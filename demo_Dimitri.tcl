@@ -1,37 +1,6 @@
-cd {C:/These/Projet Interface/COMETS/devCOMETS/Comets/}
-  set debug 0
-  source source_ordre.tcl_spe
-cd ..
+if {[info exists ::env(ROOT_COMETS)]} {cd $::env(ROOT_COMETS)/Comets/} else {puts "Please define an environment variable nammed ROOT_COMETS valuated with the Comets root path."; return}
+source minimal_load.tcl
 
-#if {[catch "package present Speech_API" res]} {
-#  if {[catch "load Speech_api.dll" res]} {
-#    puts "ERROR while loading Speech_api.dll:\n$res"
-#   }
-# }
-
-Comet_files_root    {C:/These/Projet Interface/COMETS/devCOMETS/}
-set_B207_files_root {C:/These/Projet Interface/BIGre/}
-
-CometRoot   cr "Comet root" {NO DESCRIPTION} ._test
-  PhysicalHTML_root cr_PM_P_HTML "HTML root" {NO DESCR}; cr_LM_LP Add_PM cr_PM_P_HTML; cr_LM_LP set_PM_active cr_PM_P_HTML
-  if {[info exists editeur_tcl]} {
-    if {[info exists noeud_partage]} {} else {
-      source groupe.tcl
-      proc etire_fond args {}
-     }
-    Root_PM_P_BIGre cr_PM_P_BIGre "COMET.BIGre root" "BIGre root node for comet root cr_PM_P_BIGre" -set_root $noeud_partage
-    cr_LM_LP set_PM_active cr_PM_P_BIGre
-    $Noeud_scene Retirer_fils $f_obs
-    $noeud_partage Retirer_fils $noeud_editeur_tcl
-   }
-
-#___________________________________________________________________
-# Définition des DSL
-  Style Style_CSSpp -set_comet_root cr; cr set_DSL_CSSpp     Style_CSSpp
-  DSL_GDD_QUERY dsl_q                 ; cr set_DSL_GDD_QUERY dsl_q
-  DSL_ECA       dsl_ECA               ; cr set_DSL_ECA       dsl_ECA
-  [gmlObject info objects DSL_interface_interpretor] set_dsl_gdd dsl_q
- 
 #_____________________________________________________________________________________
 Do_rec_source {C:\These\Stagiaires\2010\M2R Algo génétiques\Dimitri\CometDimitri}
   set CCE      [CPool get_a_comet CometCompo_evolution -set_L_inputs [list "in N"] -set_L_outputs [list "out N"] -set_name "MUTATIONS" -load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Cores/mutation_1.core"  -set_L_param [list "pSelector 0.01" "pCoefficient 0.01" "pAttribut 0.01"]]
