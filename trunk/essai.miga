@@ -1,0 +1,28 @@
+<MIGA id="C_Dim">
+<CometCompo_evolution id="C_Dim_CPool_COMET_33" name="START" core_f_name="">
+  <output id="out" cardN="N"/>
+  <param id="NB" val="16"/>
+  <param id="XHTML_to_process" val="ZenGarden/zen_garden.xhtml"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="98 98" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_35" name="UNION" core_f_name="">
+  <input id="in_1" cardN="*"/>
+  <input id="in_2" cardN="*"/>
+  <output id="out" cardN="N"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="147 123" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_37" name="MUTATIONS" core_f_name="">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="pSelector" val="0.01"/>
+  <param id="pCoefficient" val="0.01"/>
+  <param id="pAttribut" val="0.01"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="292 202" Translate="0 0" />
+</CometCompo_evolution>
+
+<connexion src="C_Dim_CPool_COMET_33 out" dest="C_Dim_CPool_COMET_35 in_2"/>
+<connexion src="C_Dim_CPool_COMET_35 out" dest="C_Dim_CPool_COMET_37 in"/>
+<connexion src="C_Dim_CPool_COMET_37 out" dest="C_Dim_CPool_COMET_35 in_1"/>
+</MIGA>

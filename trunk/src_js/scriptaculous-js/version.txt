@@ -1,0 +1,2 @@
+scriptaculous-js-1.7.0
+Un renommage de la variable Ajax a ete fait en Ajx.
