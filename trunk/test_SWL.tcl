@@ -1,52 +1,10 @@
-cd {C:/These/Projet Interface/COMETS/devCOMETS/Comets/}
-  set debug 0
-  source source_ordre.tcl_spe
-cd ..
+if {[info exists ::env(ROOT_COMETS)]} {cd $::env(ROOT_COMETS)} else {puts "Please define an environment variable nammed ROOT_COMETS valuated with the Comets root path."; return}
+source minimal_load.tcl
 
-if {[catch "package present Speech_API" res]} {
-  if {[catch "load Speech_api.dll" res]} {
-    puts "ERROR while loading Speech_api.dll:\n$res"
-   }
- }
-
-
-  
-CometRoot   cr "Comet root" {NO DESCRIPTION} ._Root1
-
-
-#___________________________________________________________________
-# Définition des DSL
-  Style Style_CSSpp -set_comet_root cr; cr set_DSL_CSSpp     Style_CSSpp
-  DSL_GDD_QUERY dsl_q                 ; cr set_DSL_GDD_QUERY dsl_q
-  DSL_ECA       dsl_ECA               ; cr set_DSL_ECA       dsl_ECA
-  [gmlObject info objects DSL_interface_interpretor] set_dsl_gdd dsl_q
-#___________________________________________________________________
- C_GDD_Editor   GDD_Edit      "GDD editor" {} -Load_types_from_file GDD/GDD_repository/GDD_types_def.txt
- GDD_Edit Load_GDD Comets/CSS_STYLESHEETS/GDD/INRIA.gdd
-
-
-
- PhysicalHTML_root cr_PM_P_HTML    "HTML root" {NO DESCR}; cr_LM_LP Add_PM cr_PM_P_HTML;    cr_LM_LP set_PM_active cr_PM_P_HTML
-  root_PM_P_ALX_TXT cr_PM_P_ALX_TXT "S207 root" {NO DESCR}; cr_LM_LP Add_PM cr_PM_P_ALX_TXT; cr_LM_LP set_PM_active cr_PM_P_ALX_TXT
-  if {[info exists editeur_tcl]} {
-    if {[info exists noeud_partage]} {} else {
-      source groupe.tcl
-      proc etire_fond args {}
-     }
-    Root_PM_P_BIGre cr_PM_P_BIGre "COMET.BIGre root" "BIGre root node for comet root cr_PM_P_BIGre" -set_root $noeud_partage
-    cr_LM_LP set_PM_active cr_PM_P_BIGre
-    $Noeud_scene Retirer_fils $f_obs
-    $noeud_partage Retirer_fils $noeud_editeur_tcl
-   }
-
-   
-if {![gmlObject info exists object Liant_mutable]} {
- source ../../BIGre/test_mutable.tcl
- Liant_Mutable_sim_ptr Liant_mutable; Liant_mutable startListening 8910
-}
+Init_B207
+Init_HTML
 
 CometSWL swl "StarWar Light" "A great game..."
-
 cr Add_daughters_R swl
 
 #___________________________________________________________________________________________________________________________________________
