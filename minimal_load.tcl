@@ -7,13 +7,6 @@ if {[info exists ::env(ROOT_COMETS)]} {cd $::env(ROOT_COMETS)/Comets/} else {cd 
 cd ..
 
 #___________________________________________________________________________________________________________________________________________
-if {[catch "package present Speech_API" res]} {
-  if {[catch "load Speech_api.dll" res]} {
-    puts "ERROR while loading Speech_api.dll:\n$res"
-   }
- } 
-
-#___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 CometRoot   cr "Comet root" {NO DESCRIPTION} ._COMETS
@@ -71,4 +64,9 @@ proc Init_HTML {} {
 #___________________________________________________________________________________________________________________________________________
 proc Init_S207 {} {
  root_PM_P_ALX_TXT cr_PM_P_ALX_TXT "S207 root" {NO DESCR}; cr_LM_LP Add_PM cr_PM_P_ALX_TXT; cr_LM_LP set_PM_active cr_PM_P_ALX_TXT
+ if {[catch "package present Speech_API" res]} {
+   if {[catch "load Speech_api.dll" res]} {
+     puts "ERROR while loading Speech_api.dll:\n$res"
+    }
+  } 
 }
