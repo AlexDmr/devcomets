@@ -11,10 +11,13 @@ cr Add_daughters_R swl
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 proc SWL_mode_is {swl m} {
- #puts "SWL_mode_is $swl $m"
+ puts "SWL_mode_is $swl $m"
  if {[gmlObject info exists object $m]} {set m [$m get_name]}
- set cont_game [CSS++ $swl "#$swl\(CometContainer \\>>!CometContainer/>> \CONT.GAME/\)"]
- set cont_edit [CSS++ $swl "#$swl\(CometContainer \\>>!CometContainer/>> CONT.EDITION/\)"]
+ set cont_game [CSS++ $swl "#$swl\(CometContainer \\ >CONT.GAME   , >>!CometContainer/>> CONT.GAME   /)"]
+ set cont_edit [CSS++ $swl "#$swl\(CometContainer \\ >CONT.EDITION, >>!CometContainer/>> CONT.EDITION/)"]
+ #puts "CSS++ $swl {#$swl\(CometContainer \\>>!CometContainer/>> CONT.EDITION/)}"
+ #puts "  cont_game : $cont_game"
+ #puts "  cont_edit : $cont_edit"
  if {$m == "Edition"} {
    $cont_game Hide_Elements *
    $cont_edit Hide_Elements
