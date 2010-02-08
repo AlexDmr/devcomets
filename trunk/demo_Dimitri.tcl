@@ -1,5 +1,7 @@
-if {[info exists ::env(ROOT_COMETS)]} {cd $::env(ROOT_COMETS)/Comets/} else {puts "Please define an environment variable nammed ROOT_COMETS valuated with the Comets root path."; return}
+if {[info exists ::env(ROOT_COMETS)]} {cd $::env(ROOT_COMETS)} else {puts "Please define an environment variable nammed ROOT_COMETS valuated with the Comets root path."; return}
 source minimal_load.tcl
+
+Init_HTML
 
 #_____________________________________________________________________________________
 Do_rec_source {C:\These\Stagiaires\2010\M2R Algo génétiques\Dimitri\CometDimitri}
@@ -46,5 +48,5 @@ set CC_ROULETTE [CPool get_a_comet CometCompo_evolution \
 cr Add_daughters_R [CometDimitri C_Dim "Editeur d'évolution" "Gère l'évolution d'IHMs" -set_L_class_compo [list $CC_START $CC_SCRATCH_START $CC_CROSSING $CCE $CC_EVAL $CC_FILTER $CC_MERGE $CC_ROULETTE $CC_UNION $CC_RUSSIAN $CC_SAVE]]
 
  
-  Chrono CometDimitri Add_L_instance_compo
+ # Chrono CometDimitri Add_L_instance_compo
  # puts "C_Dim Add_L_connexions \[list {{$CCE out} {$CCE2 in2}}\]"
