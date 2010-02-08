@@ -4,7 +4,7 @@ source minimal_load.tcl
 Init_HTML
 
 #_____________________________________________________________________________________
-Do_rec_source {C:\These\Stagiaires\2010\M2R Algo génétiques\Dimitri\CometDimitri}
+Do_rec_source $::env(MAGELLAN)
   set CCE      [CPool get_a_comet CometCompo_evolution -set_L_inputs [list "in N"] -set_L_outputs [list "out N"] -set_name "MUTATIONS" -load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Cores/mutation_1.core"  -set_L_param [list "pSelector 0.01" "pCoefficient 0.01" "pAttribut 0.01"]]
   set CCE2     [CPool get_a_comet CometCompo_evolution -set_L_inputs [list "in N"] -set_L_outputs [list "out X"] -set_name "CROSSING"  -load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Cores/crossing_1.core"  -set_L_param [list "KeepParents 0" "{Nb childrens} N"]]
   set CC_START [CPool get_a_comet CometCompo_evolution -set_L_inputs [list ]       -set_L_outputs [list "out N"] -set_name "START"     -load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Cores/Start.core" -set_L_param [list "NB 16" "XHTML_to_process ZenGarden/zen_garden.xhtml"] -set_nb_max_process 1]
