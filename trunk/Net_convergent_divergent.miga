@@ -1,5 +1,5 @@
 <MIGA id="C_Dim">
-<CometCompo_evolution id="C_Dim_CPool_COMET_33" name="SCRATCH START" core_f_name="CometCompo_evolution/PMs/FC/Cores/ScratchStart.core">
+<CometCompo_evolution id="C_Dim_CPool_COMET_33" name="SCRATCH START" nb_max_process="1" core_f_name="CometCompo_evolution/PMs/FC/Cores/ScratchStart.core">
   <output id="out" cardN="N"/>
   <param id="NB" val="16"/>
   <param id="XHTML_to_process" val="ZenGarden/zen_garden.xhtml"/>
