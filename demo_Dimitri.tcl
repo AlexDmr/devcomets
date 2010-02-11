@@ -22,8 +22,8 @@ Do_rec_source $::env(MAGELLAN)
   set CC_EVAL  [CPool get_a_comet CometCompo_evolution -set_L_inputs  [list "in N"]  \
                                                        -set_L_outputs [list "out N"] \
 													   -set_name "USER EVAL" \
-													   -Add_MetaData    HTML_SPECIAL_VIEW CometCompo_evolution_visu_html_2 \
-													   -Add_style_class HTML_SPECIAL_VIEW \
+													   -Add_MetaData    MAGELLAN_SPECIAL_VIEW CometCompo_evolution_PM_P_U_basic_user_eval \
+													   -Add_style_class MAGELLAN_SPECIAL_VIEW \
 													   ];
 
 
