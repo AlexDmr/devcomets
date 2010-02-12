@@ -32,7 +32,7 @@
   <input id="in" cardN="*"/>
   <output id="true" cardN="*"/>
   <output id="false" cardN="*"/>
-  <param id="condition" val="$score > 0.5"/>
+  <param id="condition" val="$score &gt; 0.5"/>
   <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="180 225" Translate="0 0" />
 </CometCompo_evolution>
 
