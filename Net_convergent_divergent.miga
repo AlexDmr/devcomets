@@ -22,7 +22,7 @@
   <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="614 132" Translate="0 0" />
 </CometCompo_evolution>
 
-<CometCompo_evolution id="C_Dim_CPool_COMET_39" name="USER EVAL" MetaData="HTML_SPECIAL_VIEW CometCompo_evolution_visu_html_2" core_f_name="">
+<CometCompo_evolution id="C_Dim_CPool_COMET_39" name="USER EVAL" MetaData="MAGELLAN_SPECIAL_VIEW CometCompo_evolution_PM_P_U_basic_user_eval" core_f_name="">
   <input id="in" cardN="N"/>
   <output id="out" cardN="N"/>
   <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="163 149" Translate="0 0" />
