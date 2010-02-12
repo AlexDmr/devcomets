@@ -1,0 +1,135 @@
+<MIGA id="C_Dim">
+<CometCompo_evolution id="C_Dim_CPool_COMET_35" name="SCRATCH START" nb_max_process="1" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/ScratchStart.core">
+  <output id="out" cardN="N"/>
+  <param id="NB" val="16"/>
+  <param id="XHTML_to_process" val="ZenGarden/zen_garden.xhtml"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="116 87" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_37" name="UNION" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/Union.core">
+  <input id="in_1" cardN="*"/>
+  <input id="in_2" cardN="*"/>
+  <output id="out" cardN="N"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="167 55" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_39" name="MERGE" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/Merge.core">
+  <input id="in_1" cardN="*"/>
+  <input id="in_2" cardN="*"/>
+  <output id="out" cardN="N"/>
+  <param id="NB_1" val="4"/>
+  <param id="NB_2" val="12"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="743 129" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_41" name="USER EVAL" MetaData="MAGELLAN_SPECIAL_VIEW CometCompo_evolution_PM_P_U_basic_user_eval" core_f_name="">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="163 149" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_177" name="FILTER" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/Filtre.core">
+  <input id="in" cardN="*"/>
+  <output id="true" cardN="*"/>
+  <output id="false" cardN="*"/>
+  <param id="condition" val="$score &gt; 0.5"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="183 220" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_179" name="MUTATIONS" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/mutation_1.core">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="pSelector" val="0.01"/>
+  <param id="pCoefficient" val="0.01"/>
+  <param id="pAttribut" val="0.01"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="469 60" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_181" name="MUTATIONS" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/mutation_1.core">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="pSelector" val="0.01"/>
+  <param id="pCoefficient" val="0.01"/>
+  <param id="pAttribut" val="0.01"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="469 125" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_183" name="MUTATIONS" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/mutation_1.core">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="pSelector" val="0.01"/>
+  <param id="pCoefficient" val="0.01"/>
+  <param id="pAttribut" val="0.01"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="469 199" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_185" name="MUTATIONS" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/mutation_1.core">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="pSelector" val="0.01"/>
+  <param id="pCoefficient" val="0.01"/>
+  <param id="pAttribut" val="0.01"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="469 264" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_187" name="CROSSING" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/crossing_1.core">
+  <input id="in1" cardN="N"/>
+  <input id="in2" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="603 84" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_189" name="CROSSING" MetaData="" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/crossing_1.core">
+  <input id="in1" cardN="N"/>
+  <input id="in2" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="603 225" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_191" name="EXPAND" MetaData="XY_for_CPool_COMET_19 {419 327}" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/expandAndComplete.core">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="output_length" val="16"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="329 60" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_193" name="EXPAND" MetaData="XY_for_CPool_COMET_19 {444 386}" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/expandAndComplete.core">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="output_length" val="16"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="329 125" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_195" name="EXPAND" MetaData="XY_for_CPool_COMET_19 {605 326}" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/expandAndComplete.core">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="output_length" val="16"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="329 199" Translate="0 0" />
+</CometCompo_evolution>
+
+<CometCompo_evolution id="C_Dim_CPool_COMET_197" name="EXPAND" MetaData="XY_for_CPool_COMET_19 {614 390}" core_f_name="CometCompo_evolution/PMs/FC/Core_css++/expandAndComplete.core">
+  <input id="in" cardN="N"/>
+  <output id="out" cardN="N"/>
+  <param id="output_length" val="16"/>
+  <CometCompo_evolution_PM_P_TK_canvas_basic Move_to="329 264" Translate="0 0" />
+</CometCompo_evolution>
+
+<connexion src="C_Dim_CPool_COMET_39 out" dest="C_Dim_CPool_COMET_37 in_1"/>
+<connexion src="C_Dim_CPool_COMET_35 out" dest="C_Dim_CPool_COMET_37 in_2"/>
+<connexion src="C_Dim_CPool_COMET_37 out" dest="C_Dim_CPool_COMET_41 in"/>
+<connexion src="C_Dim_CPool_COMET_41 out" dest="C_Dim_CPool_COMET_177 in"/>
+<connexion src="C_Dim_CPool_COMET_179 out" dest="C_Dim_CPool_COMET_187 in1"/>
+<connexion src="C_Dim_CPool_COMET_181 out" dest="C_Dim_CPool_COMET_187 in2"/>
+<connexion src="C_Dim_CPool_COMET_183 out" dest="C_Dim_CPool_COMET_189 in1"/>
+<connexion src="C_Dim_CPool_COMET_185 out" dest="C_Dim_CPool_COMET_189 in2"/>
+<connexion src="C_Dim_CPool_COMET_189 out" dest="C_Dim_CPool_COMET_39 in_2"/>
+<connexion src="C_Dim_CPool_COMET_187 out" dest="C_Dim_CPool_COMET_39 in_1"/>
+<connexion src="C_Dim_CPool_COMET_177 true" dest="C_Dim_CPool_COMET_191 in"/>
+<connexion src="C_Dim_CPool_COMET_177 true" dest="C_Dim_CPool_COMET_193 in"/>
+<connexion src="C_Dim_CPool_COMET_193 out" dest="C_Dim_CPool_COMET_181 in"/>
+<connexion src="C_Dim_CPool_COMET_191 out" dest="C_Dim_CPool_COMET_179 in"/>
+<connexion src="C_Dim_CPool_COMET_177 false" dest="C_Dim_CPool_COMET_195 in"/>
+<connexion src="C_Dim_CPool_COMET_177 false" dest="C_Dim_CPool_COMET_197 in"/>
+<connexion src="C_Dim_CPool_COMET_195 out" dest="C_Dim_CPool_COMET_183 in"/>
+<connexion src="C_Dim_CPool_COMET_197 out" dest="C_Dim_CPool_COMET_185 in"/>
+</MIGA>
