@@ -28,12 +28,27 @@ Do_rec_source $::env(MAGELLAN)
 
 
 set CC_SAVE      [CPool get_a_comet CometCompo_evolution -set_L_inputs [list "in N"] -set_L_outputs [list "out N"] -set_name "SAVE" -load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Core_css++/Save.core"]
+set CC_ELITE     [CPool get_a_comet CometCompo_evolution \
+		-set_L_inputs [list "in N"] \
+		-set_L_outputs [list "best N" "worst N"] \
+		-set_name "ELITIST SELECTION" \
+		-load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Core_css++/elite.core"  \
+		-set_L_param [list "nb_best 8"]]
+
 set CC_RUSSIAN [CPool get_a_comet CometCompo_evolution \
 		-set_L_inputs [list "in N"] \
 		-set_L_outputs [list "out N"] \
 		-set_name "RUSSIAN ROULETTE" \
 		-load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Core_css++/RussianRoulette.core"  \
 		-set_L_param [list "output_length 16"]]
+		
+set CC_EXPAND   [CPool get_a_comet CometCompo_evolution \
+		-set_L_inputs [list "in N"] \
+		-set_L_outputs [list "out N"] \
+		-set_name "EXPAND" \
+		-load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Core_css++/expandAndComplete.core"  \
+		-set_L_param [list "output_length 16"]]
+
 set CC_CROSSING [CPool get_a_comet CometCompo_evolution \
 		-set_L_inputs [list "in1 N" "in2 N"] \
 		-set_L_outputs [list "out N"] \
@@ -45,7 +60,7 @@ set CC_ROULETTE [CPool get_a_comet CometCompo_evolution \
 		-set_name "STOCHASTIC ROULETTE" \
 		-load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Core_css++/Roulette.core"  ]
 
-cr Add_daughters_R [CometDimitri C_Dim "Editeur d'évolution" "Gère l'évolution d'IHMs" -set_L_class_compo [list $CC_START $CC_SCRATCH_START $CC_CROSSING $CCE $CC_EVAL $CC_FILTER $CC_MERGE $CC_ROULETTE $CC_UNION $CC_RUSSIAN $CC_SAVE]]
+cr Add_daughters_R [CometDimitri C_Dim "Editeur d'évolution" "Gère l'évolution d'IHMs" -set_L_class_compo [list $CC_START $CC_SCRATCH_START $CC_CROSSING $CC_ELITE $CC_EVAL $CC_EXPAND $CC_FILTER $CC_MERGE $CCE $CC_ROULETTE $CC_UNION $CC_RUSSIAN $CC_SAVE]]
 
  
  # Chrono CometDimitri Add_L_instance_compo
