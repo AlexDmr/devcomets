@@ -65,3 +65,14 @@ cr Add_daughters_R [CometDimitri C_Dim "Editeur d'évolution" "Gère l'évolution d
  
  # Chrono CometDimitri Add_L_instance_compo
  # puts "C_Dim Add_L_connexions \[list {{$CCE out} {$CCE2 in2}}\]"
+CometInterleaving MSN "msn" "" 
+MSN Add_daughters_R [list [CometText DISCUSSION "discussion" ""] [CometSpecifyer SPEC "spec" ""] [CometChoice CHOIX "choix" ""]]
+CHOIX Add_daughters_R [list coucou les amis]
+
+C_Dim Load_network_from_file Net_convergent_divergent_2.miga
+
+foreach C [CSS++ cr {#cr->PMs C_Dim(CometCompo_evolution_PM_P_U_basic_user_eval)}] {
+  $C set_Croot_to_eval MSN
+ }
+
+ 
