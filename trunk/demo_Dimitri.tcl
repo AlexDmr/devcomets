@@ -66,15 +66,8 @@ cr Add_daughters_R [CometDimitri C_Dim "Editeur d'évolution" "Gère l'évolution d
  # Chrono CometDimitri Add_L_instance_compo
  # puts "C_Dim Add_L_connexions \[list {{$CCE out} {$CCE2 in2}}\]"
 puts "Building a pipo MSN for test purpose !"
-CometInterleaving MON_MSN   "Top interleaving MSN" ""
-  CometSpecifyer MON_SPEC   "A text spec" ""
-  CometText      MON_TEXT   "A text" "" -set_text "Hello world, this is a text"
-  CometChoice    MON_CHOICE "A choice" ""
-  MON_CHOICE Add_daughters_R [list Hello everyone we have the choice!]
-  
-  MON_MSN Add_daughters_R [list MON_SPEC MON_TEXT MON_CHOICE]
-  
-C_Dim set_comet_root_to_be_transformed MON_MSN
+source expe_magellan_1.tcl
+C_Dim set_comet_root_to_be_transformed MSN_ROOT
 
 puts "loading the evolution network"
 C_Dim Load_network_from_file Net_convergent_divergent_2.miga
