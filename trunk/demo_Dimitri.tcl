@@ -60,7 +60,14 @@ set CC_ROULETTE [CPool get_a_comet CometCompo_evolution \
 		-set_name "STOCHASTIC ROULETTE" \
 		-load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Core_css++/Roulette.core"  ]
 
-cr Add_daughters_R [CometDimitri C_Dim "Editeur d'évolution" "Gère l'évolution d'IHMs" -set_L_class_compo [list $CC_START $CC_SCRATCH_START $CC_CROSSING $CC_ELITE $CC_EVAL $CC_EXPAND $CC_FILTER $CC_MERGE $CCE $CC_ROULETTE $CC_UNION $CC_RUSSIAN $CC_SAVE]]
+set CC_VISUALISTEUR [CPool get_a_comet CometCompo_evolution \
+		-set_L_inputs [list "in N"] \
+		-set_L_outputs [list "out N"] \
+		-set_name "VISUALISATEUR INDIVIDU" \
+		-load_core "[Root_of_CometDimitri]CometCompo_evolution/PMs/FC/Core_css++/individuVisu.core"  ]
+		
+		
+cr Add_daughters_R [CometDimitri C_Dim "Editeur d'évolution" "Gère l'évolution d'IHMs" -set_L_class_compo [list $CC_START $CC_SCRATCH_START $CC_CROSSING $CC_ELITE $CC_EVAL $CC_EXPAND $CC_FILTER $CC_MERGE $CCE $CC_ROULETTE $CC_UNION $CC_RUSSIAN $CC_SAVE $CC_VISUALISTEUR]]
 
  
  # Chrono CometDimitri Add_L_instance_compo
@@ -71,4 +78,4 @@ C_Dim set_comet_root_to_be_transformed MSN_ROOT
 
 puts "loading the evolution network"
 C_Dim Load_network_from_file Net_convergent_divergent_2.miga
-
+source Magellan/get_marks_and_type.alx
