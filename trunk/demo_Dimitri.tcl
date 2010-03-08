@@ -78,4 +78,4 @@ C_Dim set_comet_root_to_be_transformed MSN_ROOT
 
 puts "loading the evolution network"
 C_Dim Load_network_from_file Net_convergent_divergent_2.miga
-source Magellan/get_marks_and_type.alx
+source [Root_of_CometDimitri]get_marks_and_type.alx
