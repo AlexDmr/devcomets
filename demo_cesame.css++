@@ -1,0 +1,100 @@
+Implem : NODE()<-REL(type~=GDD_inheritance && type!=GDD_restriction)*<REL(type~=GDD_implementation)<-$n();
+
+__________ RULES __________
+
+CometCamNote->PMs[soft_type==BIGre] CometLog activators {
+cr;
+FCT_set_method_placement: Line_h;
+
+}
+CometCamNote->PMs[soft_type==BIGre] CometLog contents CometContainer \>CometSpecifyer.PM_BIGre/ {
+cr;
+FCT_set_method_placement: Line_h;
+
+}
+CometCamNote->PMs[soft_type==BIGre] CometCamNote_Speaker CometContainer \>CometSlideRemoteController/ {
+cr;
+GDD_fct : Implem(Container_CUI_window);
+FCT_set_method_placement: Window_fit_daughters ;
+
+}
+CometCamNote->PMs[soft_type==BIGre] CometLog CometInterleaving {
+cr;
+FCT_set_method_placement: Line_v;
+
+}
+CometCamNote->PMs[soft_type==BIGre] CometCamNote_Speaker {
+cr;
+ECA : ccn_speaker set_preso_mode,
+  $m==1,
+  puts coucou ---
+  set telec [CSS++ $obj CometSlideRemoteController] ---
+  set cont [CSS++ $obj CometContainer \>CometSlideRemoteController/] ---
+  set slide [CSS++ $obj CometImage] ---
+  set visu [CSS++ $obj CometContainer \>CometImage/] ---
+  set bt [CSS++ $obj ccn_speaker_act_preso] ---
+  set transfo [B_transfo 1500] ---
+  set rep_svg [B_noeud] --- set rep_final [B_noeud] ---
+  $cont Raise --- 
+  set img_clavier [C_B_get_or_create_in(img_clavier, $visu, B_image Clavier.png)] ---
+  C_B_configure($visu, -Ajouter_au_contexte rep_svg $rep_svg) ---
+  C_B_Transfo( $transfo
+    , C_B_SVG_rep($cont, $rep_svg)
+    , C_B_Morph($transfo, $rep_svg, $cont, $visu) --- 
+      C_B_fade_bt ($transfo, $bt, 1, 0.1)
+    , C_GDD($telec, Implem, N_controller_CUI_basic_keyboard) ---
+      $visu Redirect_key_events_to_PM [CSS++ $obj CometSlideRemoteController] ---
+      C_B_configure($cont, -Afficher_noeud 0 -Gerer_contacts 0) ---
+      C_B_SVG_rep($cont, $rep_final) --- C_B_configure($visu, -Ajouter_au_contexte rep_final $rep_final) --- 
+      C_B_splash($slide, $img_clavier, 1500) ---
+      B_sim_sds Prendre_evennements_lies_a NULL [eval [[CSS++ $obj CometSlideRemoteController] get_prim_handle] Liant] ---
+	  puts FIN_PRESO_MODE_1
+    )
+;
+ECA : ccn_speaker set_preso_mode,
+  $m==0,
+  puts DEBALLER ---
+  set telec [CSS++ $obj CometSlideRemoteController] ---
+  set cont [CSS++ $obj CometContainer \>CometSlideRemoteController/] ---
+  set visu [CSS++ $obj CometContainer \>CometImage/] ---
+  set bt [CSS++ $obj ccn_speaker_act_preso] --- puts AVT___ ---
+  C_GDD($telec, Implem, N_controller_CUI_basic_gfx) ---
+  set transfo [B_transfo 1500] ---
+  $cont Raise --- $cont Window_fit_daughters ---
+  C_B_configure($cont, -Afficher_noeud 1 -Gerer_contacts 1) ---
+  set rep_svg [C_B_get($visu, Val rep_svg)] --- puts APR___ ---
+  set rep_origine [C_B_get($visu, Val rep_final)] --- puts $rep_origine --- puts BEGIN_MODE_0 ---
+  C_B_Transfo( $transfo
+    , puts GOGOGO
+    , C_B_Morph_B($transfo, $rep_origine, $cont, $rep_svg) ---
+      C_B_fade_bt ($transfo, $bt, 0.1, 1)
+    , $visu Stop_Redirect_key_events_to_PM --- puts END_MODE_0
+    )
+;
+
+}
+ccn(CometCamNote_Examinator(CometCamNote_ExaminatorQuestions->PMs CometSpecifyer->_LM_LP)) {
+cr;
+GDD_fct : Implem(Specifyer_basic_CUI_textarea);
+FCT_set_PM_factories_from_GDD: Implem(Specifyer_basic_CUI_textarea);
+
+}
+CometRoot->PMs[soft_type == PHP_HTML] CometCamNote_Examinator CometSpecifyer {
+ccn_cr_visiteur;
+width: 100%;
+height: 200px;
+
+}
+CometRoot->PMs[soft_type == PHP_HTML] CometCamNote_Examinator CometContainer \>CometSlideRemoteController/ {
+ccn_cr_visiteur;
+border: solid black;
+background-color: cyan;
+FCT_set_L_tags: center;
+
+}
+CometRoot->PMs[soft_type == PHP_HTML] CometCamNote_Examinator CometImage {
+ccn_cr_visiteur;
+FCT_set_L_tags: center;
+border: solid black;
+
+}
