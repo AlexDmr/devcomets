@@ -1,0 +1,877 @@
+<GDD set_root_node="IS_root">
+<node id="IS_root" set_type="GDD_C&amp;T" set_descriptions="Interactive System" set_ptf="*">
+</node>
+<node id="Choice" set_type="GDD_C&amp;T" set_descriptions="Choice among a set" set_ptf="*">
+<factory id="CometChoice"></factory>
+</node>
+<node id="ChoiceMonth" set_type="GDD_C&amp;T" set_descriptions="Choice of months" set_ptf="*">
+</node>
+<node id="TorusMonthChooserTK" set_type="GDD_FUI" set_descriptions="TK torus month chooser" set_ptf="Ptf_TK">
+<factory id="PM_P_YearCircle_TK"></factory>
+</node>
+<node id="SimpleChoice" set_type="GDD_C&amp;T" set_descriptions="Simple choice" set_ptf="*">
+</node>
+<relation id="SimpleChoice_to_FUI" set_L_source_nodes="TorusMonthChooserTK" set_L_dest_nodes="SimpleChoice" set_type="GDD_implementation"></relation>
+<relation id="ChoiceMonth_to_FUI" set_L_source_nodes="TorusMonthChooserTK" set_L_dest_nodes="ChoiceMonth" set_type="GDD_implementation"></relation>
+<node id="ChoiceFiles" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+</node>
+<node id="ChoiceFiles_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="ChoiceFiles_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="ChoiceFiles_CUI_standard_system" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="ChoiceFiles_CUI_standard_system_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Choice_file_PM_P_dialog_TK"></factory>
+</node>
+<node id="ChoiceFiles_CUI_standard_system_B207_with_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Choice_file_PM_P_dialog_B207_with_TK"></factory>
+</node>
+<relation id="GDD_implementation_ChoiceFiles_CUI_standard_system_ChoiceFiles_CUI_standard_system_TK" set_L_source_nodes="ChoiceFiles_CUI_standard_system_TK ChoiceFiles_CUI_standard_system_B207_with_TK" set_L_dest_nodes="ChoiceFiles_CUI_standard_system" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_ChoiceFiles_CUI_ChoiceFiles_CUI_standard_system" set_L_source_nodes="ChoiceFiles_CUI_standard_system" set_L_dest_nodes="ChoiceFiles_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_ChoiceFiles_AUI_ChoiceFiles_CUI" set_L_source_nodes="ChoiceFiles_CUI" set_L_dest_nodes="ChoiceFiles_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_ChoiceFiles_ChoiceFiles_AUI" set_L_source_nodes="ChoiceFiles_AUI" set_L_dest_nodes="ChoiceFiles" set_type="GDD_concretization"></relation>
+<node id="Choice_Color" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+</node>
+<node id="Choice_Color_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Choice_Color_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Choice_Color_CUI_gfx" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Choice_Color_FUI_gfx_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Choice_PM_P_B207_color_base"></factory>
+</node>
+<relation id="GDD_implementation_Choice_Color_CUI_gfx_Choice_Color_FUI_gfx_B207" set_L_source_nodes="Choice_Color_FUI_gfx_B207" set_L_dest_nodes="Choice_Color_CUI_gfx" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_Choice_Color_CUI_Choice_Color_CUI_gfx" set_L_source_nodes="Choice_Color_CUI_gfx" set_L_dest_nodes="Choice_Color_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Choice_Color_AUI_Choice_Color_CUI" set_L_source_nodes="Choice_Color_CUI" set_L_dest_nodes="Choice_Color_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_Choice_Color_Choice_Color_AUI" set_L_source_nodes="Choice_Color_AUI" set_L_dest_nodes="Choice_Color" set_type="GDD_concretization"></relation>
+<relation id="Choice_Restriction" set_L_source_nodes="ChoiceMonth SimpleChoice ChoiceFiles Choice_Color" set_L_dest_nodes="Choice" set_type="GDD_restriction"></relation>
+<node id="ChoiceAccumulator" set_type="GDD_C&amp;T" set_descriptions="Accumulator choice" set_ptf="*">
+</node>
+<relation id="ChoiceAccumulator_Unchoosed" set_L_source_nodes="ChoiceAccumulator" set_L_dest_nodes="Choice" set_type="GDD_encapsulation"></relation>
+<node id="ChoiceInterleavedMarkers" set_type="GDD_C&amp;T" set_descriptions="Choice done by interleaved markers" set_ptf="*">
+</node>
+<node id="Marker" set_type="GDD_C&amp;T" set_descriptions="Marker" set_ptf="*">
+<factory id="CometMarker"></factory>
+</node>
+<node id="Marker_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Marker_NG_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Marker_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Materialisation_Mark" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Gp1" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Encadrement" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Filtre" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Flou" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Surlignage" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Negatif" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<relation id="GDD_specialization_Filtre_Flou" set_L_source_nodes="Flou Surlignage Negatif" set_L_dest_nodes="Filtre" set_type="GDD_specialization"></relation>
+<relation id="GDD_specialization_Gp1_Encadrement" set_L_source_nodes="Encadrement Filtre" set_L_dest_nodes="Gp1" set_type="GDD_specialization"></relation>
+<node id="Gp2" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Transformation_Geometrique" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Mouvement" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Tremblement" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Pulsation" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Clignotement" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<relation id="GDD_specialization_Pulsation_Clignotement" set_L_source_nodes="Clignotement" set_L_dest_nodes="Pulsation" set_type="GDD_specialization"></relation>
+<node id="Fixite" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<relation id="GDD_specialization_Mouvement_Tremblement" set_L_source_nodes="Tremblement Pulsation Fixite" set_L_dest_nodes="Mouvement" set_type="GDD_specialization"></relation>
+<relation id="GDD_specialization_Gp2_Transformation_Geometrique" set_L_source_nodes="Transformation_Geometrique Mouvement" set_L_dest_nodes="Gp2" set_type="GDD_specialization"></relation>
+<relation id="GDD_specialization_Materialisation_Mark_Gp1" set_L_source_nodes="Gp1 Gp2" set_L_dest_nodes="Materialisation_Mark" set_type="GDD_specialization"></relation>
+<node id="Modification_Attributs" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<relation id="GDD_specialization_Marker_CUI_Materialisation_Mark" set_L_source_nodes="Materialisation_Mark Modification_Attributs" set_L_dest_nodes="Marker_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Marker_NG_AUI_Marker_CUI" set_L_source_nodes="Marker_CUI" set_L_dest_nodes="Marker_NG_AUI" set_type="GDD_concretization"></relation>
+<node id="Marker_simple_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Couple" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Radio_buttons" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Radio_buttons_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Marker_PM_P_Radio_HTML"></factory>
+</node>
+<node id="RadioBt_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Marker_PM_P_TK_RadioBt"></factory>
+</node>
+<relation id="GDD_implementation_Radio_buttons_Radio_buttons_HTML" set_L_source_nodes="Radio_buttons_HTML RadioBt_TK" set_L_dest_nodes="Radio_buttons" set_type="GDD_implementation"></relation>
+<node id="Checkbox" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Checkbox_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Marker_PM_P_CheckBox_HTML"></factory>
+</node>
+<relation id="GDD_implementation_Checkbox_Checkbox_HTML" set_L_source_nodes="Checkbox_HTML" set_L_dest_nodes="Checkbox" set_type="GDD_implementation"></relation>
+<node id="Check" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<relation id="GDD_specialization_Couple_Radio_buttons" set_L_source_nodes="Radio_buttons Checkbox Check" set_L_dest_nodes="Couple" set_type="GDD_specialization"></relation>
+<relation id="GDD_composition_Marker_simple_AUI_Couple" set_L_source_nodes="Couple" set_L_dest_nodes="Marker_simple_AUI" set_type="GDD_composition"></relation>
+<node id="Marker_simple_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Marker_simple_CUI_RadioBt" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Marker_simple_RadioBt_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Marker_PM_P_TK_RadioBt"></factory>
+</node>
+<node id="Marker_simple_CUI_RadioBt_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="Marker_PM_P_Radio_HTML"></factory>
+</node>
+<relation id="GDD_implementation_Marker_simple_CUI_RadioBt_Marker_simple_RadioBt_TK" set_L_source_nodes="Marker_simple_RadioBt_TK Marker_simple_CUI_RadioBt_HTML" set_L_dest_nodes="Marker_simple_CUI_RadioBt" set_type="GDD_implementation"></relation>
+<node id="Marker_simple_CUI_CheckBox" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Marker_simple_CheckBox_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Marker_PM_P_TK_CheckBox"></factory>
+</node>
+<node id="Marker_simple_CUI_CheckBox_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="Marker_PM_P_CheckBox_HTML"></factory>
+</node>
+<relation id="GDD_implementation_Marker_simple_CUI_CheckBox_Marker_simple_CheckBox_TK" set_L_source_nodes="Marker_simple_CheckBox_TK Marker_simple_CUI_CheckBox_HTML" set_L_dest_nodes="Marker_simple_CUI_CheckBox" set_type="GDD_implementation"></relation>
+<node id="Marker_simple_CUI_vocal" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Marker_simple_CUI_vocal_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="Marker_PM_P_ALX_TXT"></factory>
+</node>
+<relation id="GDD_implementation_Marker_simple_CUI_vocal_Marker_simple_CUI_vocal_S207" set_L_source_nodes="Marker_simple_CUI_vocal_S207" set_L_dest_nodes="Marker_simple_CUI_vocal" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_Marker_simple_CUI_Marker_simple_CUI_RadioBt" set_L_source_nodes="Marker_simple_CUI_RadioBt Marker_simple_CUI_CheckBox Marker_simple_CUI_vocal" set_L_dest_nodes="Marker_simple_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Marker_simple_AUI_Marker_simple_CUI" set_L_source_nodes="Marker_simple_CUI" set_L_dest_nodes="Marker_simple_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_Marker_AUI_Marker_NG_AUI" set_L_source_nodes="Marker_NG_AUI Marker_simple_AUI" set_L_dest_nodes="Marker_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Marker_Marker_AUI" set_L_source_nodes="Marker_AUI" set_L_dest_nodes="Marker" set_type="GDD_concretization"></relation>
+<node id="Interrupteur" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+</node>
+<relation id="GDD_restriction_Marker_Interrupteur" set_L_source_nodes="Interrupteur" set_L_dest_nodes="Marker" set_type="GDD_restriction"></relation>
+<relation id="ChoiceInterleavedMarkers_Markers" set_L_source_nodes="ChoiceInterleavedMarkers" set_L_dest_nodes="Marker" set_type="GDD_encapsulation"></relation>
+<node id="Interleaving" set_type="GDD_C&amp;T" set_descriptions="Interleaving" set_ptf="*">
+<factory id="CometInterleaving"></factory>
+</node>
+<node id="Interleaving_AUI" set_type="GDD_AUI" set_descriptions="Dialog model for interleaving" set_ptf="*">
+</node>
+<node id="Container_AUI" set_type="GDD_AUI" set_descriptions="Container AUI" set_ptf="*">
+</node>
+<node id="Container" set_type="GDD_C&amp;T" set_descriptions="Container" set_ptf="*">
+<factory id="CometContainer"></factory>
+</node>
+<relation id="Container_to_AUI" set_L_source_nodes="Container_AUI" set_L_dest_nodes="Container" set_type="GDD_concretization"></relation>
+<node id="Container_CUI_frame" set_type="GDD_CUI" set_descriptions="Container CUI frame" set_ptf="*">
+</node>
+<node id="Container_CUI_window" set_type="GDD_CUI" set_descriptions="Container CUI window" set_ptf="*">
+</node>
+<node id="Container_CUI_window_TK" set_type="GDD_FUI" set_descriptions="Container CUI TK window" set_ptf="Ptf_TK">
+<factory id="PhysicalContainer_TK_window"></factory>
+</node>
+<node id="Container_CUI_window_BIGre" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Container_PM_P_BIGre_window"></factory>
+</node>
+<node id="Container_Maskable_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Container_PM_P_HideShow_HTML"></factory>
+<attribut id="MAGELLAN__BG_bar"></attribut>
+</node>
+<node id="Container_Maskable_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Action_non_observable" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Action_observable" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_deroulable_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<relation id="GDD_extension_Container_AUI_Container_deroulable_AUI" set_L_source_nodes="Container_deroulable_AUI" set_L_dest_nodes="Container_AUI" set_type="GDD_extension"></relation>
+<relation id="GDD_concretization_Container_deroulable_AUI_Action_non_observable" set_L_source_nodes="Action_non_observable Action_observable Container_Maskable_CUI" set_L_dest_nodes="Container_deroulable_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_implementation_Container_Maskable_CUI_Container_Maskable_HTML" set_L_source_nodes="Container_Maskable_HTML" set_L_dest_nodes="Container_Maskable_CUI" set_type="GDD_implementation"></relation>
+<relation id="Container_win_CUI_to_FUI" set_L_source_nodes="Container_CUI_window_TK Container_CUI_window_BIGre Container_Maskable_HTML" set_L_dest_nodes="Container_CUI_window" set_type="GDD_implementation"></relation>
+<node id="Container_CUI_text" set_type="GDD_CUI" set_descriptions="Textual CUI for a container" set_ptf="*">
+<factory id="Container_PM_P_ALX_TXT"></factory>
+</node>
+<node id="Container_CUI_text_ALX_TXT" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="Container_PM_P_ALX_TXT"></factory>
+</node>
+<relation id="GDD_implementation_Container_CUI_text_Container_CUI_text_ALX_TXT" set_L_source_nodes="Container_CUI_text_ALX_TXT" set_L_dest_nodes="Container_CUI_text" set_type="GDD_implementation"></relation>
+<node id="Container_CUI_Scrollable" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_FUI_Scrollable_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Container_PM_P_BIGre_Scrollable"></factory>
+</node>
+<relation id="GDD_implementation_Container_CUI_Scrollable_Container_FUI_Scrollable_B207" set_L_source_nodes="Container_FUI_Scrollable_B207" set_L_dest_nodes="Container_CUI_Scrollable" set_type="GDD_implementation"></relation>
+<node id="Container_CUI_window_by_texture" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_FUI_window_by_texture" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Container_PM_P_BIGre_window_by_texture"></factory>
+</node>
+<relation id="GDD_implementation_Container_CUI_window_by_texture_Container_FUI_window_by_texture" set_L_source_nodes="Container_FUI_window_by_texture" set_L_dest_nodes="Container_CUI_window_by_texture" set_type="GDD_implementation"></relation>
+<relation id="Container_AUI_to_CUI" set_L_source_nodes="Container_CUI_frame Container_CUI_window Container_CUI_text Container_CUI_Scrollable Container_CUI_window_by_texture" set_L_dest_nodes="Container_AUI" set_type="GDD_concretization"></relation>
+<node id="Container_CUI_frame_TK" set_type="GDD_FUI" set_descriptions="Container CUI TK frame" set_ptf="Ptf_TK">
+<factory id="PhysicalContainer_TK_frame"></factory>
+</node>
+<node id="Container_CUI_frame_BIGre" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Container_PM_P_BIGre_normal"></factory>
+</node>
+<node id="Container_CUI_frame_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Container_PM_P_HTML"></factory>
+</node>
+<relation id="Container_frame_CUI_to_FUI" set_L_source_nodes="Container_CUI_frame_TK Container_CUI_frame_BIGre Container_CUI_frame_HTML" set_L_dest_nodes="Container_CUI_frame" set_type="GDD_implementation"></relation>
+<relation id="GDD_composition_Container_deroulable_AUI_Container_AUI" set_L_source_nodes="Container_AUI Container_CUI_frame" set_L_dest_nodes="Container_deroulable_AUI" set_type="GDD_composition"></relation>
+<node id="Container_AUI_bridge" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_CUI_bridge" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_CUI_bridge_HTML_to_SVG" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_CUI_bridge_HTML_to_SVG_frame" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_FUI_bridge_HTML_to_SVG_frame" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML_to_SVG">
+<factory id="Container_PM_P_HTML_to_SVG"></factory>
+</node>
+<relation id="GDD_implementation_Container_CUI_bridge_HTML_to_SVG_frame_Container_FUI_bridge_HTML_to_SVG_frame" set_L_source_nodes="Container_FUI_bridge_HTML_to_SVG_frame" set_L_dest_nodes="Container_CUI_bridge_HTML_to_SVG_frame" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_Container_CUI_bridge_HTML_to_SVG_Container_CUI_bridge_HTML_to_SVG_frame" set_L_source_nodes="Container_CUI_bridge_HTML_to_SVG_frame" set_L_dest_nodes="Container_CUI_bridge_HTML_to_SVG" set_type="GDD_specialization"></relation>
+<node id="Container_CUI_bridge_TK_to_CANVAS" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_CUI_bridge_TK_to_CANVAS_frame" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Container_FUI_bridge_TK_to_CANVAS_frame" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK_to_CANVAS">
+<factory id="Container_PM_P_TK_to_canvas"></factory>
+</node>
+<relation id="Container_CUI_bridge_TK_to_CANVAS_frame_rel_GDD_implementation_for_Container_FUI_bridge_TK_to_CANVAS_frame" set_L_source_nodes="Container_FUI_bridge_TK_to_CANVAS_frame" set_L_dest_nodes="Container_CUI_bridge_TK_to_CANVAS_frame" set_type="GDD_implementation"></relation>
+<relation id="Container_CUI_bridge_TK_to_CANVAS_rel_GDD_specialization_for_Container_CUI_bridge_TK_to_CANVAS_frame" set_L_source_nodes="Container_CUI_bridge_TK_to_CANVAS_frame" set_L_dest_nodes="Container_CUI_bridge_TK_to_CANVAS" set_type="GDD_specialization"></relation>
+<relation id="GDD_specialization_Container_CUI_bridge_Container_CUI_bridge_HTML_to_SVG" set_L_source_nodes="Container_CUI_bridge_HTML_to_SVG Container_CUI_bridge_TK_to_CANVAS" set_L_dest_nodes="Container_CUI_bridge" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Container_AUI_bridge_Container_CUI_bridge" set_L_source_nodes="Container_CUI_bridge" set_L_dest_nodes="Container_AUI_bridge" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_Container_AUI_Container_AUI_bridge" set_L_source_nodes="Container_AUI_bridge" set_L_dest_nodes="Container_AUI" set_type="GDD_specialization"></relation>
+<relation id="InterleavingAUI_ContainerAUI" set_L_source_nodes="Interleaving_AUI" set_L_dest_nodes="Container_AUI" set_type="GDD_encapsulation"></relation>
+<node id="Interleaving_AUI_NoNav" set_type="GDD_AUI" set_descriptions="Interleaving without navigation" set_ptf="*">
+</node>
+<node id="ScatteringInterleaving" set_type="GDD_CUI" set_descriptions="Scattering interleaving" set_ptf="*">
+</node>
+<node id="PieInterleaving" set_type="GDD_CUI" set_descriptions="Pie interleaving" set_ptf="*">
+</node>
+<node id="MatricialInterleaving" set_type="GDD_CUI" set_descriptions="Matricial interleaving" set_ptf="*">
+</node>
+<node id="LinearInterleaving" set_type="GDD_CUI" set_descriptions="Linear interleaving" set_ptf="*">
+</node>
+<node id="MagneticList_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Interleaving_PM_P_Magnetic_List_HTML"></factory>
+</node>
+<node id="Interleaving_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Interleaving_PM_P_HTML"></factory>
+</node>
+<node id="LinearInterleaving_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="CometInterleaving_PM_P_line_BIGre"></factory>
+</node>
+<relation id="GDD_implementation_LinearInterleaving_MagneticList_HTML" set_L_source_nodes="MagneticList_HTML Interleaving_HTML LinearInterleaving_B207" set_L_dest_nodes="LinearInterleaving" set_type="GDD_implementation"></relation>
+<node id="Interleaving_AUI_NoNav_vocal" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Interleaving_AUI_NoNav_vocal_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="CometInterleaving_PM_P_ALX_TXT"></factory>
+</node>
+<relation id="GDD_implementation_Interleaving_AUI_NoNav_vocal_Interleaving_AUI_NoNav_vocal_S207" set_L_source_nodes="Interleaving_AUI_NoNav_vocal_S207" set_L_dest_nodes="Interleaving_AUI_NoNav_vocal" set_type="GDD_implementation"></relation>
+<relation id="NoNav_to_CUI" set_L_source_nodes="ScatteringInterleaving PieInterleaving MatricialInterleaving LinearInterleaving Interleaving_AUI_NoNav_vocal" set_L_dest_nodes="Interleaving_AUI_NoNav" set_type="GDD_concretization"></relation>
+<relation id="InterleavingAUI_to_NoNav" set_L_source_nodes="Interleaving_AUI_NoNav" set_L_dest_nodes="Interleaving_AUI" set_type="GDD_specialization"></relation>
+<node id="Interleaving_AUI_Nav" set_type="GDD_AUI" set_descriptions="Interleaving with navigation" set_ptf="*">
+</node>
+<node id="Interleaving_AUI_MonoSPace" set_type="GDD_AUI" set_descriptions="Interleaving showing one subspace at a time" set_ptf="*">
+</node>
+<node id="Interleaving_AUI_Menu" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Interleaving_CUI_Menu" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Interleaving_FUI_Menu_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="CometInterleaving_PM_P_menu_B207"></factory>
+</node>
+<node id="Interleaving_CUI_Menu_FUI_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Interleaving_PM_P_HTML_menu"></factory>
+</node>
+<relation id="GDD_implementation_Interleaving_CUI_Menu_Interleaving_FUI_Menu_B207" set_L_source_nodes="Interleaving_FUI_Menu_B207 Interleaving_CUI_Menu_FUI_HTML" set_L_dest_nodes="Interleaving_CUI_Menu" set_type="GDD_implementation"></relation>
+<relation id="GDD_concretization_Interleaving_AUI_Menu_Interleaving_CUI_Menu" set_L_source_nodes="Interleaving_CUI_Menu" set_L_dest_nodes="Interleaving_AUI_Menu" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_Interleaving_AUI_MonoSPace_Interleaving_AUI_Menu" set_L_source_nodes="Interleaving_AUI_Menu" set_L_dest_nodes="Interleaving_AUI_MonoSPace" set_type="GDD_specialization"></relation>
+<node id="ScrollableMonospaceInterleaving" set_type="GDD_CUI" set_descriptions="Scrollable monospace ListBox" set_ptf="*">
+</node>
+<node id="ScrollListInterleaving" set_type="GDD_CUI" set_descriptions="Scroll list ListBox" set_ptf="*">
+</node>
+<node id="ComboMenu" set_type="GDD_CUI" set_descriptions="Combo menu" set_ptf="*">
+</node>
+<node id="Interleaving_AUI_Sequence" set_type="GDD_AUI" set_descriptions="Interleaving shwing subspace in sequence" set_ptf="*">
+</node>
+<relation id="NoNav_to_Sequence" set_L_source_nodes="Interleaving_AUI_Sequence" set_L_dest_nodes="Interleaving_AUI_Nav" set_type="GDD_specialization"></relation>
+<relation id="Sequence_to_CUI" set_L_source_nodes="ComboMenu ScrollListInterleaving" set_L_dest_nodes="Interleaving_AUI_Sequence" set_type="GDD_concretization"></relation>
+<node id="Interleaving_AUI_Sequential" set_type="GDD_AUI" set_descriptions="Interleaving showing subspace sequentialy" set_ptf="*">
+</node>
+<relation id="NoNav_to_Sequential" set_L_source_nodes="Interleaving_AUI_Sequential" set_L_dest_nodes="Interleaving_AUI_Nav" set_type="GDD_specialization"></relation>
+<relation id="Sequential_to_CUI" set_L_source_nodes="ScrollListInterleaving ScrollableMonospaceInterleaving" set_L_dest_nodes="Interleaving_AUI_Sequential" set_type="GDD_concretization"></relation>
+<node id="ScrollableMonospaceInterleaving_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Interleaving_PM_P_MenuHorizontal_HTML"></factory>
+</node>
+<node id="ScrollableMonospaceInterleaving_TK" set_type="GDD_FUI" set_descriptions="Scrollable monospace ListBox in TK" set_ptf="Ptf_TK">
+<factory id="Interleaving_PM_P_nav_mono_TK_menu"></factory>
+</node>
+<relation id="GDD_implementation_ScrollableMonospaceInterleaving_ScrollableMonospaceInterleaving_HTML" set_L_source_nodes="ScrollableMonospaceInterleaving_HTML ScrollableMonospaceInterleaving_TK" set_L_dest_nodes="ScrollableMonospaceInterleaving" set_type="GDD_implementation"></relation>
+<node id="ScrollableMonospaceInterleaving_menu" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="ScrollableMonospaceInterleaving_menu_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Interleaving_PM_P_menu_TK"></factory>
+</node>
+<relation id="GDD_implementation_ScrollableMonospaceInterleaving_menu_ScrollableMonospaceInterleaving_menu_TK" set_L_source_nodes="ScrollableMonospaceInterleaving_menu_TK" set_L_dest_nodes="ScrollableMonospaceInterleaving_menu" set_type="GDD_implementation"></relation>
+<node id="ScrollableMonospaceInterleaving_Deployable" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="ScrollableMonospaceInterleaving_Deployable_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Interleaving_PM_P_B207_deployable"></factory>
+</node>
+<relation id="GDD_implementation_ScrollableMonospaceInterleaving_Deployable_ScrollableMonospaceInterleaving_Deployable_B207" set_L_source_nodes="ScrollableMonospaceInterleaving_Deployable_B207" set_L_dest_nodes="ScrollableMonospaceInterleaving_Deployable" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_ScrollableMonospaceInterleaving_ScrollableMonospaceInterleaving_menu" set_L_source_nodes="ScrollableMonospaceInterleaving_menu ScrollableMonospaceInterleaving_Deployable" set_L_dest_nodes="ScrollableMonospaceInterleaving" set_type="GDD_specialization"></relation>
+<relation id="MonoSpace_to_CUI" set_L_source_nodes="ScrollableMonospaceInterleaving" set_L_dest_nodes="Interleaving_AUI_MonoSPace" set_type="GDD_concretization"></relation>
+<relation id="NoNav_to_MonoSpace" set_L_source_nodes="Interleaving_AUI_MonoSPace" set_L_dest_nodes="Interleaving_AUI_Nav" set_type="GDD_specialization"></relation>
+<relation id="InterleavingAUI_to_Nav" set_L_source_nodes="Interleaving_AUI_Nav" set_L_dest_nodes="Interleaving_AUI" set_type="GDD_specialization"></relation>
+<relation id="Interleaving_to_AUI" set_L_source_nodes="Interleaving_AUI" set_L_dest_nodes="Interleaving" set_type="GDD_concretization"></relation>
+<relation id="ChoiceInterleavedMarkers_Interleaving" set_L_source_nodes="ChoiceInterleavedMarkers" set_L_dest_nodes="Interleaving" set_type="GDD_encapsulation"></relation>
+<node id="ChoiceInterleavingMarkersTK" set_type="GDD_FUI" set_descriptions="Tk interleavement of boolean markers, each of them associated with a choice" set_ptf="Ptf_TK">
+<factory id="DChoice_PM_P_interleaving_markers_TK"></factory>
+</node>
+<node id="Choice_InterleavedMarkers_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="DChoice_PM_P_interleaving_markers_HTML"></factory>
+</node>
+<node id="ChoiceInterleavedMarkers_U" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="U_choice_PM_P"></factory>
+</node>
+<node id="ChoiceInterleavingMarkers_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="Choice_PM_P_ALX_TXT"></factory>
+</node>
+<relation id="ChoiceInterleavedMarkers_to_FUI" set_L_source_nodes="ChoiceInterleavingMarkersTK Choice_InterleavedMarkers_HTML ChoiceInterleavedMarkers_U ChoiceInterleavingMarkers_S207" set_L_dest_nodes="ChoiceInterleavedMarkers" set_type="GDD_implementation"></relation>
+<relation id="ChoiceSpecialization" set_L_source_nodes="ChoiceAccumulator ChoiceInterleavedMarkers" set_L_dest_nodes="Choice" set_type="GDD_specialization"></relation>
+<relation id="ChoiceAccumulator_Choosed" set_L_source_nodes="ChoiceAccumulator" set_L_dest_nodes="Choice" set_type="GDD_encapsulation"></relation>
+<node id="ChoiceWithExtend" set_type="GDD_C&amp;T" set_descriptions="Choice among an extendable set" set_ptf="*">
+</node>
+<node id="Specifyer" set_type="GDD_C&amp;T" set_descriptions="Textual Specifyer" set_ptf="*">
+<factory id="CometSpecifyer"></factory>
+</node>
+<node id="Specifyer_basic_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_basic_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_basic_CUI_entry" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_basic_TK_entry" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Specifyer_PM_P_entry_TK"></factory>
+</node>
+<node id="Specifyer_basic_HTML_entry" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Specifyer_PM_P_Entry_HTML"></factory>
+</node>
+<relation id="GDD_implementation_Specifyer_basic_CUI_entry_Specifyer_basic_TK_entry" set_L_source_nodes="Specifyer_basic_TK_entry Specifyer_basic_HTML_entry" set_L_dest_nodes="Specifyer_basic_CUI_entry" set_type="GDD_implementation"></relation>
+<node id="Specifyer_basic_CUI_textarea" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_basic_TK_textarea" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Specifyer_PM_P_text_TK"></factory>
+</node>
+<node id="Specifyer_basic_HTML_textarea" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Specifyer_PM_P_ZoneEntry_HTML"></factory>
+</node>
+<node id="Specifyer_basic_BIGre_textarea" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Specifyer_PM_P_BIGre_text"></factory>
+</node>
+<relation id="GDD_implementation_Specifyer_basic_CUI_textarea_Specifyer_basic_TK_textarea" set_L_source_nodes="Specifyer_basic_TK_textarea Specifyer_basic_HTML_textarea Specifyer_basic_BIGre_textarea" set_L_dest_nodes="Specifyer_basic_CUI_textarea" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_Specifyer_basic_CUI_Specifyer_basic_CUI_entry" set_L_source_nodes="Specifyer_basic_CUI_entry Specifyer_basic_CUI_textarea" set_L_dest_nodes="Specifyer_basic_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Specifyer_basic_AUI_Specifyer_basic_CUI" set_L_source_nodes="Specifyer_basic_CUI" set_L_dest_nodes="Specifyer_basic_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_Specifyer_Specifyer_basic_AUI" set_L_source_nodes="Specifyer_basic_AUI" set_L_dest_nodes="Specifyer" set_type="GDD_concretization"></relation>
+<node id="SpecifyerFile" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+</node>
+<node id="SpecifyerFile_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="SpecifyerFile_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="SpecifyerFile_CUI_standard_system" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="SpecifyerFile_CUI_standard_system_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Specifyer_file_PM_P_dialog_TK"></factory>
+</node>
+<relation id="GDD_implementation_SpecifyerFile_CUI_standard_system_SpecifyerFile_CUI_standard_system_TK" set_L_source_nodes="SpecifyerFile_CUI_standard_system_TK" set_L_dest_nodes="SpecifyerFile_CUI_standard_system" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_SpecifyerFile_CUI_SpecifyerFile_CUI_standard_system" set_L_source_nodes="SpecifyerFile_CUI_standard_system" set_L_dest_nodes="SpecifyerFile_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_SpecifyerFile_AUI_SpecifyerFile_CUI" set_L_source_nodes="SpecifyerFile_CUI" set_L_dest_nodes="SpecifyerFile_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_SpecifyerFile_SpecifyerFile_AUI" set_L_source_nodes="SpecifyerFile_AUI" set_L_dest_nodes="SpecifyerFile" set_type="GDD_concretization"></relation>
+<node id="Specifyer_Color" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_Color_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_Color_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_Color_CUI_basic" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_Color_CUI_basic_system" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Specifyer_Color_FUI_basic_system_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Specifyer_PM_P_B207_color_base"></factory>
+</node>
+<relation id="GDD_implementation_Specifyer_Color_CUI_basic_system_Specifyer_Color_FUI_basic_system_B207" set_L_source_nodes="Specifyer_Color_FUI_basic_system_B207" set_L_dest_nodes="Specifyer_Color_CUI_basic_system" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_Specifyer_Color_CUI_basic_Specifyer_Color_CUI_basic_system" set_L_source_nodes="Specifyer_Color_CUI_basic_system" set_L_dest_nodes="Specifyer_Color_CUI_basic" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Specifyer_Color_AUI_basic_Specifyer_Color_CUI_basic" set_L_source_nodes="Specifyer_Color_CUI_basic" set_L_dest_nodes="Specifyer_Color_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_Specifyer_Color_AUI_Specifyer_Color_AUI_basic" set_L_source_nodes="Specifyer_Color_AUI_basic" set_L_dest_nodes="Specifyer_Color_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Specifyer_Color_Specifyer_Color_AUI" set_L_source_nodes="Specifyer_Color_AUI" set_L_dest_nodes="Specifyer_Color" set_type="GDD_concretization"></relation>
+<relation id="GDD_restriction_Specifyer_SpecifyerFile" set_L_source_nodes="SpecifyerFile Specifyer_Color" set_L_dest_nodes="Specifyer" set_type="GDD_restriction"></relation>
+<relation id="ChoiceWithExtendSpecifyer" set_L_source_nodes="ChoiceWithExtend" set_L_dest_nodes="Specifyer" set_type="GDD_encapsulation"></relation>
+<relation id="ChoiceExtension" set_L_source_nodes="ChoiceWithExtend" set_L_dest_nodes="Choice" set_type="GDD_extension"></relation>
+<node id="Choice_AUI_DropDown" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Choice_CUI_DropDown" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Choice_DropDown_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PM_P_menu_TK"></factory>
+</node>
+<node id="Choice_CUI_list_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="DChoice_PM_P_Menu_HTML"></factory>
+</node>
+<node id="Choice_CUI_list_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PM_P_ScrollableListBox_TK"></factory>
+</node>
+<node id="Choice_CUI_list" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Choice_AUI_list" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<relation id="GDD_concretization_Choice_AUI_list_Choice_CUI_list" set_L_source_nodes="Choice_CUI_list" set_L_dest_nodes="Choice_AUI_list" set_type="GDD_concretization"></relation>
+<relation id="GDD_implementation_Choice_CUI_list_Choice_CUI_list_TK" set_L_source_nodes="Choice_CUI_list_TK Choice_CUI_list_HTML" set_L_dest_nodes="Choice_CUI_list" set_type="GDD_implementation"></relation>
+<relation id="GDD_implementation_Choice_CUI_DropDown_Choice_DropDown_HTML" set_L_source_nodes="Choice_DropDown_TK Choice_CUI_list_HTML" set_L_dest_nodes="Choice_CUI_DropDown" set_type="GDD_implementation"></relation>
+<relation id="GDD_concretization_Choice_AUI_DropDown_Choice_CUI_DropDown" set_L_source_nodes="Choice_CUI_DropDown" set_L_dest_nodes="Choice_AUI_DropDown" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_Choice_Choice_AUI_DropDown" set_L_source_nodes="Choice_AUI_DropDown Choice_AUI_list" set_L_dest_nodes="Choice" set_type="GDD_concretization"></relation>
+<node id="N_controller" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometSlideRemoteController"></factory>
+</node>
+<node id="N_controller_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_controller_CUI_basic" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_controller_CUI_basic_keyboard" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_controller_basic_BIGre_keyboard" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="SlideRemoteController_PM_P_BIGre_keyboard"></factory>
+</node>
+<relation id="GDD_implementation_N_controller_CUI_basic_keyboard_N_controller_basic_BIGre_keyboard" set_L_source_nodes="N_controller_basic_BIGre_keyboard" set_L_dest_nodes="N_controller_CUI_basic_keyboard" set_type="GDD_implementation"></relation>
+<node id="N_controller_CUI_basic_gfx" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_controller_CUI_basic_Universal" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="CometSlideRemoteController_PM_P_basic"></factory>
+</node>
+<relation id="GDD_implementation_N_controller_CUI_basic_gfx_N_controller_CUI_basic_Universal" set_L_source_nodes="N_controller_CUI_basic_Universal" set_L_dest_nodes="N_controller_CUI_basic_gfx" set_type="GDD_implementation"></relation>
+<node id="N_controller_CUI_basic_gfx_skinnable_simple" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_controller_CUI_basic_gfx_skinnable_simple_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="CometSlideRemoteController_PM_P_HTML_image_dynamic"></factory>
+</node>
+<node id="N_controller_CUI_basic_gfx_skinnable_simple_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="CometSlideRemoteController_PM_P_B207_image_dynamic"></factory>
+</node>
+<relation id="GDD_implementation_N_controller_CUI_basic_gfx_skinnable_simple_N_controller_CUI_basic_gfx_skinnable_simple_HTML" set_L_source_nodes="N_controller_CUI_basic_gfx_skinnable_simple_HTML N_controller_CUI_basic_gfx_skinnable_simple_B207" set_L_dest_nodes="N_controller_CUI_basic_gfx_skinnable_simple" set_type="GDD_implementation"></relation>
+<relation id="GDD_extension_N_controller_CUI_basic_gfx_N_controller_CUI_basic_gfx_skinnable_simple" set_L_source_nodes="N_controller_CUI_basic_gfx_skinnable_simple" set_L_dest_nodes="N_controller_CUI_basic_gfx" set_type="GDD_extension"></relation>
+<node id="N_controller_CUI_basic_gfx_luna" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_controller_CUI_basic_gfx_luna_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="SlideRemoteController_PM_P_BIGre_gfx_luna"></factory>
+</node>
+<relation id="GDD_implementation_N_controller_CUI_basic_gfx_luna_N_controller_CUI_basic_gfx_luna_B207" set_L_source_nodes="N_controller_CUI_basic_gfx_luna_B207" set_L_dest_nodes="N_controller_CUI_basic_gfx_luna" set_type="GDD_implementation"></relation>
+<node id="N_controller_CUI_basic_gfx_Fish_Eye" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_controller_CUI_basic_gfx_Fish_Eye_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="SlideRemoteController_PM_P_BIGre_table"></factory>
+</node>
+<relation id="GDD_implementation_N_controller_CUI_basic_gfx_Fish_Eye_N_controller_CUI_basic_gfx_Fish_Eye_B207" set_L_source_nodes="N_controller_CUI_basic_gfx_Fish_Eye_B207" set_L_dest_nodes="N_controller_CUI_basic_gfx_Fish_Eye" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_N_controller_CUI_basic_gfx_N_controller_CUI_basic_gfx_luna" set_L_source_nodes="N_controller_CUI_basic_gfx_luna N_controller_CUI_basic_gfx_Fish_Eye" set_L_dest_nodes="N_controller_CUI_basic_gfx" set_type="GDD_specialization"></relation>
+<node id="N_controller_CUI_basic_vocal" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_controller_CUI_basic_vocal_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="SlideRemoteController_PM_P_ALX_TXT"></factory>
+</node>
+<relation id="GDD_implementation_N_controller_CUI_basic_vocal_N_controller_CUI_basic_vocal_S207" set_L_source_nodes="N_controller_CUI_basic_vocal_S207" set_L_dest_nodes="N_controller_CUI_basic_vocal" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_N_controller_CUI_basic_N_controller_CUI_basic_keyboard" set_L_source_nodes="N_controller_CUI_basic_keyboard N_controller_CUI_basic_gfx N_controller_CUI_basic_vocal" set_L_dest_nodes="N_controller_CUI_basic" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_N_controller_AUI_basic_N_controller_CUI_basic" set_L_source_nodes="N_controller_CUI_basic" set_L_dest_nodes="N_controller_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_N_controller_N_controller_AUI_basic" set_L_source_nodes="N_controller_AUI_basic" set_L_dest_nodes="N_controller" set_type="GDD_concretization"></relation>
+<node id="TextDisplay" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometText"></factory>
+</node>
+<node id="TextDisplay_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="TextDisplay_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="TextDisplay_CUI_label" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="TextDisplay_CUI_label_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PhysicalTextTK_horizontal"></factory>
+</node>
+<node id="TextDisplay_CUI_label_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id=""></factory>
+<factory id=""></factory>
+<attribut id="MAGELLAN__BG"></attribut>
+</node>
+<node id="TextDisplay_CUI_label_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+</node>
+<node id="TextDisplay_CUI_label_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+</node>
+<relation id="GDD_implementation_TextDisplay_CUI_label_TextDisplay_CUI_label_TK" set_L_source_nodes="TextDisplay_CUI_label_TK TextDisplay_CUI_label_HTML TextDisplay_CUI_label_B207 TextDisplay_CUI_label_S207" set_L_dest_nodes="TextDisplay_CUI_label" set_type="GDD_implementation"></relation>
+<node id="TextDisplay_CUI_area" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="TextDisplay_CUI_area_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Text_PM_P_zone_TK"></factory>
+</node>
+<relation id="GDD_implementation_TextDisplay_CUI_area_TextDisplay_CUI_area_TK" set_L_source_nodes="TextDisplay_CUI_area_TK" set_L_dest_nodes="TextDisplay_CUI_area" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_TextDisplay_CUI_TextDisplay_CUI_label" set_L_source_nodes="TextDisplay_CUI_label TextDisplay_CUI_area" set_L_dest_nodes="TextDisplay_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_TextDisplay_AUI_TextDisplay_CUI" set_L_source_nodes="TextDisplay_CUI" set_L_dest_nodes="TextDisplay_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_TextDisplay_TextDisplay_AUI" set_L_source_nodes="TextDisplay_AUI" set_L_dest_nodes="TextDisplay" set_type="GDD_concretization"></relation>
+<node id="Clock" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometClock"></factory>
+</node>
+<node id="Clock_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Clock_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Clock_CUI_standard" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Clock_CUI_standard_analogic" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Clock_CUI_standard_analogic_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="CometClock_PM_P_graph_canvas_TK"></factory>
+</node>
+<relation id="GDD_implementation_Clock_CUI_standard_analogic_Clock_CUI_standard_analogic_TK" set_L_source_nodes="Clock_CUI_standard_analogic_TK" set_L_dest_nodes="Clock_CUI_standard_analogic" set_type="GDD_implementation"></relation>
+<node id="Clock_CUI_standard_numeric" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Clock_CUI_standard_numeric_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="CometClock_PM_P_basic_TK"></factory>
+</node>
+<relation id="GDD_implementation_Clock_CUI_standard_numeric_Clock_CUI_standard_numeric_TK" set_L_source_nodes="Clock_CUI_standard_numeric_TK" set_L_dest_nodes="Clock_CUI_standard_numeric" set_type="GDD_implementation"></relation>
+<node id="Clock_CUI_standard_vocal" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Clock_CUI_standard_vocal_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="Clock_PM_P_ALX_TXT"></factory>
+</node>
+<relation id="GDD_implementation_Clock_CUI_standard_vocal_Clock_CUI_standard_vocal_S207" set_L_source_nodes="Clock_CUI_standard_vocal_S207" set_L_dest_nodes="Clock_CUI_standard_vocal" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_Clock_CUI_standard_Clock_CUI_standard_analogic" set_L_source_nodes="Clock_CUI_standard_analogic Clock_CUI_standard_numeric Clock_CUI_standard_vocal" set_L_dest_nodes="Clock_CUI_standard" set_type="GDD_specialization"></relation>
+<relation id="GDD_specialization_Clock_CUI_Clock_CUI_standard" set_L_source_nodes="Clock_CUI_standard" set_L_dest_nodes="Clock_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Clock_AUI_Clock_CUI" set_L_source_nodes="Clock_CUI" set_L_dest_nodes="Clock_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_Clock_Clock_AUI" set_L_source_nodes="Clock_AUI" set_L_dest_nodes="Clock" set_type="GDD_concretization"></relation>
+<node id="CT_Activator" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometActivator"></factory>
+</node>
+<node id="CT_Activator_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Activator_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Activator_AUI_basic_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Activator_AUI_basic_CUI_button" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Activator_AUI_basic_CUI_button_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Activator_PM_P_button_HTML"></factory>
+</node>
+<node id="CT_Activator_AUI_basic_CUI_button_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Activator_PM_P_BIGre_button"></factory>
+</node>
+<node id="CT_Activator_AUI_basic_CUI_button_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Activator_PM_P_button_TK"></factory>
+</node>
+<node id="CT_Activator_AUI_basic_CUI_button_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="Activator_PM_P_ALX_TXT"></factory>
+</node>
+<relation id="GDD_implementation_CT_Activator_AUI_basic_CUI_button_CT_Activator_AUI_basic_CUI_button_HTML" set_L_source_nodes="CT_Activator_AUI_basic_CUI_button_HTML CT_Activator_AUI_basic_CUI_button_B207 CT_Activator_AUI_basic_CUI_button_TK CT_Activator_AUI_basic_CUI_button_S207" set_L_dest_nodes="CT_Activator_AUI_basic_CUI_button" set_type="GDD_implementation"></relation>
+<node id="CT_Activator_CUI_skinnable" set_type="GDD_CUI" set_descriptions="" set_ptf="Ptf_BIGre">
+</node>
+<node id="FUI_Activator_PM_P_BIGre_polygon" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Activator_PM_P_BIGre_polygon"></factory>
+</node>
+<relation id="GDD_implementation_CT_Activator_CUI_skinnable_FUI_Activator_PM_P_BIGre_polygon" set_L_source_nodes="FUI_Activator_PM_P_BIGre_polygon" set_L_dest_nodes="CT_Activator_CUI_skinnable" set_type="GDD_implementation"></relation>
+<node id="CT_Activator_AUI_basic_CUI_hyperlink" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Activator_AUI_basic_FUI_hyperlink_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Activator_PM_P_hyperlink_HTML"></factory>
+</node>
+<relation id="GDD_implementation_CT_Activator_AUI_basic_CUI_hyperlink_CT_Activator_AUI_basic_FUI_hyperlink_HTML" set_L_source_nodes="CT_Activator_AUI_basic_FUI_hyperlink_HTML" set_L_dest_nodes="CT_Activator_AUI_basic_CUI_hyperlink" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_Activator_AUI_basic_CUI_CT_Activator_AUI_basic_CUI_button" set_L_source_nodes="CT_Activator_AUI_basic_CUI_button CT_Activator_CUI_skinnable CT_Activator_AUI_basic_CUI_hyperlink" set_L_dest_nodes="CT_Activator_AUI_basic_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Activator_AUI_basic_CT_Activator_AUI_basic_CUI" set_L_source_nodes="CT_Activator_AUI_basic_CUI" set_L_dest_nodes="CT_Activator_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_CT_Activator_AUI_CT_Activator_AUI_basic" set_L_source_nodes="CT_Activator_AUI_basic" set_L_dest_nodes="CT_Activator_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Activator_CT_Activator_AUI" set_L_source_nodes="CT_Activator_AUI" set_L_dest_nodes="CT_Activator" set_type="GDD_concretization"></relation>
+<node id="N_Choice" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometChoiceN"></factory>
+</node>
+<node id="N_Choice_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic_CUI_menu" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic_CUI_menu_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PM_P_ChoiceN_menu_TK"></factory>
+</node>
+<node id="N_Choice_AUI_basic_CUI_menu_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="ChoiceN_PM_P_menu_HTML"></factory>
+</node>
+<relation id="GDD_implementation_N_Choice_AUI_basic_CUI_menu_N_Choice_AUI_basic_CUI_menu_TK" set_L_source_nodes="N_Choice_AUI_basic_CUI_menu_TK N_Choice_AUI_basic_CUI_menu_HTML" set_L_dest_nodes="N_Choice_AUI_basic_CUI_menu" set_type="GDD_implementation"></relation>
+<node id="N_Choice_AUI_basic_CUI_slider" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic_CUI_slider_line" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic_CUI_slider_line_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PM_P_scale_TK"></factory>
+</node>
+<node id="N_Choice_AUI_basic_CUI_slider_line_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="CometChoiceN_PM_P_scale_BIGre"></factory>
+</node>
+<relation id="GDD_implementation_N_Choice_AUI_basic_CUI_slider_line_N_Choice_AUI_basic_CUI_slider_line_TK" set_L_source_nodes="N_Choice_AUI_basic_CUI_slider_line_TK N_Choice_AUI_basic_CUI_slider_line_B207" set_L_dest_nodes="N_Choice_AUI_basic_CUI_slider_line" set_type="GDD_implementation"></relation>
+<node id="N_Choice_AUI_basic_CUI_slider_rounded" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic_CUI_slider_rounded_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="CometChoiceN_PM_P_scale_round_BIGre"></factory>
+</node>
+<relation id="GDD_implementation_N_Choice_AUI_basic_CUI_slider_rounded_N_Choice_AUI_basic_CUI_slider_rounded_B207" set_L_source_nodes="N_Choice_AUI_basic_CUI_slider_rounded_B207" set_L_dest_nodes="N_Choice_AUI_basic_CUI_slider_rounded" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_N_Choice_AUI_basic_CUI_slider_N_Choice_AUI_basic_CUI_slider_line" set_L_source_nodes="N_Choice_AUI_basic_CUI_slider_line N_Choice_AUI_basic_CUI_slider_rounded" set_L_dest_nodes="N_Choice_AUI_basic_CUI_slider" set_type="GDD_specialization"></relation>
+<node id="N_Choice_AUI_basic_CUI_vocal" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic_CUI_entry" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="N_Choice_AUI_basic_CUI_entry_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="ChoiceN_PM_P_Texte_HTML"></factory>
+</node>
+<relation id="GDD_implementation_N_Choice_AUI_basic_CUI_entry_N_Choice_AUI_basic_CUI_entry_HTML" set_L_source_nodes="N_Choice_AUI_basic_CUI_entry_HTML" set_L_dest_nodes="N_Choice_AUI_basic_CUI_entry" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_N_Choice_AUI_basic_CUI_N_Choice_AUI_basic_CUI_menu" set_L_source_nodes="N_Choice_AUI_basic_CUI_menu N_Choice_AUI_basic_CUI_slider N_Choice_AUI_basic_CUI_vocal N_Choice_AUI_basic_CUI_entry" set_L_dest_nodes="N_Choice_AUI_basic_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_N_Choice_AUI_basic_N_Choice_AUI_basic_CUI" set_L_source_nodes="N_Choice_AUI_basic_CUI" set_L_dest_nodes="N_Choice_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_N_Choice_AUI_N_Choice_AUI_basic" set_L_source_nodes="N_Choice_AUI_basic" set_L_dest_nodes="N_Choice_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_N_Choice_N_Choice_AUI" set_L_source_nodes="N_Choice_AUI" set_L_dest_nodes="N_Choice" set_type="GDD_concretization"></relation>
+<node id="CT_CometViewer" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometViewer"></factory>
+</node>
+<node id="CT_CometViewer_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CometViewer_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CometViewer_AUI_basic_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CometViewer_AUI_basic_CUI_bulles" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CometViewer_AUI_basic_CUI_bulles_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PM_P_mickey_TK"></factory>
+</node>
+<relation id="GDD_implementation_CT_CometViewer_AUI_basic_CUI_bulles_CT_CometViewer_AUI_basic_CUI_bulles_TK" set_L_source_nodes="CT_CometViewer_AUI_basic_CUI_bulles_TK" set_L_dest_nodes="CT_CometViewer_AUI_basic_CUI_bulles" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_CometViewer_AUI_basic_CUI_CT_CometViewer_AUI_basic_CUI_bulles" set_L_source_nodes="CT_CometViewer_AUI_basic_CUI_bulles" set_L_dest_nodes="CT_CometViewer_AUI_basic_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_CometViewer_AUI_basic_CT_CometViewer_AUI_basic_CUI" set_L_source_nodes="CT_CometViewer_AUI_basic_CUI" set_L_dest_nodes="CT_CometViewer_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_CT_CometViewer_AUI_CT_CometViewer_AUI_basic" set_L_source_nodes="CT_CometViewer_AUI_basic" set_L_dest_nodes="CT_CometViewer_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_CometViewer_CT_CometViewer_AUI" set_L_source_nodes="CT_CometViewer_AUI" set_L_dest_nodes="CT_CometViewer" set_type="GDD_concretization"></relation>
+<node id="CT_OkCancel" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometOkCancel"></factory>
+</node>
+<node id="CT_OkCancel_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_OkCancel_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_OkCancel_AUI_basic_CUI_composite" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_OkCancel_AUI_basic_CUI_composite_Universal" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="CometOkCancel_PM_P_U"></factory>
+</node>
+<relation id="GDD_implementation_CT_OkCancel_AUI_basic_CUI_composite_CT_OkCancel_AUI_basic_CUI_composite_Universal" set_L_source_nodes="CT_OkCancel_AUI_basic_CUI_composite_Universal" set_L_dest_nodes="CT_OkCancel_AUI_basic_CUI_composite" set_type="GDD_implementation"></relation>
+<relation id="GDD_concretization_CT_OkCancel_AUI_basic_CT_OkCancel_AUI_basic_CUI_composite" set_L_source_nodes="CT_OkCancel_AUI_basic_CUI_composite" set_L_dest_nodes="CT_OkCancel_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_CT_OkCancel_AUI_CT_OkCancel_AUI_basic" set_L_source_nodes="CT_OkCancel_AUI_basic" set_L_dest_nodes="CT_OkCancel_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_OkCancel_CT_OkCancel_AUI" set_L_source_nodes="CT_OkCancel_AUI" set_L_dest_nodes="CT_OkCancel" set_type="GDD_concretization"></relation>
+<node id="CT_CSS_Meta_IHM" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CSS_Meta_IHM"></factory>
+</node>
+<node id="CT_CSS_Meta_IHM_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CSS_Meta_IHM_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CSS_Meta_IHM_AUI_basic_CUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CSS_Meta_IHM_AUI_basic_CUI_Composite" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CSS_Meta_IHM_AUI_basic_CUI_Composite_Universal" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="CSS_Meta_IHM_PM_P_U_1"></factory>
+</node>
+<relation id="GDD_implementation_CT_CSS_Meta_IHM_AUI_basic_CUI_Composite_CT_CSS_Meta_IHM_AUI_basic_CUI_Composite_Universal" set_L_source_nodes="CT_CSS_Meta_IHM_AUI_basic_CUI_Composite_Universal" set_L_dest_nodes="CT_CSS_Meta_IHM_AUI_basic_CUI_Composite" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_CSS_Meta_IHM_AUI_basic_CUI_CT_CSS_Meta_IHM_AUI_basic_CUI_Composite" set_L_source_nodes="CT_CSS_Meta_IHM_AUI_basic_CUI_Composite" set_L_dest_nodes="CT_CSS_Meta_IHM_AUI_basic_CUI" set_type="GDD_specialization"></relation>
+<node id="CT_CSS_Meta_IHM_CUI_toolglass" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CSS_Meta_IHM_FUI_toolglass" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="CSS_Meta_IHM_PM_P_B207_toolglass"></factory>
+</node>
+<relation id="GDD_implementation_CT_CSS_Meta_IHM_CUI_toolglass_CT_CSS_Meta_IHM_FUI_toolglass" set_L_source_nodes="CT_CSS_Meta_IHM_FUI_toolglass" set_L_dest_nodes="CT_CSS_Meta_IHM_CUI_toolglass" set_type="GDD_implementation"></relation>
+<relation id="GDD_concretization_CT_CSS_Meta_IHM_AUI_basic_CT_CSS_Meta_IHM_AUI_basic_CUI" set_L_source_nodes="CT_CSS_Meta_IHM_AUI_basic_CUI CT_CSS_Meta_IHM_CUI_toolglass" set_L_dest_nodes="CT_CSS_Meta_IHM_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_CT_CSS_Meta_IHM_AUI_CT_CSS_Meta_IHM_AUI_basic" set_L_source_nodes="CT_CSS_Meta_IHM_AUI_basic" set_L_dest_nodes="CT_CSS_Meta_IHM_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_CSS_Meta_IHM_CT_CSS_Meta_IHM_AUI" set_L_source_nodes="CT_CSS_Meta_IHM_AUI" set_L_dest_nodes="CT_CSS_Meta_IHM" set_type="GDD_concretization"></relation>
+<node id="CT_Hierarchy" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometHierarchy"></factory>
+</node>
+<node id="CT_Hierarchy_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Hierarchy_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Hierarchy_AUI_basic_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Hierarchy_AUI_basic_CUI_tree_ala_explorer" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+<factory id="PM_P_treectrl_TK"></factory>
+</node>
+<node id="CT_Hierarchy_AUI_basic_CUI_tree_ala_explorer_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PM_P_treectrl_TK"></factory>
+</node>
+<relation id="GDD_implementation_CT_Hierarchy_AUI_basic_CUI_tree_ala_explorer_CT_Hierarchy_AUI_basic_CUI_tree_ala_explorer_TK" set_L_source_nodes="CT_Hierarchy_AUI_basic_CUI_tree_ala_explorer_TK" set_L_dest_nodes="CT_Hierarchy_AUI_basic_CUI_tree_ala_explorer" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_Hierarchy_AUI_basic_CUI_CT_Hierarchy_AUI_basic_CUI_tree_ala_explorer" set_L_source_nodes="CT_Hierarchy_AUI_basic_CUI_tree_ala_explorer" set_L_dest_nodes="CT_Hierarchy_AUI_basic_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Hierarchy_AUI_basic_CT_Hierarchy_AUI_basic_CUI" set_L_source_nodes="CT_Hierarchy_AUI_basic_CUI" set_L_dest_nodes="CT_Hierarchy_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_CT_Hierarchy_AUI_CT_Hierarchy_AUI_basic" set_L_source_nodes="CT_Hierarchy_AUI_basic" set_L_dest_nodes="CT_Hierarchy_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Hierarchy_CT_Hierarchy_AUI" set_L_source_nodes="CT_Hierarchy_AUI" set_L_dest_nodes="CT_Hierarchy" set_type="GDD_concretization"></relation>
+<node id="CT_Image" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometImage"></factory>
+</node>
+<node id="CT_Image_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Image_AUI_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Image_AUI_CUI_basic" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Image_AUI_CUI_basic_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="Image_PM_P_TK"></factory>
+</node>
+<node id="CT_Image_AUI_CUI_basic_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Image_PM_P_BIGre"></factory>
+</node>
+<node id="CT_Image_AUI_CUI_basic_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="Image_PM_P_HTML"></factory>
+</node>
+<relation id="GDD_implementation_CT_Image_AUI_CUI_basic_CT_Image_AUI_CUI_basic_TK" set_L_source_nodes="CT_Image_AUI_CUI_basic_TK CT_Image_AUI_CUI_basic_B207 CT_Image_AUI_CUI_basic_HTML" set_L_dest_nodes="CT_Image_AUI_CUI_basic" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_Image_AUI_CUI_CT_Image_AUI_CUI_basic" set_L_source_nodes="CT_Image_AUI_CUI_basic" set_L_dest_nodes="CT_Image_AUI_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Image_AUI_CT_Image_AUI_CUI" set_L_source_nodes="CT_Image_AUI_CUI" set_L_dest_nodes="CT_Image_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_CT_Image_CT_Image_AUI" set_L_source_nodes="CT_Image_AUI" set_L_dest_nodes="CT_Image" set_type="GDD_concretization"></relation>
+<node id="CT_Log" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometLog"></factory>
+</node>
+<node id="CT_Log_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Log_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Log_AUI_basic_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Log_AUI_basic_CUI_entries" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Log_AUI_basic_CUI_entries_composite" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Log_AUI_basic_CUI_entries_composite_Universal" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="CometLog_PM_P_basic_U"></factory>
+</node>
+<relation id="GDD_implementation_CT_Log_AUI_basic_CUI_entries_composite_CT_Log_AUI_basic_CUI_entries_composite_Universal" set_L_source_nodes="CT_Log_AUI_basic_CUI_entries_composite_Universal" set_L_dest_nodes="CT_Log_AUI_basic_CUI_entries_composite" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_Log_AUI_basic_CUI_entries_CT_Log_AUI_basic_CUI_entries_composite" set_L_source_nodes="CT_Log_AUI_basic_CUI_entries_composite" set_L_dest_nodes="CT_Log_AUI_basic_CUI_entries" set_type="GDD_specialization"></relation>
+<node id="CT_Log_AUI_basic_CUI_vocal" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Log_AUI_basic_CUI_vocal_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="CometLog_PM_P_ALX_TXT"></factory>
+</node>
+<relation id="GDD_implementation_CT_Log_AUI_basic_CUI_vocal_CT_Log_AUI_basic_CUI_vocal_S207" set_L_source_nodes="CT_Log_AUI_basic_CUI_vocal_S207" set_L_dest_nodes="CT_Log_AUI_basic_CUI_vocal" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_Log_AUI_basic_CUI_CT_Log_AUI_basic_CUI_entries" set_L_source_nodes="CT_Log_AUI_basic_CUI_entries CT_Log_AUI_basic_CUI_vocal" set_L_dest_nodes="CT_Log_AUI_basic_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Log_AUI_basic_CT_Log_AUI_basic_CUI" set_L_source_nodes="CT_Log_AUI_basic_CUI" set_L_dest_nodes="CT_Log_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_CT_Log_AUI_CT_Log_AUI_basic" set_L_source_nodes="CT_Log_AUI_basic" set_L_dest_nodes="CT_Log_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Log_CT_Log_AUI" set_L_source_nodes="CT_Log_AUI" set_L_dest_nodes="CT_Log" set_type="GDD_concretization"></relation>
+<node id="CT_Comet_Root" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometRoot"></factory>
+</node>
+<node id="CT_Comet_Root_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Comet_Root_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+<factory id="PhysicalRootTK_root"></factory>
+</node>
+<node id="CT_Comet_Root_FUI_TK" set_type="GDD_CUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PhysicalRootTK_root"></factory>
+</node>
+<node id="CT_Comet_Root_FUI_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Root_PM_P_BIGre"></factory>
+</node>
+<node id="CT_Comet_Root_FUI_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="root_PM_P_ALX_TXT"></factory>
+</node>
+<node id="CT_Comet_Root_FUI_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<factory id="PhysicalHTML_root"></factory>
+</node>
+<relation id="GDD_implementation_CT_Comet_Root_CUI_CT_Comet_Root_FUI_TK" set_L_source_nodes="CT_Comet_Root_FUI_TK CT_Comet_Root_FUI_B207 CT_Comet_Root_FUI_S207 CT_Comet_Root_FUI_HTML" set_L_dest_nodes="CT_Comet_Root_CUI" set_type="GDD_implementation"></relation>
+<relation id="GDD_concretization_CT_Comet_Root_AUI_CT_Comet_Root_CUI" set_L_source_nodes="CT_Comet_Root_CUI" set_L_dest_nodes="CT_Comet_Root_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_CT_Comet_Root_CT_Comet_Root_AUI" set_L_source_nodes="CT_Comet_Root_AUI" set_L_dest_nodes="CT_Comet_Root" set_type="GDD_concretization"></relation>
+<node id="CT_Sequence" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometSequence"></factory>
+</node>
+<node id="CT_Sequence_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Sequence_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Sequence_AUI_basic_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Sequence_AUI_basic_CUI_simple" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_Sequence_AUI_basic_CUI_simple_TK" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_TK">
+<factory id="PM_P_sequence_TK_basic"></factory>
+</node>
+<relation id="GDD_implementation_CT_Sequence_AUI_basic_CUI_simple_CT_Sequence_AUI_basic_CUI_simple_TK" set_L_source_nodes="CT_Sequence_AUI_basic_CUI_simple_TK" set_L_dest_nodes="CT_Sequence_AUI_basic_CUI_simple" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_Sequence_AUI_basic_CUI_CT_Sequence_AUI_basic_CUI_simple" set_L_source_nodes="CT_Sequence_AUI_basic_CUI_simple" set_L_dest_nodes="CT_Sequence_AUI_basic_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Sequence_AUI_basic_CT_Sequence_AUI_basic_CUI" set_L_source_nodes="CT_Sequence_AUI_basic_CUI" set_L_dest_nodes="CT_Sequence_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_CT_Sequence_AUI_CT_Sequence_AUI_basic" set_L_source_nodes="CT_Sequence_AUI_basic" set_L_dest_nodes="CT_Sequence_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_Sequence_CT_Sequence_AUI" set_L_source_nodes="CT_Sequence_AUI" set_L_dest_nodes="CT_Sequence" set_type="GDD_concretization"></relation>
+<node id="CT_CamNote" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="CometCamNote"></factory>
+</node>
+<node id="CT_CamNote_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CamNote_AUI_basic" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CamNote_AUI_basic_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CamNote_AUI_basic_CUI_basic" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CamNote_AUI_basic_CUI_basic_Universal" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CamNote_AUI_basic_FUI_basic_Universal" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id="CometCamNote_PM_U"></factory>
+</node>
+<relation id="GDD_implementation_CT_CamNote_AUI_basic_CUI_basic_Universal_CT_CamNote_AUI_basic_FUI_basic_Universal" set_L_source_nodes="CT_CamNote_AUI_basic_FUI_basic_Universal" set_L_dest_nodes="CT_CamNote_AUI_basic_CUI_basic_Universal" set_type="GDD_implementation"></relation>
+<node id="CT_CamNote_AUI_basic_CUI_basic_vocal" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="CT_CamNote_AUI_basic_CUI_basic_vocal_S207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_ALX_TXT">
+<factory id="CometCamNote_PM_ALX_TXT"></factory>
+</node>
+<relation id="GDD_implementation_CT_CamNote_AUI_basic_CUI_basic_vocal_CT_CamNote_AUI_basic_CUI_basic_vocal_S207" set_L_source_nodes="CT_CamNote_AUI_basic_CUI_basic_vocal_S207" set_L_dest_nodes="CT_CamNote_AUI_basic_CUI_basic_vocal" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_CT_CamNote_AUI_basic_CUI_basic_CT_CamNote_AUI_basic_CUI_basic_Universal" set_L_source_nodes="CT_CamNote_AUI_basic_CUI_basic_Universal CT_CamNote_AUI_basic_CUI_basic_vocal" set_L_dest_nodes="CT_CamNote_AUI_basic_CUI_basic" set_type="GDD_specialization"></relation>
+<relation id="GDD_specialization_CT_CamNote_AUI_basic_CUI_CT_CamNote_AUI_basic_CUI_basic" set_L_source_nodes="CT_CamNote_AUI_basic_CUI_basic" set_L_dest_nodes="CT_CamNote_AUI_basic_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_CamNote_AUI_basic_CT_CamNote_AUI_basic_CUI" set_L_source_nodes="CT_CamNote_AUI_basic_CUI" set_L_dest_nodes="CT_CamNote_AUI_basic" set_type="GDD_concretization"></relation>
+<relation id="GDD_specialization_CT_CamNote_AUI_CT_CamNote_AUI_basic" set_L_source_nodes="CT_CamNote_AUI_basic" set_L_dest_nodes="CT_CamNote_AUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_CT_CamNote_CT_CamNote_AUI" set_L_source_nodes="CT_CamNote_AUI" set_L_dest_nodes="CT_CamNote" set_type="GDD_concretization"></relation>
+<node id="Avatar_Helper" set_type="GDD_C&amp;T" set_descriptions="" set_ptf="*">
+<factory id="Avatar_Helper_LC"></factory>
+</node>
+<node id="Avatar_Helper_AUI" set_type="GDD_AUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Avatar_Helper_CUI" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Avatar_Helper_CUI_Hands" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Avatar_Helper_CUI_Hands_FUI_B207_Hasselt" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+<factory id="Avatar_Helper_PM_P_B207_Hasselt"></factory>
+</node>
+<relation id="GDD_implementation_Avatar_Helper_CUI_CtcPts_Avatar_Helper_FUI_B207_Hasselt" set_L_source_nodes="Avatar_Helper_CUI_Hands_FUI_B207_Hasselt" set_L_dest_nodes="Avatar_Helper_CUI_Hands" set_type="GDD_implementation"></relation>
+<node id="Avatar_Helper_CUI_Contact_Points" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
+</node>
+<node id="Avatar_Helper_CUI_CtcPts_FUI_B207" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
+</node>
+<relation id="GDD_implementation_Avatar_Helper_CUI_Contact_Points_Avatar_Helper_CUI_Hands_FUI_B207" set_L_source_nodes="Avatar_Helper_CUI_CtcPts_FUI_B207" set_L_dest_nodes="Avatar_Helper_CUI_Contact_Points" set_type="GDD_implementation"></relation>
+<relation id="GDD_specialization_Avatar_Helper_CUI_Avatar_Helper_CUI_Hands" set_L_source_nodes="Avatar_Helper_CUI_Hands Avatar_Helper_CUI_Contact_Points" set_L_dest_nodes="Avatar_Helper_CUI" set_type="GDD_specialization"></relation>
+<relation id="GDD_concretization_Avatar_Helper_AUI_Avatar_Helper_CUI" set_L_source_nodes="Avatar_Helper_CUI" set_L_dest_nodes="Avatar_Helper_AUI" set_type="GDD_concretization"></relation>
+<relation id="GDD_concretization_Avatar_Helper_Avatar_Helper_AUI" set_L_source_nodes="Avatar_Helper_AUI" set_L_dest_nodes="Avatar_Helper" set_type="GDD_concretization"></relation>
+<relation id="IS_Restriction" set_L_source_nodes="Choice Marker Interleaving Container Specifyer N_controller TextDisplay Clock CT_Activator N_Choice CT_CometViewer CT_OkCancel CT_CSS_Meta_IHM CT_Hierarchy CT_Image CT_Log CT_Comet_Root CT_Sequence CT_CamNote Avatar_Helper" set_L_dest_nodes="IS_root" set_type="GDD_restriction"></relation>
+<node id="IS_root_HTML" set_type="GDD_FUI" set_descriptions="" set_ptf="*">
+<factory id=""></factory>
+<factory id=""></factory>
+<factory id=""></factory>
+<factory id=""></factory>
+<attribut id="MAGELLAN__FG"></attribut>
+<attribut id="MAGELLAN__BG"></attribut>
+<attribut id="MAGELLAN__WIDTH"></attribut>
+<attribut id="MAGELLAN__HEIGHT"></attribut>
+</node>
+<relation id="IS_root_rel_GDD_implementation_for_IS_root_HTML" set_L_source_nodes="IS_root_HTML" set_L_dest_nodes="IS_root" set_type="GDD_implementation"></relation>
+</GDD>
