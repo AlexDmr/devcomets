@@ -9,7 +9,7 @@ U_encapsulator_PM $PM_cont {$obj(, "EVEN", CometContainer(-Add_style_class TOTO)
 set PM_cont [CSS++ cr "#cr->PMs.PM_TK cont"]; puts "After re-encapsulation, PM is $PM_cont"
 
 
-puts "cont set_L_display_order \[list TXT_3 TXT_4\]"
+puts "TRY : $PM_cont set_L_display_order \[list TXT_3 TXT_4\]"
 
 
 proc Delete_all {} {
