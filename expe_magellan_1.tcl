@@ -5,7 +5,7 @@ CometInterleaving MSN_ROOT "Use instant messenger\n|||" "" -Add_style_class "ROO
 										[CPool get_a_comet CometText -Add_style_class BOB    -set_name "BOB-2   " -set_text "What's up?"] \
 	                                    [CPool get_a_comet CometText -Add_style_class GAELLE -set_name "GAELLE-2" -set_text "working on a paper..."] \
 										[CPool get_a_comet CometText -Add_style_class BOB    -set_name "BOB-3   " -set_text "Nice!"] \
-										[CPool get_a_comet CometContainer -Add_style_class [list MESSAGE] \
+										[CPool get_a_comet CometContainer -Add_style_class [list MESSAGE GAELLE] \
 										                                  -set_name "Send message" \
 																		  -Add_daughters_R [list [CPool get_a_comet CometSpecifyer -set_name "Specify\ntext message" -Add_style_class "SPECIFY SPECIFYER MESSAGE"] \
 																		                         [CPool get_a_comet CometActivator -set_name "Send\nmessage"          -Add_style_class "ACTIVATOR SEND MESSAGE" -set_text "Envoyer"] \
