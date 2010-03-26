@@ -1,5 +1,6 @@
 if {[info exists ::env(ROOT_COMETS)]} {cd $::env(ROOT_COMETS)} else {puts "Please define an environment variable nammed ROOT_COMETS valuated with the Comets root path."; return}
 source minimal_load.tcl
+GDD_Edit Load_GDD GDD_Magellan.gdd
 
 Init_HTML
 
