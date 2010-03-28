@@ -872,7 +872,6 @@
 <factory id=""></factory>
 <factory id=""></factory>
 <factory id=""></factory>
-<attribut id="MAGELLAN__FG" name="core"></attribut>
 <attribut id="MAGELLAN__BG" name="core"></attribut>
 <attribut id="MAGELLAN__WIDTH" name="core"></attribut>
 <attribut id="MAGELLAN__HEIGHT" name="core"></attribut>
