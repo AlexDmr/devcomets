@@ -27,7 +27,7 @@ method Dessin_c_bien constructor {PM_cam} {
  $this(visu) Mode_traitement_image_transparent 2
  
  this set_ref_color 1 1 1
- this set_param_transparent 0.73 64 64 64
+ this set_param_transparent 0.5 8 8 8
  #this set_param_transparent 0.2 25 25 25
  
  set pere [$this(poly) Pere]; $pere Position_des_fils_changeable 0
