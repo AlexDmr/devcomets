@@ -74,7 +74,7 @@ cr Add_daughters_R [CometDimitri C_Dim "Editeur d'évolution" "Gère l'évolution d
  # Chrono CometDimitri Add_L_instance_compo
  # puts "C_Dim Add_L_connexions \[list {{$CCE out} {$CCE2 in2}}\]"
 puts "Building a pipo MSN for test purpose !"
-source expe_magellan_1.tcl
+source expe_magellan_2.tcl
 C_Dim set_comet_root_to_be_transformed MSN_ROOT
 
 puts "loading the evolution network"
