@@ -78,6 +78,16 @@ source expe_magellan_2.tcl
 C_Dim set_comet_root_to_be_transformed MSN_ROOT
 
 puts "loading the evolution network"
-C_Dim Load_network_from_file Net_convergent_divergent_2.miga
+C_Dim Load_network_from_file expe_magellan_3.miga
 source [Root_of_CometDimitri]get_marks_and_type.alx
 source [Root_of_CometDimitri]running_case_study.dim
+
+# Trace fuite de mémoire
+# set error_log_file [open error.log w]
+# global error_log_file
+# Inject_code gmlObjRootClass dispose {	global error_log_file
+	# puts -nonewline $error_log_file "$objName : [gmlObject info classes $objName] is to dispose"
+	# flush $error_log_file
+# } {	puts $error_log_file done
+	# flush $error_log_file
+# }
