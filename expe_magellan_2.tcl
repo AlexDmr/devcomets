@@ -4,7 +4,7 @@ CometInterleaving MSN_CONVERSATIONS "Fenetres de conversation" "" -Add_style_cla
 foreach contact "ALEX DIMITRI" {
 
 	CometInterleaving CHAT_$contact "Conversation avec $contact" ""	-Add_style_class [list CONVERSER $contact] 
-	CometContainer LOG_$contact "Historique de conversation $contact" "" -Add_style_class [list CONVERSER $contact] 
+	CometContainer LOG_$contact "Historique de conversation $contact" "" -Add_style_class [list CONVERSER $contact] -Add_MAGELLAN_Designer_constraint [list LIST FIXED_ORDER]
 	LOG_$contact Add_daughters_R [list   [CPool get_a_comet CometText -Add_style_class $contact    -set_name "$contact    16:54" -set_text "Hello Gaelle, how are you?\n"] \
 																[CPool get_a_comet CometText -Add_style_class GAELLE -set_name "GAELLE 16:55" -set_text "Hi $contact, I'm fine, and you?\n"] \
 																[CPool get_a_comet CometText -Add_style_class $contact    -set_name "$contact    16:56" -set_text "What's up?\n"] \
@@ -38,8 +38,8 @@ CometContainer    MSN_L_CONTACTS "Contacts list" "" -Add_style_class [list LIST 
   CometContainer    MSN_PROFIL "Gérer mon profil" "" \
     -Add_style_class [list MANAGE PROFIL] \
 	-set_name "Manage profil" \
-	-Add_daughters_R [list [CPool get_a_comet CometImage -Add_style_class PHOTO  -set_name "Photo"        -load_img "gaelle.calvary.jpg"] \
-	                       [CPool get_a_comet CometText  -Add_style_class NAME   -set_name "Name"         -set_text "Gaelle Calvary"] \
+	-Add_daughters_R [list [CPool get_a_comet CometImage -Add_style_class [list PHOTO GAELLE] -set_name "Photo"        -load_img "gaelle.calvary.jpg"] \
+	                       [CPool get_a_comet CometText  -Add_style_class [list NAME GAELLE]  -set_name "Name"         -set_text "Gaelle Calvary"] \
 						   [CPool get_a_comet CometText  -Add_style_class STATUT -set_name "Availability" -set_text "Available"] \
 	                 ]
   MSN_ROOT Add_daughters_R [list MSN_CONVERSATIONS MSN_L_CONTACTS MSN_PROFIL]
