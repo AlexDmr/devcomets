@@ -18,9 +18,9 @@ method Dessin_c_bien constructor {PM_cam} {
  set this(L_img_svg)                 [list]
  
  set this(PM_cam) $PM_cam
- set this(poly)   [$this(PM_cam) get_prim_handle]
+ set this(poly)   [$this(PM_cam) get_prim_handle]; $this(poly) Translucidite 1
  #set this(visu)   [$this(PM_cam) get_visu_cam]
- set this(visu)   [$this(PM_cam) get_B207_currrent_video_img]; $this(visu) Translucidite 1
+ set this(visu)   [$this(PM_cam) get_visu_cam]; $this(visu) Translucidite 1
  
  $this(visu) Ordre_couleur_texture             [GL_bvra]
  $this(visu) Nb_octets_par_pixels_texture      4
