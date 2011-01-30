@@ -22,12 +22,12 @@ method Dessin_c_bien constructor {PM_cam} {
  #set this(visu)   [$this(PM_cam) get_visu_cam]
  set this(visu)   [$this(PM_cam) get_visu_cam]; $this(visu) Translucidite 1
  
- $this(visu) Ordre_couleur_texture             [GL_bvra]
+ $this(visu) Ordre_couleur_texture             [GL_rvba]
  $this(visu) Nb_octets_par_pixels_texture      4
  $this(visu) Mode_traitement_image_transparent 2
  
  this set_ref_color 1 1 1
- this set_param_transparent 0.5 8 8 8
+ this set_param_transparent 0.7 64 64 64
  #this set_param_transparent 0.2 25 25 25
  
  set pere [$this(poly) Pere]; $pere Position_des_fils_changeable 0
@@ -50,8 +50,8 @@ method Dessin_c_bien constructor {PM_cam} {
  #"puts {FISHEYE IN !}; $this(fisheye) set_E_for_daughters 0.3; B207_flow $root; B207_position_fisheye $root 4"
  
  $this(node_L_img_svg) Ajouter_fils $root
- 
- $this(img) maj_raw [$this(visu) L] [$this(visu) H] [GL_bvra] 4 [$this(visu) Tempon_void]
+ $this(img) maj_raw_with_transfo [$this(visu) L] [$this(visu) H] [$this(visu) Ordre_couleur_texture] [$this(visu) Nb_octets_par_pixels_texture] [GL_rvba] 4 NULL
+
  this Reset
  this Full_screen 1
  
@@ -82,6 +82,7 @@ method Dessin_c_bien Char_entered {} {
  set c [Void_vers_int [$this(rap_car) Param]]
  set bbox [$this(img) Boite_noeud_et_fils_glob]
  set TX [$bbox Tx]
+ puts "\t$c"
  switch $c {
    [SDSK_RIGHT] {B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px] - \$v * $TY\]"
                 }
@@ -98,8 +99,8 @@ method Dessin_c_bien Char_entered {} {
 			 27 {this Reset
 			    }
   }
- if {$c == [SDSK_LEFT] } {B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px] - \$v * $TX\]"} else {
- if {$c == [SDSK_RIGHT]} {B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px]\]"} else {
+ if {$c == [SDSK_LEFT] } {puts "L"; B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px] - \$v * $TX\]"; puts "OK"} else {
+ if {$c == [SDSK_RIGHT]} {puts "R"; B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px]\]"; puts "OK"} else {
  if {$c == [SDSK_HOME]}  {this prim_go_to_bgn} else {
  if {$c == [SDSK_END]}   {this prim_go_to_end} else {
  if {$c>=48 && $c<=57} {this Chiffre [Void_vers_char [$this(rap_car) Param]]}
@@ -159,6 +160,7 @@ method Dessin_c_bien Merge {} {
  
  set L $this(L_img_temp_svg_for_redo) ; foreach img $L {this release_an_image $img}
 }
+
 #___________________________________________________________________________________________________________________________________________
 method Dessin_c_bien Reset {} {
  this Save_for_cancel
@@ -190,8 +192,8 @@ method Dessin_c_bien set_param_transparent {seuil min_r min_v min_b} {
 method Dessin_c_bien set_resolution {x y} {
  if {[$this(PM_cam) get_video_source] == "WEBCAM"} {
 	 #$this(visu) set_resolution $x $y
-	 $this(PM_cam) set_resolution $x $y
-	 $this(img) maj_raw [$this(visu) L] [$this(visu) H] [GL_bvra] 4 [$this(visu) Tempon_void]
+	 [$this(PM_cam) get_LC] set_resolution $x $y
+	 $this(img) maj_raw [expr int([$this(PM_cam) get_width])] [expr int([$this(PM_cam) get_height])] [GL_bvra] 4 NULL
   } else {$this(img) maj_raw_with_transfo [$this(visu) L] [$this(visu) H] [$this(visu) Ordonnancement_couleurs] [$this(visu) Nb_octets_par_pixel] [GL_rvba] 4 [$this(visu) Tempon_void]
          }
 	 
@@ -206,7 +208,7 @@ method Dessin_c_bien set_resolution {x y} {
 method Dessin_c_bien Full_screen {v} {
  set this(full_screen) $v
  if {$v} {
-   set L  [$this(visu) L]; set H [$this(visu) H]
+   set L  [$this(PM_cam) get_width]; set H [$this(PM_cam) get_height]
    set TX [N_i_mere Largeur]; set TY [N_i_mere Hauteur]
    set e [expr double($TX) / $L]
   } else {set e 1}
