@@ -22,12 +22,13 @@ method Dessin_c_bien constructor {PM_cam} {
  #set this(visu)   [$this(PM_cam) get_visu_cam]
  set this(visu)   [$this(PM_cam) get_visu_cam]; $this(visu) Translucidite 1
  
- $this(visu) Ordre_couleur_texture             [GL_rvba]
+ $this(visu) Ordre_couleur_texture             [GL_bvra]
  $this(visu) Nb_octets_par_pixels_texture      4
- $this(visu) Mode_traitement_image_transparent 2
+ $this(visu) Mode_traitement_image_transparent 3
+ $this(visu) Threaded_mode                     1
  
  this set_ref_color 1 1 1
- this set_param_transparent 0.7 64 64 64
+ this set_param_transparent 0.8 128 128 128
  #this set_param_transparent 0.2 25 25 25
  
  set pere [$this(poly) Pere]; $pere Position_des_fils_changeable 0
@@ -50,7 +51,7 @@ method Dessin_c_bien constructor {PM_cam} {
  #"puts {FISHEYE IN !}; $this(fisheye) set_E_for_daughters 0.3; B207_flow $root; B207_position_fisheye $root 4"
  
  $this(node_L_img_svg) Ajouter_fils $root
- $this(img) maj_raw_with_transfo [$this(visu) L] [$this(visu) H] [$this(visu) Ordre_couleur_texture] [$this(visu) Nb_octets_par_pixels_texture] [GL_rvba] 4 NULL
+ $this(img) maj_raw_with_transfo [$this(visu) L] [$this(visu) H] [$this(visu) Ordre_couleur_texture] [$this(visu) Nb_octets_par_pixels_texture] [GL_bvra] 4 NULL
 
  this Reset
  this Full_screen 1
@@ -185,7 +186,7 @@ method Dessin_c_bien set_ref_color {r g b} {
 
 #___________________________________________________________________________________________________________________________________________
 method Dessin_c_bien set_param_transparent {seuil min_r min_v min_b} {
- $this(visu) Pixels_transparents_mtd_2 $this(ref_R) $this(ref_G) $this(ref_B) $seuil $min_r $min_v $min_b
+ $this(visu) Pixels_transparents_mtd_3_V1 $this(ref_R) $this(ref_G) $this(ref_B) $seuil $min_r $min_v $min_b
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -194,7 +195,7 @@ method Dessin_c_bien set_resolution {x y} {
 	 #$this(visu) set_resolution $x $y
 	 [$this(PM_cam) get_LC] set_resolution $x $y
 	 $this(img) maj_raw [expr int([$this(PM_cam) get_width])] [expr int([$this(PM_cam) get_height])] [GL_bvra] 4 NULL
-  } else {$this(img) maj_raw_with_transfo [$this(visu) L] [$this(visu) H] [$this(visu) Ordonnancement_couleurs] [$this(visu) Nb_octets_par_pixel] [GL_rvba] 4 [$this(visu) Tempon_void]
+  } else {$this(img) maj_raw_with_transfo [$this(visu) L] [$this(visu) H] [$this(visu) Ordonnancement_couleurs] [$this(visu) Nb_octets_par_pixel] [GL_bvra] 4 [$this(visu) Tempon_void]
          }
 	 
  this Reset
