@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scpd xmlns="urn:schemas-upnp-org:service-1-0">
+   <specVersion>
+      <major>1</major>
+      <minor>0</minor>
+   </specVersion>
+   <actionList>
+      <action>
+         <name>getTcpServer</name>
+         <argumentList>
+            <argument>
+               <name>a</name>
+               <direction>out</direction>
+               <relatedStateVariable>tcpServer</relatedStateVariable>
+            </argument>
+         </argumentList>
+      </action>
+      <action>
+         <name>setForce</name>
+         <argumentList>
+            <argument>
+               <name>f</name>
+               <direction>in</direction>
+               <relatedStateVariable>force</relatedStateVariable>
+            </argument>
+         </argumentList>
+      </action>
+      <action>
+         <name>setPage</name>
+         <argumentList>
+            <argument>
+               <name>p</name>
+               <direction>in</direction>
+               <relatedStateVariable>page</relatedStateVariable>
+            </argument>
+         </argumentList>
+      </action>
+      <action>
+         <name>setSerial</name>
+         <argumentList>
+            <argument>
+               <name>s</name>
+               <direction>in</direction>
+               <relatedStateVariable>serial</relatedStateVariable>
+            </argument>
+         </argumentList>
+      </action>
+      <action>
+         <name>setX</name>
+         <argumentList>
+            <argument>
+               <name>x</name>
+               <direction>in</direction>
+               <relatedStateVariable>x</relatedStateVariable>
+            </argument>
+         </argumentList>
+      </action>
+      <action>
+         <name>setY</name>
+         <argumentList>
+            <argument>
+               <name>y</name>
+               <direction>in</direction>
+               <relatedStateVariable>y</relatedStateVariable>
+            </argument>
+         </argumentList>
+      </action>
+   </actionList>
+   <serviceStateTable>
+      <stateVariable sendEvents="yes">
+         <name>page</name>
+         <dataType>string</dataType>
+      </stateVariable>
+      <stateVariable sendEvents="yes">
+         <name>x</name>
+         <dataType>i4</dataType>
+      </stateVariable>
+      <stateVariable sendEvents="yes">
+         <name>y</name>
+         <dataType>i4</dataType>
+      </stateVariable>
+      <stateVariable sendEvents="no">
+         <name>tcpServer</name>
+         <dataType>string</dataType>
+      </stateVariable>
+      <stateVariable sendEvents="yes">
+         <name>serial</name>
+         <dataType>string</dataType>
+      </stateVariable>
+      <stateVariable sendEvents="yes">
+         <name>force</name>
+         <dataType>i4</dataType>
+      </stateVariable>
+   </serviceStateTable>
+</scpd>
