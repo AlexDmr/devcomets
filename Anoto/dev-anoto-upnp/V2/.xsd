@@ -1,0 +1,153 @@
+�<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="urn:schemas-upnp-org:service::1" xmlns="urn:schemas-upnp-org:service::1" xmlns:upnp="http://www.upnp.org/Schema/DataTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="getTcpServer" type="getTcpServerType" />
+  <xsd:element name="getTcpServerResponse" type="getTcpServerResponseType" />
+  <!--Note: Some schema validation tools may consider the following xsd:any element ambiguous in this placement-->
+  <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+  <xsd:complexType name="getTcpServerType">
+    <xsd:sequence>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:complexType name="getTcpServerResponseType">
+    <xsd:sequence>
+      <xsd:element name="a">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="upnp:string">
+              <xsd:anyAttribute namespace="##other" processContents="lax" />
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:element name="setForce" type="setForceType" />
+  <xsd:element name="setForceResponse" type="setForceResponseType" />
+  <!--Note: Some schema validation tools may consider the following xsd:any element ambiguous in this placement-->
+  <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+  <xsd:complexType name="setForceType">
+    <xsd:sequence>
+      <xsd:element name="f">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="upnp:i4">
+              <xsd:anyAttribute namespace="##other" processContents="lax" />
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:complexType name="setForceResponseType">
+    <xsd:sequence>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:element name="setPage" type="setPageType" />
+  <xsd:element name="setPageResponse" type="setPageResponseType" />
+  <!--Note: Some schema validation tools may consider the following xsd:any element ambiguous in this placement-->
+  <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+  <xsd:complexType name="setPageType">
+    <xsd:sequence>
+      <xsd:element name="p">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="upnp:string">
+              <xsd:anyAttribute namespace="##other" processContents="lax" />
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:complexType name="setPageResponseType">
+    <xsd:sequence>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:element name="setSerial" type="setSerialType" />
+  <xsd:element name="setSerialResponse" type="setSerialResponseType" />
+  <!--Note: Some schema validation tools may consider the following xsd:any element ambiguous in this placement-->
+  <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+  <xsd:complexType name="setSerialType">
+    <xsd:sequence>
+      <xsd:element name="s">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="upnp:string">
+              <xsd:anyAttribute namespace="##other" processContents="lax" />
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:complexType name="setSerialResponseType">
+    <xsd:sequence>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:element name="setX" type="setXType" />
+  <xsd:element name="setXResponse" type="setXResponseType" />
+  <!--Note: Some schema validation tools may consider the following xsd:any element ambiguous in this placement-->
+  <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+  <xsd:complexType name="setXType">
+    <xsd:sequence>
+      <xsd:element name="x">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="upnp:i4">
+              <xsd:anyAttribute namespace="##other" processContents="lax" />
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:complexType name="setXResponseType">
+    <xsd:sequence>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:element name="setY" type="setYType" />
+  <xsd:element name="setYResponse" type="setYResponseType" />
+  <!--Note: Some schema validation tools may consider the following xsd:any element ambiguous in this placement-->
+  <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+  <xsd:complexType name="setYType">
+    <xsd:sequence>
+      <xsd:element name="y">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="upnp:i4">
+              <xsd:anyAttribute namespace="##other" processContents="lax" />
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+  <xsd:complexType name="setYResponseType">
+    <xsd:sequence>
+      <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax" />
+  </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,85 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns:Conversion="urn:Conversion">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}</ProjectGuid>
+    <RootNamespace>SampleDevice</RootNamespace>
+    <AssemblyName>SampleDevice</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ApplicationIcon />
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <PreBuildEvent />
+    <PostBuildEvent />
+    <StartupObject />
+    <NoConfig>false</NoConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <NoStdLib />
+    <WarningLevel>4</WarningLevel>
+    <NoWarn />
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <NoStdLib />
+    <WarningLevel>4</WarningLevel>
+    <NoWarn />
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\Release\</OutputPath>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <HintPath>..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.dll</HintPath>
+      <Private />
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Data.dll</HintPath>
+      <Private />
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml">
+      <HintPath>..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll</HintPath>
+      <Private />
+    </Reference>
+    <Reference Include="UPnP">
+      <HintPath>UPnP.dll</HintPath>
+      <Private />
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnotoDevice.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Form1.cs" />
+    <Compile Include="Form1.Designer.cs" />
+    <Compile Include="ImportedService.cs" />
+    <Compile Include="SampleDevice.cs" />
+    <Compile Include="Main.cs" />
+    <EmbeddedResource Include="Form1.resx" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <COMReference Include="AnotoGenericStreamer">
+      <Guid>{EA3227C1-546D-4825-BEE7-BB0A28E0B451}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <Folder Include="Properties" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

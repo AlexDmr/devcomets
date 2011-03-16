@@ -1,0 +1,11 @@
+E:\Doctorat\dev-anoto-upnp\bin\Debug\SampleDevice.exe
+E:\Doctorat\dev-anoto-upnp\bin\Debug\SampleDevice.pdb
+E:\Doctorat\dev-anoto-upnp\bin\Debug\UPnP.dll
+E:\Doctorat\dev-anoto-upnp\obj\Debug\ResolveAssemblyReference.cache
+E:\Doctorat\dev-anoto-upnp\obj\Debug\SampleDevice.exe
+E:\Doctorat\dev-anoto-upnp\obj\Debug\SampleDevice.pdb
+E:\Doctorat\dev-anoto-upnp\obj\Debug\SampleDevice.Form1.resources
+E:\Doctorat\dev-anoto-upnp\obj\Debug\SampleDevice.csproj.GenerateResource.Cache
+E:\Doctorat\dev-anoto-upnp\obj\Debug\Interop.AnotoGenericStreamer.dll
+E:\Doctorat\dev-anoto-upnp\obj\Debug\SampleDevice.csproj.ResolveComReference.cache
+E:\Doctorat\dev-anoto-upnp\bin\Debug\Interop.AnotoGenericStreamer.dll
