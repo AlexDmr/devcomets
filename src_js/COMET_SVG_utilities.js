@@ -167,11 +167,11 @@ function convert_coord_from_page_to_node(x,y,node) {
 	coord['y'] = y;                      										
 	var current_node = node;	                      							
 
-	while(current_node.nodeName != 'HTML' && current_node.nodeName != 'svg') {  
+	while(current_node.nodeName != 'HTML' && current_node.nodeName != 'svg' && current_node.nodeName != 'svg:svg') {  
 		current_node = current_node.parentNode;                      			
 		}
 
-	if(current_node.nodeName == 'svg') {										
+	if(current_node.nodeName == 'svg' || current_node.nodeName != 'svg:svg') {										
 		coord['x'] -= current_node.offsetLeft;								
 		coord['y'] -= current_node.offsetTop;									
 		var ma_matrice = current_node.createSVGMatrix();						
