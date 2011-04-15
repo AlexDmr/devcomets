@@ -153,7 +153,7 @@ function Drop_zone(id_node, accept_class, feedback_start, feedback_hover, feedba
 //___________________________________________________________________________________________________________________________________________
 function get_svg_canvas_of (node) {
 	var current_node = node;
-	while(current_node != null && current_node.nodeName != 'svg') {current_node = current_node.parentNode;}
+	while(current_node != null && current_node.nodeName != 'svg' && current_node.nodeName != 'svg:svg') {current_node = current_node.parentNode;}
 	
 	return current_node;
 }
