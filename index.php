@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ALL);
-header('Content-type: text/html; charset=UTF-8');
+//error_reporting(E_ALL);
+header('Content-type: application/xhtml+xml; charset=UTF-8');
   if (ini_get('short_open_tag') == 1) echo "ATTENTION : short_open_tag option is activated in PHP. You must desactivate it!<br/>\n";
 /* Lit le port du service WWW. */
 if(isset($_REQUEST['Comet_port'])) {
@@ -11,13 +11,6 @@ if(isset($_REQUEST['Comet_port'])) {
 $address = '127.0.0.1';
 //$address = '172.18.15.14';
 
-/*  On affiche la liste des paramètres du POST
-echo "List of parameters :<br>";
-foreach($_REQUEST as $cle => $val) {
- echo "$cle : $val<br>\n";
-}
-*/
-//echo "T0 : " . time() . '<br>';
 /* Construction du message pour les comets */
 if(isset($_REQUEST['Comet_port'])) {
   /* Cree une socket TCP/IP. */
@@ -63,7 +56,7 @@ if(isset($_REQUEST['Comet_port'])) {
  } else {//echo "T1 : " . time() . '<br>';
          $fp = fsockopen($address, $service_port, $errno, $errstr, 30);
          if (!$fp) {echo "$errstr ($errno)<br />\n";}
-		 $in = "$REMOTE_ADDR 0                         ";
+		 $in = "$address 0                         ";
 		 fwrite($fp, $in);
          $out = '';
 		 //echo "T2 : " . time() . '<br>'; flush(); 
@@ -72,10 +65,10 @@ if(isset($_REQUEST['Comet_port'])) {
            $tmp = str_replace(array("\r", "\n"), "\r\n", $tmp);
            $out .= utf8_encode( $tmp );
           }
-		 echo "T3 : " . time() . '<br>';
+		 //echo "T3 : " . time() . '<br>';
          echo $out;
 		 fclose($fp);
-		 echo "T4 : " . time() . '<br>';
+		 //echo "T4 : " . time() . '<br>';
         }
 //echo "Tend : " . time() . '<br>';
 ?>
