@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph>
+	<node id="InteractiveSystem" type="Sketch,C&T" src="Basics/InteractiveSystem.xml"></node>
+	<node id="Task"              type="Sketch,C&T" src="Basics/UserTask.xml"></node>
+	<node id="TaskOperator"      type="Sketch,C&T" src="Basics/UserTaskOperator.xml"></node>
+	<arc type="Specialize" src="Task"         dst="InteractiveSystem"></arc>
+	<arc type="Specialize" src="TaskOperator" dst="InteractiveSystem"></arc>
+</graph>
