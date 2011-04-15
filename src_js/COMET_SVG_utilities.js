@@ -3,7 +3,6 @@
 // drag_info_obj.svg_rect.x = 0; drag_info_obj.svg_rect.y = 0; drag_info_obj.svg_rect.width = 1; drag_info_obj.svg_rect.height = 1;
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
-
 function Drag_info_obj() {
 	this.infos = "Object to store functions usefull for dragging...";
 	this.Tab_drag = new Array();
@@ -75,12 +74,13 @@ function COMET_SVG_drag      (id_grp, id_drag, dCTM, dsx, dsy, evt) {
 	
 	node_grp.setAttribute('transform', dCTM + " translate(" + dx + "," + dy + ")");
 	
+	// Callback during drag
 	if(drag_info_obj.Tab_drag[id_drag][1] != null) {drag_info_obj.Tab_drag[id_drag][1](node_grp, evt);}
 	
+	// Managing the drop zones
 	drag_info_obj.svg_rect.x = evt.pageX - drag_info_obj.svg_canvas.offsetLeft - 1;
 	drag_info_obj.svg_rect.y = evt.pageY - drag_info_obj.svg_canvas.offsetTop  - 1;
 	
-	//document.getElementById('Ajax_Raw').innerHTML = drag_info_obj.svg_canvas.checkIntersection(document.getElementById('CPool_COMET_2_drop_circle'), drag_info_obj.svg_rect);
 	var Tab_SVG_elements = drag_info_obj.svg_canvas.getIntersectionList(drag_info_obj.svg_rect, null);
 	var new_drop_zone = null;
 	if(Tab_SVG_elements != null) {
@@ -190,7 +190,6 @@ function convert_coord_from_page_to_node(x,y,node) {
 //___________________________________________________________________________________________________________________________________________
 //________________________________________________________ Move node _____________________________________________
 //___________________________________________________________________________________________________________________________________________
-
 function set_svg_origine(id,x,y) {											
 	var node = document.getElementById(id);									
 	if(node != null) {														
@@ -204,9 +203,9 @@ function set_svg_origine(id,x,y) {
 //___________________________________________________________________________________________________________________________________________
 //_____________________________________________________ Load SVG description ______________________________________________________
 //___________________________________________________________________________________________________________________________________________
-function Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_str) {
+function Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string) {
 	var node_root = document.getElementById(id_root);
-	if (node_root == null) {alert("There is no root node to plug SVG:\n\tid_root : " + id_root + "\tSVG : " + SVG_str); return;}
+	if (node_root == null) {alert("There is no root node to plug SVG:\n\tid_root : " + id_root + "\n\tSVG : " + SVG_str); return;}
 	
 	if(clear_descendants) {
 		 for(var i = node_root.childNodes.length - 1; i>=0 ; i--) {node_root.removeChild( node_root.childNodes[i] );}
@@ -214,27 +213,64 @@ function Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_str) {
 		
 	if(add_svg_tag) {SVG_str = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' + SVG_str + '</svg>';}
 	
-	var parser  = new DOMParser();
-    var doc_dom = parser.parseFromString(SVG_str, "text/xml");
+	if(is_string) {
+		 var parser  = new DOMParser();
+		 var doc_dom = parser.parseFromString(SVG_descr, "text/xml");
+		} else {var doc_dom = SVG_descr;}
 	
+	var L_nodes = new Array();;
 	for(var i = 0; i < doc_dom.firstChild.childNodes.length; i++) {
-		 var node_to_import = document.importNode(doc_dom.firstChild.childNodes[i], true);
-		 node_root.appendChild( node_to_import );
+		 //alert(doc_dom.firstChild.childNodes[i].nodeName);
+		 if(doc_dom.firstChild.childNodes[i].nodeName != "#text") {
+			  var node_to_import = document.importNode(doc_dom.firstChild.childNodes[i], true);
+			  L_nodes.push( node_to_import );
+			  node_root.appendChild( node_to_import );
+			 }
 		}
+		
+	return L_nodes;
 }
 
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
-function test_dd () {
+function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line) {
 //accept_class, feedback_start, feedback_hover, feedback_out, feedback_done, feedback_undone, fct
-	Drop_zone('CPool_COMET_2_drop_circle', '*', function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Drop zone possible in " + z.getAttribute('id') + 'from ' + n.getAttribute('id');}
+	Drop_zone(id_drop_z, '*', function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Drop zone possible in " + z.getAttribute('id') + 'from ' + n.getAttribute('id');}
 											  , function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Hover drop zone " + z.getAttribute('id') + ' with node ' + n.getAttribute('id');}
 											  , function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Out of drop zone " + z.getAttribute('id') + ' with node ' + n.getAttribute('id') + ' last zone was ' + drag_info_obj.last_drop_zone_hover.getAttribute('id') ;}
 											  , function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Release on drop zone " + z.getAttribute('id') + ' with node ' + n.getAttribute('id');}
 											  , function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Release outside of drop zone " + z.getAttribute('id') + ' with node ' + n.getAttribute('id');}
 											  , function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Plop on drop zone " + z.getAttribute('id') + ' with node ' + n.getAttribute('id');}
 											  );
-	Draggable('CPool_COMET_2', ['CPool_COMET_2_drag'], null, null, function(n, e) {});
+	document.getElementById(id_drag_g).setAttribute('pipo_line'  , id_pipo_line  );
+	document.getElementById(id_drag_g).setAttribute('pipo_circle', id_pipo_circle);
+	Draggable(id_drag_g, [id_drag_z], null
+									, function(n, e) {
+										 var matrix_n = n.parentNode.getCTM().inverse().multiply(n.getCTM()).translate(100, 50);
+										 var line   = document.getElementById(n.getAttribute('pipo_line'  ));
+										 var circle = document.getElementById(n.getAttribute('pipo_circle'));
+										 line.setAttribute('x1', matrix_n.e);
+										 line.setAttribute('y1', matrix_n.f);
+										}
+									, null
+									);
+	//var query_svg  = "http://194.199.23.189/kasanayan/bin/processor.tcl?request=http://194.199.23.189/kasanayan/bd/widgets/root.xml";
+	var query_svg  = "essai_svg.svg";
+	var svg_canvas = get_svg_canvas_of( document.getElementById(id_drag_g) );
+	$.post(query_svg, {}, function (data_xml) {
+									 document.getElementById('Ajax_Raw').innerHTML = (new XMLSerializer()).serializeToString(data_xml);
+									 var g_graph = Load_SVG(svg_canvas.id + '_g_root', false, false, data_xml, false)[0];
+									 //alert(g_graph);
+									 g_graph.setAttribute('transform', g_graph.getAttribute('transform') + ' translate(50, 50)');
+									 for(var i = 0; i < g_graph.childNodes.length; i++) {
+										 var xml_node = g_graph.childNodes[i];
+										 if(xml_node.nodeName == "g" && xml_node.getAttribute('class') == "node") {
+											 Draggable(xml_node.id, [xml_node.id], null, null, null);
+											}
+										}
+									}
+						, 'xml'
+			   );
 }
 
