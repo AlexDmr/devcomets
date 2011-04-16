@@ -234,6 +234,13 @@ function Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string)
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
+function Update_edges(node, evt) {
+	document.getElementById('Ajax_Raw').innerHTML = "source edges : " + node.getAttribute('edges_src') + "\n  dest edges : " + node.getAttribute('edges_dst');
+}
+
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
 function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line) {
 //accept_class, feedback_start, feedback_hover, feedback_out, feedback_done, feedback_undone, fct
 	Drop_zone(id_drop_z, '*', function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Drop zone possible in " + z.getAttribute('id') + 'from ' + n.getAttribute('id');}
@@ -263,11 +270,36 @@ function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line)
 									 var g_graph = Load_SVG(svg_canvas.id + '_g_root', false, false, data_xml, false)[0];
 									 //alert(g_graph);
 									 g_graph.setAttribute('transform', g_graph.getAttribute('transform') + ' translate(50, 50)');
+									 var L_nodes = new Array();
+									 var L_edges = new Array();
 									 for(var i = 0; i < g_graph.childNodes.length; i++) {
 										 var xml_node = g_graph.childNodes[i];
-										 if(xml_node.nodeName == "g" && xml_node.getAttribute('class') == "node") {
-											 Draggable(xml_node.id, [xml_node.id], null, null, null);
+										 if(xml_node.nodeName == "g" && xml_node.getAttribute('class') == "edge") {
+											 L_edges.push(xml_node);
+											 var T_str = xml_node.childNodes[0].childNodes[0].nodeValue.split("->"); 
+											 xml_node.setAttribute('node_src', T_str[0] );
+											 xml_node.setAttribute('node_dst', T_str[1] );
+											 xml_node.setAttribute('class', 'edge ' + T_str[0] + ' ' + T_str[1]);
 											}
+										 if(xml_node.nodeName == "g" && xml_node.getAttribute('class') == "node") {
+											 L_nodes.push(xml_node);
+											 var node_name = xml_node.childNodes[0].childNodes[0].nodeValue;
+											 xml_node.setAttribute('name', node_name );
+											 Draggable(xml_node.id, [xml_node.id], null, Update_edges, null);
+											}
+										}
+									 // Link related edges for each node
+									 for(var i = 0; i < L_nodes.length; i++) {
+										 var node       = L_nodes[i];
+										 var node_name  = node.getAttribute('name');
+										 var L_edges_src = new Array();
+										 var L_edges_dst = new Array();
+										 for(var j = 0; j < L_edges.length; j++) {
+											 if(L_edges[j].getAttribute('node_src') == node_name) {L_edges_src.push( L_edges[j].id );}
+											 if(L_edges[j].getAttribute('node_dst') == node_name) {L_edges_dst.push( L_edges[j].id );}
+											}
+										 node.setAttribute('edges_src', L_edges_src.toString());
+										 node.setAttribute('edges_dst', L_edges_dst.toString());
 										}
 									}
 						, 'xml'
