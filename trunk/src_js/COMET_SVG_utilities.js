@@ -43,7 +43,7 @@ function COMET_SVG_start_drag(id_grp, id_drag, evt) {
 	var parentNode = node_grp.parentNode;
 	parentNode.removeChild( node_grp );
 	parentNode.appendChild( node_grp );
-	document.getElementById('Ajax_Raw').innerHTML = "document.getElementById('" + id_grp + "')";
+	//document.getElementById('Ajax_Raw').innerHTML = "document.getElementById('" + id_grp + "')";
 	
 	// Manage drop zones
 	drag_info_obj.svg_canvas     = get_svg_canvas_of(node_grp);
@@ -262,11 +262,11 @@ function Update_edges(node, evt) {
 	var parent_graph      = node.parentNode;
 	var inverse_graph_CTM = parent_graph.getCTM().inverse();
 	
-	var debug_line = document.getElementById('debug_line');
+	//var debug_line = document.getElementById('debug_line');
 	var str = "";
 	var L_edges = node.getAttribute('edges_src').split(',');
 	L_edges = L_edges.concat(node.getAttribute('edges_dst').split(','));
-	document.getElementById('Ajax_Raw').innerHTML = L_edges;
+	//document.getElementById('Ajax_Raw').innerHTML = L_edges;
 	var pt_src = drag_info_obj.pt_src;
 	var pt_dst = drag_info_obj.pt_dst;
 	
@@ -347,7 +347,7 @@ function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line)
 	var query_svg  = "essai_svg.svg";
 	var svg_canvas = get_svg_canvas_of( document.getElementById(id_drag_g) );
 	$.post(query_svg, {}, function (data_xml) {
-									 document.getElementById('Ajax_Raw').innerHTML = (new XMLSerializer()).serializeToString(data_xml);
+									 //document.getElementById('Ajax_Raw').innerHTML = (new XMLSerializer()).serializeToString(data_xml);
 									 var g_graph = Load_SVG(svg_canvas.id + '_g_root', false, false, data_xml, false)[0];
 									 //alert(g_graph);
 									 g_graph.setAttribute('transform', g_graph.getAttribute('transform') + ' translate(50, 50)');
