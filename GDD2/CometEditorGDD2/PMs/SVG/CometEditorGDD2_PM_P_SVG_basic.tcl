@@ -45,6 +45,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
 
   append strm $dec "  <circle id=\"${objName}_pipo_circle\" cx=\"600\" cy=\"150\" r=\"150\" stroke=\"black\" stroke-width=\"2\" fill=\"blue\"/>"
   append strm $dec "  <line   id=\"${objName}_pipo_line\" x1=\"100\" y1=\"50\" x2=\"600\" y2=\"150\" style=\"stroke:rgb(99,99,99);stroke-width:2\"/>"
+  append strm $dec "  <line   id=\"debug_line\" x1=\"0\" y1=\"0\" x2=\"20\" y2=\"20\" style=\"stroke:rgb(0,0,0);stroke-width:2\"/>"
 
   this Render_daughters strm "$dec  "
 }
