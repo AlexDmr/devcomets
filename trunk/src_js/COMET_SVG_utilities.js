@@ -46,9 +46,12 @@ function COMET_SVG_start_drag(id_grp, id_drag, evt) {
 	document.getElementById('Ajax_Raw').innerHTML = "document.getElementById('" + id_grp + "')";
 	
 	// Manage drop zones
-	drag_info_obj.svg_canvas = get_svg_canvas_of(node_grp);
-	drag_info_obj.svg_rect   = drag_info_obj.svg_canvas.createSVGRect();
+	drag_info_obj.svg_canvas     = get_svg_canvas_of(node_grp);
+	drag_info_obj.svg_rect       = drag_info_obj.svg_canvas.createSVGRect();
 	drag_info_obj.svg_rect.width = drag_info_obj.svg_rect.height = 1;
+	drag_info_obj.pt_src = drag_info_obj.svg_canvas.createSVGPoint();;
+	drag_info_obj.pt_dst = drag_info_obj.svg_canvas.createSVGPoint();;
+	
 	for(var i in drag_info_obj.Tab_drop) {
 		 var L_nodes = $(drag_info_obj.Tab_drop[i][0]);
 		 var contains = false;
@@ -122,7 +125,7 @@ function COMET_SVG_stop_drag (id_grp, id_drag, evt) {
 		}
 	
 	// Manage/Clear drop zones
-	drag_info_obj.Tab_drop_actives     = [];
+	drag_info_obj.Tab_drop_actives     = new Array();
 	drag_info_obj.last_drop_zone_hover = null;
 }
 
@@ -232,10 +235,88 @@ function Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string)
 }
 
 //___________________________________________________________________________________________________________________________________________
+function get_first_child_typed(type, node) {
+	var n = null;
+	for(var i = 0; i < node.childNodes.length; i++) {
+		 n = node.childNodes[i];
+		 if(n.nodeName == type) {return n;}
+		}
+	return null;
+}
+
 //___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+function Draw_arrow(n_poly, x1, y1, x2, y2, L, S) {
+	var U = get_unitary_vector_from(x1, y1, x2, y2);
+	var D = get_right_perpendicular_vector_from(U[0], U[1]);
+	var G = get_left_perpendicular_vector_from (U[0], U[1]);
+	var Bx = x2 - L*U[0];
+	var By = y2 - L*U[1];
+	
+	n_poly.setAttribute('points', x2+','+y2+ ' ' + (Bx+S*G[0])+','+(By+S*G[1]) + ' ' + (Bx+S*D[0])+','+(By+S*D[1]));
+}
+
 //___________________________________________________________________________________________________________________________________________
 function Update_edges(node, evt) {
-	document.getElementById('Ajax_Raw').innerHTML = "source edges : " + node.getAttribute('edges_src') + "\n  dest edges : " + node.getAttribute('edges_dst');
+	var parent_graph      = node.parentNode;
+	var inverse_graph_CTM = parent_graph.getCTM().inverse();
+	
+	var debug_line = document.getElementById('debug_line');
+	var str = "";
+	var L_edges = node.getAttribute('edges_src').split(',');
+	L_edges = L_edges.concat(node.getAttribute('edges_dst').split(','));
+	document.getElementById('Ajax_Raw').innerHTML = L_edges;
+	var pt_src = drag_info_obj.pt_src;
+	var pt_dst = drag_info_obj.pt_dst;
+	
+	for(var i = 0; i < L_edges.length; i++) {
+		 var e = document.getElementById(L_edges[i]);
+		 if(e == null) {continue;}
+		 var n_src = document.getElementById(e.getAttribute('node_src'));
+			var n_src_ellipse = get_first_child_typed('ellipse', n_src);
+			pt_src.x = n_src_ellipse.cx.baseVal.value; pt_src.y = n_src_ellipse.cy.baseVal.value;
+			pt_src = pt_src.matrixTransform(n_src_ellipse.getCTM().multiply(inverse_graph_CTM));
+			
+		 var n_dst = document.getElementById(e.getAttribute('node_dst'));
+			var n_dst_ellipse = get_first_child_typed('ellipse', n_dst);
+			pt_dst.x = n_dst_ellipse.cx.baseVal.value; pt_dst.y = n_dst_ellipse.cy.baseVal.value;
+			pt_dst = pt_dst.matrixTransform(n_dst_ellipse.getCTM().multiply(inverse_graph_CTM));
+			
+			//document.getElementById('Ajax_Raw').innerHTML = '(' + pt_src.x + ';' + pt_src.y + ') -> (' + pt_dst.x + ';' + pt_dst.y + ')';
+
+		 // Compute intersections
+		 var T_pt_src = get_intersections_oval_line ( pt_src.x, pt_src.y
+													, n_src_ellipse.rx.baseVal.value, n_src_ellipse.ry.baseVal.value
+													, pt_src.x, pt_src.y
+													, pt_dst.x, pt_dst.y
+													);
+
+		 var T_pt_dst = get_intersections_oval_line ( pt_dst.x, pt_dst.y
+													, n_dst_ellipse.rx.baseVal.value, n_dst_ellipse.ry.baseVal.value
+													, pt_src.x, pt_src.y
+													, pt_dst.x, pt_dst.y
+													);
+		 
+		 // Draw line from embeded path inside edge element
+		 var n_path = get_first_child_typed('path', e);
+		 if(n_path != null) {
+			 n_path.setAttribute('d', 'M '+T_pt_src+' '+T_pt_dst );
+			} else {alert('no path for edge '+ L_edges[i] + ' : ' + n_path);}
+
+		 // Draw arrow from embeded polygon inside edge element
+		 var n_poly = get_first_child_typed('polygon', e);
+		 if(n_poly != null) {
+			 Draw_arrow(n_poly, T_pt_src[0], T_pt_src[1], T_pt_dst[0], T_pt_dst[1], 12,5);
+			} else {alert('no polygon for edge '+ L_edges[i] + ' : ' + n_poly);}
+
+ 		 // debug_line.setAttribute('x1', T_pt_src[0]);
+		 // debug_line.setAttribute('y1', T_pt_src[1]);
+		 // debug_line.setAttribute('x2', T_pt_dst[0]);
+		 // debug_line.setAttribute('y2', T_pt_dst[1]);
+		 // document.getElementById('Ajax_Raw').innerHTML = T_pt_src + ' ; ' + T_pt_dst;
+		}
+
 }
 
 //___________________________________________________________________________________________________________________________________________
@@ -285,6 +366,7 @@ function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line)
 											 L_nodes.push(xml_node);
 											 var node_name = xml_node.childNodes[0].childNodes[0].nodeValue;
 											 xml_node.setAttribute('name', node_name );
+											 //xml_node.setAttribute('class', 'node ' + node_name);
 											 Draggable(xml_node.id, [xml_node.id], null, Update_edges, null);
 											}
 										}
@@ -295,12 +377,19 @@ function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line)
 										 var L_edges_src = new Array();
 										 var L_edges_dst = new Array();
 										 for(var j = 0; j < L_edges.length; j++) {
-											 if(L_edges[j].getAttribute('node_src') == node_name) {L_edges_src.push( L_edges[j].id );}
-											 if(L_edges[j].getAttribute('node_dst') == node_name) {L_edges_dst.push( L_edges[j].id );}
+											 var e = L_edges[j];
+											 if(e.getAttribute('node_src') == node_name) {L_edges_src.push(e.id); e.setAttribute('node_src', node.id);}
+											 if(e.getAttribute('node_dst') == node_name) {L_edges_dst.push(e.id); e.setAttribute('node_dst', node.id);}
 											}
 										 node.setAttribute('edges_src', L_edges_src.toString());
 										 node.setAttribute('edges_dst', L_edges_dst.toString());
 										}
+										
+									 //DEBUG
+									 var debug_line  = document.getElementById('debug_line');
+									 var parent_line = debug_line.parentNode;
+									 parent_line.removeChild( debug_line );
+									 parent_line.appendChild( debug_line );
 									}
 						, 'xml'
 			   );
