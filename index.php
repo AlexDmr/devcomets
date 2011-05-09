@@ -1,6 +1,6 @@
 <?php
 //error_reporting(E_ALL);
-header('Content-type: application/xhtml+xml; charset=UTF-8');
+
   if (ini_get('short_open_tag') == 1) echo "ATTENTION : short_open_tag option is activated in PHP. You must desactivate it!<br/>\n";
 /* Lit le port du service WWW. */
 if(isset($_REQUEST['Comet_port'])) {
@@ -10,6 +10,12 @@ if(isset($_REQUEST['Comet_port'])) {
 /* Lit l'adresse IP du serveur de destination */
 $address = '127.0.0.1';
 //$address = '172.18.15.14';
+
+if(isset($_REQUEST['js_update'])) {
+	header('charset=UTF-8');
+	if(isset($_POST['js_update'])) {unset($_POST['js_update']);}
+} else {header('Content-type: application/xhtml+xml; charset=UTF-8');}
+
 
 /* Construction du message pour les comets */
 if(isset($_REQUEST['Comet_port'])) {

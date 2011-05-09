@@ -18,6 +18,7 @@ var drag_info_obj = new Drag_info_obj();
 //___________________________________________________ Drag nodes _____________________________________________________
 //___________________________________________________________________________________________________________________________________________
 function COMET_SVG_start_drag(id_grp, id_drag, evt) {
+	evt.stopPropagation();
 	var node_grp  = document.getElementById(id_grp);
 	if(node_grp == null) {alert('Problem starting a drag with unknow id ' + id_grp); return;}
 	
@@ -75,7 +76,7 @@ function COMET_SVG_drag      (id_grp, id_drag, dCTM, dsx, dsy, evt) {
 	var coord  = convert_coord_from_page_to_node(evt.pageX, evt.pageY, node_grp.parentNode);
 	var dx = coord['x'] - dsx; var dy = coord['y'] - dsy;
 	
-	node_grp.setAttribute('transform', dCTM + " translate(" + dx + "," + dy + ")");
+	node_grp.setAttribute('transform', " translate(" + dx + "," + dy + ")" + dCTM);
 	
 	// Callback during drag
 	if(drag_info_obj.Tab_drag[id_drag][1] != null) {drag_info_obj.Tab_drag[id_drag][1](node_grp, evt);}
@@ -162,6 +163,59 @@ function get_svg_canvas_of (node) {
 }
 
 //___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+function Register_CB_onwheel_with_id (node_id, fct_CB) {return Register_CB_onwheel(document.getElementById(node_id), fct_CB);}
+function Register_CB_onwheel   (node, fct_CB)    {
+	if (node.addEventListener) {
+			node.addEventListener('DOMMouseScroll', fct_CB, false);
+			node.addEventListener('mousewheel'    , fct_CB, false); // Chrome
+			return 1;
+		}
+	return 0;
+}
+
+
+//___________________________________________________________________________________________________________________________________________
+function Register_node_id_SVG_zoom_onwheel(node_id) {return Register_node_SVG_zoom_onwheel(document.getElementById(node_id));}
+function Register_node_SVG_zoom_onwheel   (node)    {
+	return Register_CB_onwheel(node, SVG_zoom_onwheel);
+}
+
+//___________________________________________________________________________________________________________________________________________
+function SVG_zoom_onwheel(e) {
+	e.stopPropagation(); e.cancelBubble = true; e.preventDefault(); e.returnValue = false;
+    var nDelta = 0;
+	if ( e.wheelDelta ) { // IE and Opera
+         nDelta= e.wheelDelta;
+         if ( window.opera ) {  // Opera has the values reversed
+            nDelta= -nDelta;
+        }
+    } else if (e.detail) { // Mozilla FireFox
+         nDelta= -e.detail;
+		}
+	
+	var svg_canvas = get_svg_canvas_of(e.currentTarget);
+	SVG_zoom(svg_canvas, e.currentTarget, window.pageXOffset + e.clientX - svg_canvas.offsetLeft, window.pageYOffset + e.clientY - svg_canvas.offsetTop, nDelta<0?0.9:1.1);
+//	alert(e.currentTarget);
+
+	return false;
+}
+
+//___________________________________________________________________________________________________________________________________________
+function SVG_zoom(svg_canvas, node, x, y, z_factor) {
+	var P = svg_canvas.createSVGPoint(); P.x = x; P.y = y;
+	
+	P = P.matrixTransform(node.getCTM().inverse());
+	
+	document.getElementById('Ajax_Raw').value = 'Wheel at ' + P.x + ';' + P.y;
+	
+	// var M = node.getCTM().multiply( node.parentNode.getCTM().inverse() ).translate((1-z_factor) * P.x, (1-z_factor) * P.y).scale(z_factor);
+	// node.setAttribute('transform', 'matrix(' + M.a + ',' + M.b + ',' + M.c + ',' + M.d + ',' + M.e + ',' + M.f + ')');
+	node.setAttribute('transform', node.getAttribute('transform') + ' translate(' + (1-z_factor) * P.x + ', ' + (1-z_factor) * P.y + ') scale(' + z_factor + ', ' + z_factor + ')');
+}
+
+//___________________________________________________________________________________________________________________________________________
 //_______________________________________________________ Coordinates converstion _______________________________________________________
 //___________________________________________________________________________________________________________________________________________
 function convert_coord_from_page_to_node(x,y,node) {  						
@@ -211,10 +265,10 @@ function Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string)
 	if (node_root == null) {alert("There is no root node to plug SVG:\n\tid_root : " + id_root + "\n\tSVG : " + SVG_str); return;}
 	
 	if(clear_descendants) {
-		 for(var i = node_root.childNodes.length - 1; i>=0 ; i--) {node_root.removeChild( node_root.childNodes[i] );}
+		 while(node_root.childNodes.length > 0) {node_root.removeChild( node_root.childNodes[0] );}
 		}
 		
-	if(add_svg_tag) {SVG_str = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">' + SVG_str + '</svg>';}
+	if(add_svg_tag) {SVG_descr = '<svg xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">' + SVG_descr + '</svg>';}
 	
 	if(is_string) {
 		 var parser  = new DOMParser();
@@ -322,6 +376,57 @@ function Update_edges(node, evt) {
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
+function Line_joining_ellipses (id_svg_canvas, id_n_root, id_e_1, id_e_2) {
+	var svg_canvas = document.getElementById(id_svg_canvas);
+	var n_root     = document.getElementById(id_n_root);
+	var n_e_1      = document.getElementById(id_e_1);
+	var n_e_2      = document.getElementById(id_e_2);
+
+	if (svg_canvas == null || id_n_root == null || n_e_1 == null || n_e_2 == null) {return null;}
+	
+	return Line_joining_node_ellipses(svg_canvas, n_root, n_e_1, n_e_2);
+}
+
+//___________________________________________________________________________________________________________________________________________
+function get_children_of_type_class(node, type, c) {
+	var rep = new Array();
+	for(var i = 0; i < node.childNodes.length; i++) {
+		 var n = node.childNodes[i];
+		 if(n.nodeName == type && n.getAttribute('class') == c) {rep.push(n);}
+		}
+	return rep;
+}
+
+//___________________________________________________________________________________________________________________________________________
+function Line_joining_node_ellipses (svg_canvas, n_root, n_e_1, n_e_2) {
+	// get the transformations of ellipses
+	var CTM_r = n_root.getCTM(); var CTM_ri = CTM_r.inverse();
+	var CTM_1 = n_e_1.getCTM (); var CTM_1i = CTM_1.inverse();
+	var CTM_2 = n_e_2.getCTM (); var CTM_2i = CTM_2.inverse();
+	
+	// get the centers
+	var C_1 = svg_canvas.createSVGPoint(); C_1.x = n_e_1.cx.baseVal.value; C_1.y = n_e_1.cy.baseVal.value;
+	var C_2 = svg_canvas.createSVGPoint(); C_2.x = n_e_2.cx.baseVal.value, C_2.y = n_e_2.cy.baseVal.value;
+
+	// Express each center with respect to the coordinate system of the other
+	var C_2_in_e_1 = C_2.matrixTransform( CTM_2 ).matrixTransform( CTM_1i );
+	var C_1_in_e_2 = C_1.matrixTransform( CTM_1 ).matrixTransform( CTM_2i ); 
+	
+	// Compute collisions
+	var T1 = get_intersections_oval_line(C_1.x, C_1.y, n_e_1.rx.baseVal.value, n_e_1.ry.baseVal.value, C_1.x, C_1.y, C_2_in_e_1.x, C_2_in_e_1.y);
+	var P1 = svg_canvas.createSVGPoint(); P1.x = T1[0]; P1.y = T1[1];
+	P1 = P1.matrixTransform( CTM_1 ).matrixTransform( CTM_ri );
+	
+	var T2 = get_intersections_oval_line(C_2.x, C_2.y, n_e_2.rx.baseVal.value, n_e_2.ry.baseVal.value, C_2.x, C_2.y, C_1_in_e_2.x, C_1_in_e_2.y);
+	var P2 = svg_canvas.createSVGPoint(); P2.x = T2[0]; P2.y = T2[1];
+	P2 = P2.matrixTransform( CTM_2 ).matrixTransform( CTM_ri );
+	
+	return [P1.x, P1.y, P2.x, P2.y];
+}
+
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
 function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line) {
 //accept_class, feedback_start, feedback_hover, feedback_out, feedback_done, feedback_undone, fct
 	Drop_zone(id_drop_z, '*', function(z, n, e) {document.getElementById('Ajax_Raw').innerHTML = "Drop zone possible in " + z.getAttribute('id') + 'from ' + n.getAttribute('id');}
@@ -394,4 +499,8 @@ function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line)
 						, 'xml'
 			   );
 }
+
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
 
