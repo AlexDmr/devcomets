@@ -27,6 +27,7 @@ function addOutput(obj) {
 
 function refreshClientServer() {
 	//$("#p_debug").append("refreshClientServer --- ");
+	alert('r');
 	if(mutex == false) {
 		//$("#p_debug").append("INSIDE --- ");
 		mutex = true;
@@ -41,11 +42,12 @@ function refreshClientServer() {
 			url: "index.php",
 			data: outputVer,
 			success: function(msg){
-				if(msg) {					
+				if(msg) {alert(msg);
 					try { 
 						eval(msg); 
 					}
 					catch(err) {
+						alert(err);
 					}
 					do_update = true;
 				}
