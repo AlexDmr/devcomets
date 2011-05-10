@@ -33,8 +33,8 @@ Generate_PM_setters CometEditorGDD2_PM_P_SVG_basic [P_L_methodes_set_CometEditor
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
-method CometEditorGDD2_PM_P_SVG_basic GDD_doc_to_SVG {n_document str_svg_name id X_name Y_name} {
- upvar $str_svg_name str_svg
+method CometEditorGDD2_PM_P_SVG_basic GDD_doc_to_SVG {n_document str_svg_name str_js_name id X_name Y_name} {
+ upvar $str_svg_name str_svg; upvar $str_js_name str_js
  upvar $X_name X
  upvar $Y_name Y
  
@@ -49,11 +49,19 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_doc_to_SVG {n_document str_svg_name id
 			  set X [expr $X + $width + 10]
 			 }
         html {set width  [$n_document getAttribute "width" ]; set height [$n_document getAttribute "height"]; set href   [$n_document getAttribute "href"]
-		      append str_svg "<foreignObject x=\"$X\" y=\"$Y\" width=\"$width\" height=\"$height\">\n"
+		      set id     "${id}_#_[$n_document getAttribute id]"
+			  append str_svg "<g id=\"$id\" annotations_CB=\"\" transform=\"translate($X , $Y)\">"
+			  append str_svg "<ellipse id=\"${id}_centroid_ellipse\" class=\"centroid\" cx=\"[expr $width / 2]\" cy=\"[expr $height / 2]\" rx=\"[expr $width / 2]\" ry=\"[expr $height / 2]\" style =\"fill:none; stroke:none; stroke-width:1\" />"
+			  append str_svg "<rect x=\"-30\" y=\"-30\" width=\"[expr 60+$width]\" height=\"[expr 60+$height]\" style=\"fill:rgb(99,99,99); stroke:rgb(0,0,0);\"/>\n"
+			  append str_svg "<foreignObject id=\"${id}_foreign_html\" width=\"$width\" height=\"$height\">\n"
 			  append str_svg "  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n"
 			  append str_svg "    <iframe src=\"$href\" style=\"width:${width}px;height:${height}px\"></iframe>\n"
+			  # append str_svg "  <h1>Titre 1</h1><p>coucou c'est un bien joli paragraphe que vous avez là madame...</p>\n"
 			  append str_svg "  </body>\n"
 			  append str_svg "</foreignObject>\n"
+			  append str_svg "</g>\n"
+			  
+			  append str_js "Add_events_blocking_bubbling('${id}_foreign_html');\n"
 			  set X [expr $X + $width + 10]
 			 }
 	 default {
@@ -107,7 +115,7 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url} {
 	 set X 0
 	 set Y 0
 	 foreach n_document [$root selectNodes "/node/document"] {
-		 this GDD_doc_to_SVG $n_document str_svg $GDD_node_url X Y
+		 this GDD_doc_to_SVG $n_document str_svg str_js $GDD_node_url X Y
 		 set id_doc ${GDD_node_url}_#_[$n_document getAttribute id]
 		 append str_js "Draggable('$id_doc', \['$id_doc'\], null, function(n, e) {update_annotations_related_to('${id_doc}');}, null);\n"
 		 append str_js "Register_node_id_SVG_zoom_onwheel('$id_doc');\n"
@@ -115,11 +123,11 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url} {
 		}
 
 	 foreach n_annotation [$root selectNodes "/node/annotation"] {
-	     set str ""; set X 0; set Y 0
+	     set str ""; set str_js_tmp ""; set X 0; set Y 0
 		 # Get the document of the annotation
 		 set n_doc [$n_annotation selectNodes "./document"];
 		 set annotation_id [$n_doc getAttribute id]
-		 this GDD_doc_to_SVG $n_doc str $GDD_node_url X Y
+		 this GDD_doc_to_SVG $n_doc str str_js_tmp $GDD_node_url X Y
 		 
 		 # For each binding, place the annotation
 		 set annotation_added 0; set L_id_segments [list]; set L_animated_id [list ${GDD_node_url}_#_${annotation_id}]; 
@@ -145,6 +153,8 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url} {
 			}
 			
 		 if {!$annotation_added} {append str_svg $str}
+		 append str_js $str_js_tmp
+		 
 		 if {[llength $L_id_segments] > 0} {
 			 # Add to each node the index of the animation to maintain
 			 append str_js "T_tmp = \['" [join $L_animated_id "','"] "'\];\n"

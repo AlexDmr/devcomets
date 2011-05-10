@@ -210,15 +210,15 @@ function SVG_zoom(svg_canvas, node, x, y, z_factor) {
 	
 	document.getElementById('Ajax_Raw').value = 'Wheel at ' + P.x + ';' + P.y;
 	
-	// var M = node.getCTM().multiply( node.parentNode.getCTM().inverse() ).translate((1-z_factor) * P.x, (1-z_factor) * P.y).scale(z_factor);
-	// node.setAttribute('transform', 'matrix(' + M.a + ',' + M.b + ',' + M.c + ',' + M.d + ',' + M.e + ',' + M.f + ')');
-	node.setAttribute('transform', node.getAttribute('transform') + ' translate(' + (1-z_factor) * P.x + ', ' + (1-z_factor) * P.y + ') scale(' + z_factor + ', ' + z_factor + ')');
+	var M = node.getCTM().multiply( node.parentNode.getCTM().inverse() ).translate((1-z_factor) * P.x, (1-z_factor) * P.y).scale(z_factor);
+	node.setAttribute('transform', 'matrix(' + M.a + ',' + M.b + ',' + M.c + ',' + M.d + ',' + M.e + ',' + M.f + ')');
+	//node.setAttribute('transform', node.getAttribute('transform') + ' translate(' + (1-z_factor) * P.x + ', ' + (1-z_factor) * P.y + ') scale(' + z_factor + ', ' + z_factor + ')');
 }
 
 //___________________________________________________________________________________________________________________________________________
 //_______________________________________________________ Coordinates converstion _______________________________________________________
 //___________________________________________________________________________________________________________________________________________
-function convert_coord_from_page_to_node(x,y,node) {  						
+function convert_coord_from_page_to_node(x,y,node) {
 	var coord = new Array();													
 	coord['x'] = x;                         									
 	coord['y'] = y;                      										
@@ -503,4 +503,59 @@ function test_dd (id_drag_g, id_drag_z, id_drop_z, id_pipo_circle, id_pipo_line)
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+function CometEditor_obj() {
+	this.infos = "Object to store functions usefull for convertinf from/to SVG/HTLM....";
+	this.svg_canvas = null;
+	this.svg_point  = null;
+}
+
+var cometEditor_obj = new CometEditor_obj();
+
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+function Add_event_converter_SVG_to_HTML_for(node_id) {
+	var node = document.getElementById( node_id );
+	if(node == null) return false;
+	
+	// Add listeners to the node so that events coordinates are translated
+	node.addEventListener('click'    , convert_coords_from_svg_to_html, true);
+	node.addEventListener('mousedown', convert_coords_from_svg_to_html, true);
+	node.addEventListener('mouseup'  , convert_coords_from_svg_to_html, true);
+	node.addEventListener('mousemove', convert_coords_from_svg_to_html, true);
+	
+	return true;
+}
+
+//___________________________________________________________________________________________________________________________________________
+function convert_coords_from_svg_to_html(e) {
+	e.clientX = 0;
+	e.clientY = 0;
+	//alert('coucou ' + e.clientX);
+}
+
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+function Add_events_blocking_bubbling(node_id) {
+	var node = document.getElementById( node_id );
+	if(node == null) return false;
+	
+	// Add listeners to the node so that events coordinates are translated
+	node.addEventListener('click'    , Block_events_bubbling, false);
+	node.addEventListener('mousedown', Block_events_bubbling, false);
+	node.addEventListener('mouseup'  , Block_events_bubbling, false);
+	node.addEventListener('mousemove', Block_events_bubbling, false);
+	
+	return true;
+}
+
+//___________________________________________________________________________________________________________________________________________
+function Block_events_bubbling(e) {
+	e.stopPropagation(); e.cancelBubble = true; e.preventDefault(); e.returnValue = false;
+	return false;
+}
 
