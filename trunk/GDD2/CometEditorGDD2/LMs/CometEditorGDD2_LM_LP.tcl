@@ -17,7 +17,7 @@ Methodes_set_LC CometEditorGDD2_LM_LP [P_L_methodes_set_CometEditorGDD2] {} {$th
 Methodes_get_LC CometEditorGDD2_LM_LP [P_L_methodes_get_CometEditorGDD2] {$this(FC)}
 
 #___________________________________________________________________________________________________________________________________________
-proc P_L_methodes_set_CometEditorGDD2_COMET_RE_P {} {return [list]}
+proc P_L_methodes_set_CometEditorGDD2_COMET_RE_P {} {return [concat [P_L_methodes_set_CometEditorGDD2] [list]]}
 Generate_LM_setters CometEditorGDD2_LM_LP [P_L_methodes_set_CometEditorGDD2_COMET_RE_P]
 
 #___________________________________________________________________________________________________________________________________________
