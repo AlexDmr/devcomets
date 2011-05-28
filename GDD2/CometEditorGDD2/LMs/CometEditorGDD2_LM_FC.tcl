@@ -4,8 +4,7 @@ inherit CometEditorGDD2_LM_FC Logical_model
 method CometEditorGDD2_LM_FC constructor {name descr args} {
  this inherited $name $descr
 # Adding some physical presentations 
- this Add_PM_factories [Generate_factories_for_PM_type [list \
-                                                       ] $objName]
+ this set_PM_active [CPool get_a_comet CometEditorGDD2_PM_FC_basic]
 
  eval "$objName configure $args"
  return $objName
@@ -16,7 +15,7 @@ Methodes_set_LC CometEditorGDD2_LM_FC [P_L_methodes_set_CometEditorGDD2] {} {$th
 Methodes_get_LC CometEditorGDD2_LM_FC [P_L_methodes_get_CometEditorGDD2] {$this(FC)}
 
 #___________________________________________________________________________________________________________________________________________
-proc P_L_methodes_set_CometEditorGDD2_COMET_RE_FC {} {return [list]}
+proc P_L_methodes_set_CometEditorGDD2_COMET_RE_FC {} {return [concat [P_L_methodes_set_CometEditorGDD2] [list]]}
 Generate_LM_setters CometEditorGDD2_LM_FC [P_L_methodes_set_CometEditorGDD2_COMET_RE_FC]
 
 #___________________________________________________________________________________________________________________________________________

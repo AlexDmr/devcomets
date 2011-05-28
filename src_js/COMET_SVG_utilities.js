@@ -69,6 +69,8 @@ function COMET_SVG_start_drag(id_grp, id_drag, evt) {
 
 //___________________________________________________________________________________________________________________________________________
 function COMET_SVG_drag      (id_grp, id_drag, dCTM, dsx, dsy, evt) {
+	if(evt.button != 0) {return;}
+
 	var node_grp  = document.getElementById(id_grp);
 	if(node_grp == null) {alert('Problem starting a drag with unknow id ' + id_grp); return;}
 	
@@ -210,9 +212,9 @@ function SVG_zoom(svg_canvas, node, x, y, z_factor) {
 	
 	document.getElementById('Ajax_Raw').value = 'Wheel at ' + P.x + ';' + P.y;
 	
-	var M = node.getCTM().multiply( node.parentNode.getCTM().inverse() ).translate((1-z_factor) * P.x, (1-z_factor) * P.y).scale(z_factor);
+	var M = node.parentNode.getCTM().inverse().multiply(node.getCTM()).translate((1-z_factor) * P.x, (1-z_factor) * P.y).scale(z_factor);
 	node.setAttribute('transform', 'matrix(' + M.a + ',' + M.b + ',' + M.c + ',' + M.d + ',' + M.e + ',' + M.f + ')');
-	//node.setAttribute('transform', node.getAttribute('transform') + ' translate(' + (1-z_factor) * P.x + ', ' + (1-z_factor) * P.y + ') scale(' + z_factor + ', ' + z_factor + ')');
+	// node.setAttribute('transform', node.getAttribute('transform') + ' translate(' + (1-z_factor) * P.x + ', ' + (1-z_factor) * P.y + ') scale(' + z_factor + ', ' + z_factor + ')');
 }
 
 //___________________________________________________________________________________________________________________________________________

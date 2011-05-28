@@ -10,7 +10,7 @@ method CometEditorGDD2_PM_P_SVG_basic constructor {name descr args} {
  this inherited $name $descr
    this set_GDD_id FUI_CometSWL_Planet_PM_P_SVG_basic
  
- this Add_MetaData PRIM_STYLE_CLASS [list $objName "PLANET PARAM RESULT IN OUT"]
+ this Add_MetaData PRIM_STYLE_CLASS [list $objName "ROOT GDD SVG"]
  
  set this(svg_x) ""
  set this(svg_y) ""
@@ -18,6 +18,12 @@ method CometEditorGDD2_PM_P_SVG_basic constructor {name descr args} {
  
  package require http
  package require tdom
+ package require uuid
+ 
+ set this(C_UPNP) [CPool get_singleton CometUPNP]
+ # Subscribe to the apparition/disparition of a service converting dot graphs into SVG files
+ $this(C_UPNP) Subscribe_to_set_item_of_dict_devices    $objName [list $objName New_UPNP_device_appears \$keys \$val]
+ $this(C_UPNP) Subscribe_to_remove_item_of_dict_devices $objName [list $objName New_UPNP_device_disappears \$UDN]
 
  eval "$objName configure $args"
  return $objName
@@ -29,6 +35,343 @@ Methodes_get_LC CometEditorGDD2_PM_P_SVG_basic [P_L_methodes_get_CometEditorGDD2
 
 #___________________________________________________________________________________________________________________________________________
 Generate_PM_setters CometEditorGDD2_PM_P_SVG_basic [P_L_methodes_set_CometEditorGDD2_COMET_RE_P]
+
+#___________________________________________________________________________________________________________________________________________
+#________________________________________________________________ UPNP services ____________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic New_UPNP_device_appears {keys val} {
+
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic New_UPNP_device_disappears {UDN} {
+
+}
+
+#___________________________________________________________________________________________________________________________________________
+#______________________________________________________________ Graph dot and SVG __________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+Inject_code CometEditorGDD2_PM_P_SVG_basic Query_GDD {} {
+	# Params : str
+	
+}
+
+#___________________________________________________________________________________________________________________________________________
+Inject_code CometEditorGDD2_PM_P_SVG_basic set_Query_GDD_result {} {
+	# Params : str res
+		set this(URL_graph) $str
+		set doc  $res
+		set root [$doc documentElement]
+		
+		set str_dot ""
+		this Render_[$root nodeName]_to_dot $str $doc $root str_dot
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic get_UID {URL root id} {
+	# If the id identify one node of the document then it is local to this document, elsewhere it has to be a UID pointing to another one
+	if {[llength [$root selectNodes "//*\[@id='${id}'\]"]]} {
+		 return ${URL}?id=$id
+		} else {return $id}
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic Render_kasanayan:Graph_to_dot {URL doc root str_dot_name} {
+	upvar $str_dot_name str_dot
+	
+	# Define some array to store node and edges presentations depending on their attributes
+	set Color [dict create CT lightgray AUI lightpink CUI yellow FUI yellowgreen]
+	set Shape [dict create Sketch invtriangle Prototype oval Code box]
+	
+	# We get the GDD description here, it can be translated in terms of a dot description in order to generate a SVG file
+	   set str_dot "digraph {\n"
+	   # Write information relative to the graph itself (authors, name, accessRead accessWrite, ...?)
+	   
+	   
+	   # Write nodes and edges
+	   foreach node [$root child all] {
+			 switch [$node nodeName] {
+				 kasanayan:Edge       {set id_src    [this get_UID $URL $root [$node getAttribute src]]
+									   set id_dst    [this get_UID $URL $root [$node getAttribute dst]]
+									   set relations [join [$node getAttribute kasanayan:Relation] "\\n"]
+									   append str_dot "\t\"$id_src\" -> \"$id_dst\" \[label=\"R:\\n$relations\"\];\n"
+									  }
+				 kasanayan:Node       {set id [this get_UID $URL $root [$node getAttribute id]]
+									   append str_dot "\t\"$id\" \[style=filled, shape=[dict get $Shape [$node getAttribute precision]], fillcolor=[dict get $Color [$node getAttribute abstraction]], label=\"[$node getAttribute name]\"\];\n"
+									  }
+				 kasanayan:Annotation {
+									  }
+				 kasanayan:Graph      {
+									  }
+				}
+			}
+	   
+	append str_dot "}\n"
+	puts $str_dot
+	
+	this get_SVG_from_dot dot str_dot [list $objName Update_SVG $URL]
+}
+#Trace CometEditorGDD2_PM_P_SVG_basic set_Query_GDD_result
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic get_SVG_from_dot {type str_dot_name CB} {
+	upvar $str_dot_name str_dot
+	set pg "C:/Program Files/Graphviz2.26/bin/$type"
+	set f_name [CPool get_a_unique_name].dot; set f [open $f_name w]; puts $f $str_dot; close $f;
+	set str_svg [exec $pg -Tsvg $f_name]
+	
+	# puts $str_svg
+	
+	eval [concat $CB [list $str_svg]]
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic Update_SVG {URL_graph str_svg} {
+	set str_svg [string range $str_svg [string first "<svg " $str_svg] end]
+	
+	set doc  [dom parse $str_svg]
+	set root [$doc documentElement]
+	set L_nodes [$root selectNodes "//*\[@id\]"]
+	foreach node $L_nodes {$node setAttribute id "${URL_graph}?id=[$node getAttribute id]"}
+	
+	set str_svg [$doc asXML]
+	$doc delete
+	
+	set    str_load "Load_SVG('${objName}_docs', true, false, \""
+	append str_load [string map [list "\"" {\"} "\n" {\n}] $str_svg] "\", true)\[0\]"
+	
+	set C_html_to_SVG [CSS++ $objName "#$objName <--< Container_PM_P_HTML_to_SVG"]
+	set    msg "Process_SVG_dot_to_add_interaction('${URL_graph}', '${C_html_to_SVG}', '${objName}', $str_load );\n"
+	#Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string)
+	this send_jquery_message Update_SVG $msg
+}
+
+#___________________________________________________________________________________________________________________________________________
+Inject_code CometEditorGDD2_PM_P_SVG_basic unset_Query_GDD_result {} {
+	# Params : str
+	
+}
+
+#___________________________________________________________________________________________________________________________________________
+Inject_code CometEditorGDD2_PM_P_SVG_basic exist_Query_GDD_result {} {
+	# Params : str
+	
+}
+
+#___________________________________________________________________________________________________________________________________________
+Inject_code CometEditorGDD2_PM_P_SVG_basic Add_graph_elements {} {
+	# Params : URL_graph L_elements
+	this set_Query_GDD_result $URL_graph [this get_Query_GDD_result $URL_graph]
+}
+
+#___________________________________________________________________________________________________________________________________________
+Inject_code CometEditorGDD2_PM_P_SVG_basic Sub_graph_elements {} {
+	# Params : URL_graph L_elements
+	this set_Query_GDD_result $URL_graph [this get_Query_GDD_result $URL_graph]
+}
+
+
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_Sub_graph_elements {e} {
+	set length [string length $this(URL_graph)?id=]
+	if {[string equal -length $length "$this(URL_graph)?id=" $e]} {set e [string range $e $length end]}
+	this prim_Sub_graph_elements $this(URL_graph) [list $e]
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_Sub_graph_edge {GDD_edge} {
+	regexp {^(.*)\?id=(.*)->(.*)\?id=(.*)$} $GDD_edge reco URL_graph_1 id_1 URL_graph_2 id_2
+
+	set doc  [this get_Query_GDD_result $URL_graph_1]
+	set root [$doc documentElement]
+	set kasanayan [$root namespaceURI]
+
+	foreach e [$root selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Edge\[@src='${id_1}' and @dst='${id_2}'\]"] {
+		 set id [$e getAttribute id]
+		 this prim_Sub_graph_elements $URL_graph_1 $id
+		 if {$URL_graph_1 != $URL_graph_2} {this prim_Sub_graph_elements $URL_graph_2 $id}
+		}
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_Add_a_new_node {URL_graph} {
+	this prim_Add_graph_elements $URL_graph [list [list kasanayan:Node [list precision Sketch name "A new concept and tasks sketch" abstraction "CT" id [uuid::uuid generate] edges ""]]]
+	return 
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_node {GDD_id} {
+	if {![regexp {^(.*)\?id=(.*)$} $GDD_id reco URL_graph id]} {error "Unknown GDD identifier $GDD_id"}
+	
+	# Generate a dialog window to add a new node, parameters will depend on the XML schema
+	set doc       [this get_Query_GDD_result $URL_graph]
+	set root      [$doc documentElement]
+	set kasanayan [$root namespaceURI]
+	
+	set node      [$root selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id}'\]"]
+	
+	set xs_doc  [this get_dom_XML_schema]
+	set xs_root [$xs_doc documentElement]
+	
+	set L_JS_update [list]
+	set xs_node [$xs_root selectNodes "//xs:element\[@name = 'Node'\]"]; 
+	   set str "<div title=\"Node edition\" id=\"dialog_Edit_node\">"
+	append str "<div id=\"dialog_Edit_node_Tabs\">"
+		append str "<ul><li><a href=\"#${objName}_tab_1\">Attributes</a></li><li><a href=\"#${objName}_tab_2\">SVG</a></li></ul>"
+		append str "<div id=\"${objName}_tab_1\">"
+		foreach n [$xs_node selectNodes "./xs:complexType/*"] {
+			 # puts "\t$n : [$n nodeName]"
+			 this Generate_dialog_for_[$n nodeName] $node $n str L_JS_update
+			}
+		append str "<div><input type=\"button\" value=\"OK\" onclick=\"ALX_send_node_update('${objName}', '${URL_graph}', '${id}', new Array([join $L_JS_update {, }]) );\"/></div>"
+		append str "</div>"
+		append str "<div id=\"${objName}_tab_2\">"
+		append str "<input type=\"button\" value=\"Toggle node display\" onclick=\"\"/>"
+		append str "</div>"
+		
+	append str "</div>"	
+	append str "</div>"
+	
+	# puts $str
+	   set msg {$('#dialog_Edit_node').remove(); $('body').append(}
+	append msg [this Encode_param_for_JS $str]
+	append msg "); \$('#dialog_Edit_node').dialog(); \$('#dialog_Edit_node_Tabs').tabs();"
+
+	this send_jquery_message HTML_Edit_node $msg
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic Generate_dialog_for_xs:documentation {edited_node node str_name L_JS_update_name} {
+	upvar $str_name str; upvar $L_JS_update_name L_JS_update
+	
+	append str "<p>" [string trim [$node text]] "</p>"
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic Generate_dialog_for_xs:attribute {edited_node node str_name L_JS_update_name} {
+	upvar $str_name str; upvar $L_JS_update_name L_JS_update
+		
+	set name [$node getAttribute name]
+	if {[$edited_node hasAttribute $name]} {
+		 set val [$edited_node getAttribute $name]
+		} else {set val ""}
+
+	set id   "CometEditorGDD2_PM_P_SVG_basic__$name"
+	append str "<div><label for=\"$id\">$name </label><input type=\"text\" name=\"$id\" id=\"$id\" value=\"${val}\"/></div>"
+	
+	lappend L_JS_update "'${name}'" "function() {return document.getElementById('${id}').value;}"
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic Generate_dialog_for_xs:attributeGroup {edited_node node str_name L_JS_update_name} {
+	upvar $str_name str; upvar $L_JS_update_name L_JS_update
+	set xs_doc  [this get_dom_XML_schema]
+	set xs_root [$xs_doc documentElement]
+
+	set name [lindex [split [$node getAttribute ref] ":"] end]
+	set gp [$xs_root selectNodes -namespace [list xs "http://www.w3.org/2001/XMLSchema"] "//xs:attributeGroup\[@name='${name}'\]"]
+	append str "<hr/><div><div class=\"title\">${name}</div>"
+	foreach n [$gp childNodes] {
+		 this Generate_dialog_for_[$n nodeName] $edited_node $n str L_JS_update
+		}
+	append str "</div><hr/>"
+
+}
+
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_edge {GDD_id__rel_type} {
+	lassign $GDD_id__rel_type GDD_id rel_type
+	
+	regexp {^(.*)\?id=(.*)->(.*)\?id=(.*)$} $GDD_id reco URL_graph_1 id_1 URL_graph_2 id_2
+	
+	# set length [string length $this(URL_graph)?id=]
+	# if {[string equal -length $length "$this(URL_graph)?id=" $GDD_id]} {set GDD_id [string range $GDD_id $length end]}
+	
+	set doc  [this get_Query_GDD_result $URL_graph_1]
+	set root [$doc documentElement]
+	set kasanayan [$root namespaceURI]
+	
+	foreach n [$root selectNodes -namespaces [list kasanayan $kasanayan] "//*\[@src='${id_1}' and @dst='${id_2}'\]"] {
+		 set L_rel [$n getAttribute kasanayan:Relation]
+		 
+		 set L_all_rels [list {Sharpens Blurs} {Specializes Generalizes} {Abstracts Concretizes}]
+		 if {[lsearch $L_rel $rel_type] >= 0} {
+			 Sub_list L_rel $rel_type
+			} else  {foreach couple $L_all_rels {
+						 set pos [lsearch $couple $rel_type]
+						 if {$pos >= 0} {
+							 Sub_list L_rel [lindex $couple [expr 1 - $pos]]
+							 break
+							}
+						}
+					 if {$rel_type == "ComposedOf"} {set L_rel $rel_type} else {Sub_list L_rel "ComposedOf"; Add_list L_rel $rel_type}
+					}
+		 
+		 $n setAttributeNS $kasanayan kasanayan:Relation $L_rel
+		 puts [list $n setAttributeNS $kasanayan kasanayan:Relation $L_rel]
+		}
+}
+# Trace CometEditorGDD2_PM_P_SVG_basic HTML_Edit_edge
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_update_edge {src_dest} {
+	regexp {^(.*)\?id=(.*)->(.*)\?id=(.*)$} $src_dest reco URL_graph_1 id_1 URL_graph_2 id_2
+	
+	set doc_1  [this get_Query_GDD_result $URL_graph_1]; set doc_2  [this get_Query_GDD_result $URL_graph_2]
+	set root_1 [$doc_1 documentElement]                ; set root_2 [$doc_2 documentElement]
+	set kasanayan [$root_1 namespaceURI]
+
+	puts "CometEditorGDD2_PM_P_SVG_basic::HTML_update_edge\n\tsrc : $URL_graph_1  ::  $id_1\n\tdst : $URL_graph_2  ::  $id_2"
+	
+	if {$URL_graph_1 == $URL_graph_2} {
+		 set edge [$root_1 selectNodes -namespaces [list kasanayan $kasanayan] "//*\[@src='${id_1}' and @dst='${id_2}'\]"]
+		 if {$edge != ""} {set msg "An edge still exists between nodes $id_1 and $id_2"
+						   this send_jquery_message HTML_update_edge "alert('${msg}');"
+						  } else {set node_1 [$root_1 selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id_1}'\]"]
+						          set node_2 [$root_2 selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id_2}'\]"]
+								  puts "doc : $doc_2"
+								  puts [list $root_1 selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id_1}'\]"]
+								  puts [list $root_2 selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id_2}'\]"]
+								  puts "Edge from $node_1 to $node_2"
+								  set relations [list]
+								  # XXX Propose relations here depending on the abstraction and presicion of nodes
+								  this prim_Add_graph_elements $URL_graph_1 [list [list kasanayan:Edge [list kasanayan:Relation $relations src $id_1 dst $id_2 id [uuid::uuid generate]]]]
+								 }
+		} else  {set msg "Edges between graphs currently not supported"
+				 this send_jquery_message HTML_update_edge "alert('${msg}');"
+				 error $msg
+				}
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_update_node {params_update} {
+	lassign $params_update URL_graph node_id L_update
+	
+	set doc       [this get_Query_GDD_result $URL_graph]
+	set root      [$doc documentElement]
+	set kasanayan [$root namespaceURI]
+	
+	set node [$doc selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${node_id}'\]"]
+	foreach {att val} $L_update {$node setAttribute $att $val}
+	
+	set str_dot ""
+	this Render_kasanayan:Graph_to_dot $URL_graph $doc $root str_dot
+	
+}
+Trace CometEditorGDD2_PM_P_SVG_basic HTML_update_node
+
+
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic set_PM_root {PM} {
+	this inherited $PM
+	if {$PM != ""} {$PM Add_L_js_files_link "./GDD2/CometEditorGDD2/PMs/SVG/utils.js"}
+}
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -56,7 +399,6 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_doc_to_SVG {n_document str_svg_name st
 			  append str_svg "<foreignObject id=\"${id}_foreign_html\" width=\"$width\" height=\"$height\">\n"
 			  append str_svg "  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n"
 			  append str_svg "    <iframe src=\"$href\" style=\"width:${width}px;height:${height}px\"></iframe>\n"
-			  # append str_svg "  <h1>Titre 1</h1><p>coucou c'est un bien joli paragraphe que vous avez là madame...</p>\n"
 			  append str_svg "  </body>\n"
 			  append str_svg "</foreignObject>\n"
 			  append str_svg "</g>\n"
@@ -178,13 +520,18 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url} {
 }
 
 #___________________________________________________________________________________________________________________________________________
+#_____________________________________________ View of the design process (path/pb/solutions) ______________________________________________
+#___________________________________________________________________________________________________________________________________________
+
+
+#___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
  upvar $strm_name strm
  
   append strm $dec "<g id=\"${objName}\" transform=\"\">\n"
-  append strm $dec "<rect id=\"${objName}_BG_rect\" x=\"-100000\" y=\"-100000\" width=\"200000\" height=\"200000\" transform=\"\" style=\"fill:rgb(0,0,255);stroke-width:1;\"/>\n"
+  append strm $dec "<rect id=\"${objName}_BG_rect\" x=\"-10000000\" y=\"-10000000\" width=\"20000000\" height=\"20000000\" transform=\"\" style=\"fill:rgb(0,0,255);stroke-width:1;\"/>\n"
   append strm $dec "<g id=\"${objName}_docs\"  transform=\"\"></g>\n"
   append strm $dec "<g id=\"${objName}_links\" transform=\"\"></g>\n"
   append strm $dec "</g>\n"
@@ -205,6 +552,14 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
   }
  append strm "Draggable('$objName', \['${objName}_BG_rect'\], null, null, null);\n"
  append strm "Register_node_id_SVG_zoom_onwheel('$objName');\n"
+ append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click);\n"
+ 
+ set C_html_to_SVG [CSS++ $objName "#$objName <--< Container_PM_P_HTML_to_SVG"]
+ append strm "document.getElementById('${objName}_BG_rect').setAttribute('PM', '${objName}');\n"
+ append strm "document.getElementById('${objName}_BG_rect').setAttribute('PM_HTML_to_SVG', '${C_html_to_SVG}');\n"
+ append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click);\n"
  
  this Render_daughters_post_JS strm $dec
 }
+
+
