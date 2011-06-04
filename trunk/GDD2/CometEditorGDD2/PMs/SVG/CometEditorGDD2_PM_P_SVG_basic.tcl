@@ -107,7 +107,6 @@ method CometEditorGDD2_PM_P_SVG_basic Render_kasanayan:Graph_to_dot {URL doc roo
 			}
 	   
 	append str_dot "}\n"
-	puts $str_dot
 	
 	this get_SVG_from_dot dot str_dot [list $objName Update_SVG $URL]
 }
@@ -119,8 +118,6 @@ method CometEditorGDD2_PM_P_SVG_basic get_SVG_from_dot {type str_dot_name CB} {
 	set pg "C:/Program Files/Graphviz2.26/bin/$type"
 	set f_name [CPool get_a_unique_name].dot; set f [open $f_name w]; puts $f $str_dot; close $f;
 	set str_svg [exec $pg -Tsvg $f_name]
-	
-	# puts $str_svg
 	
 	eval [concat $CB [list $str_svg]]
 }
@@ -141,7 +138,7 @@ method CometEditorGDD2_PM_P_SVG_basic Update_SVG {URL_graph str_svg} {
 	append str_load [string map [list "\"" {\"} "\n" {\n}] $str_svg] "\", true)\[0\]"
 	
 	set C_html_to_SVG [CSS++ $objName "#$objName <--< Container_PM_P_HTML_to_SVG"]
-	set    msg "Process_SVG_dot_to_add_interaction('${URL_graph}', '${C_html_to_SVG}', '${objName}', $str_load );\n"
+	set    msg "Clear_descendants_of(document.getElementById('${objName}_links')); Process_SVG_dot_to_add_interaction('${URL_graph}', '${C_html_to_SVG}', '${objName}', $str_load );\n"
 	#Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string)
 	this send_jquery_message Update_SVG $msg
 }
@@ -222,7 +219,6 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_node {GDD_id} {
 		append str "<ul><li><a href=\"#${objName}_tab_1\">Attributes</a></li><li><a href=\"#${objName}_tab_2\">SVG</a></li></ul>"
 		append str "<div id=\"${objName}_tab_1\">"
 		foreach n [$xs_node selectNodes "./xs:complexType/*"] {
-			 # puts "\t$n : [$n nodeName]"
 			 this Generate_dialog_for_[$n nodeName] $node $n str L_JS_update
 			}
 		append str "<div><input type=\"button\" value=\"OK\" onclick=\"ALX_send_node_update('${objName}', '${URL_graph}', '${id}', new Array([join $L_JS_update {, }]) );\"/></div>"
@@ -234,10 +230,23 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_node {GDD_id} {
 	append str "</div>"	
 	append str "</div>"
 	
-	# puts $str
 	   set msg {$('#dialog_Edit_node').remove(); $('body').append(}
 	append msg [this Encode_param_for_JS $str]
 	append msg "); \$('#dialog_Edit_node').dialog(); \$('#dialog_Edit_node_Tabs').tabs();"
+	
+	# If a href is given, open a node viewer
+	set name_frame_node "Frame_$GDD_id"
+	append msg "\$('${name_frame_node}').remove();"
+	
+	# Create node
+	if {[$node hasAttribute href]} {set href [$node getAttribute href]} else {set href ""}
+	if {$href != ""} {
+		 lassign [this Load_GDD_node $href "" 0] str_svg str_js
+		 set str_svg [this Encode_param_for_JS "<g id=\"$name_frame_node\">${str_svg}</g>"]
+		 append msg "Load_SVG('${objName}_docs', false, true, " $str_svg ", true);"
+		 append msg $str_js
+		}
+
 
 	this send_jquery_message HTML_Edit_node $msg
 }
@@ -312,7 +321,6 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_edge {GDD_id__rel_type} {
 					}
 		 
 		 $n setAttributeNS $kasanayan kasanayan:Relation $L_rel
-		 puts [list $n setAttributeNS $kasanayan kasanayan:Relation $L_rel]
 		}
 }
 # Trace CometEditorGDD2_PM_P_SVG_basic HTML_Edit_edge
@@ -325,18 +333,12 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_update_edge {src_dest} {
 	set root_1 [$doc_1 documentElement]                ; set root_2 [$doc_2 documentElement]
 	set kasanayan [$root_1 namespaceURI]
 
-	puts "CometEditorGDD2_PM_P_SVG_basic::HTML_update_edge\n\tsrc : $URL_graph_1  ::  $id_1\n\tdst : $URL_graph_2  ::  $id_2"
-	
 	if {$URL_graph_1 == $URL_graph_2} {
 		 set edge [$root_1 selectNodes -namespaces [list kasanayan $kasanayan] "//*\[@src='${id_1}' and @dst='${id_2}'\]"]
 		 if {$edge != ""} {set msg "An edge still exists between nodes $id_1 and $id_2"
 						   this send_jquery_message HTML_update_edge "alert('${msg}');"
 						  } else {set node_1 [$root_1 selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id_1}'\]"]
 						          set node_2 [$root_2 selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id_2}'\]"]
-								  puts "doc : $doc_2"
-								  puts [list $root_1 selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id_1}'\]"]
-								  puts [list $root_2 selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node\[@id='${id_2}'\]"]
-								  puts "Edge from $node_1 to $node_2"
 								  set relations [list]
 								  # XXX Propose relations here depending on the abstraction and presicion of nodes
 								  this prim_Add_graph_elements $URL_graph_1 [list [list kasanayan:Edge [list kasanayan:Relation $relations src $id_1 dst $id_2 id [uuid::uuid generate]]]]
@@ -362,7 +364,7 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_update_node {params_update} {
 	this Render_kasanayan:Graph_to_dot $URL_graph $doc $root str_dot
 	
 }
-Trace CometEditorGDD2_PM_P_SVG_basic HTML_update_node
+# Trace CometEditorGDD2_PM_P_SVG_basic HTML_update_node
 
 
 #___________________________________________________________________________________________________________________________________________
@@ -435,15 +437,17 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {id id_ellipse_doc s
 }
 
 #___________________________________________________________________________________________________________________________________________
-method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url} {
-	set str_js ""
-	set    str_svg  {<?xml version="1.0" encoding="UTF-8"?>}
-	append str_svg "\n<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n"
+method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url {svg_root_id {}} {send_to_client 1}} {
+	if {$svg_root_id == ""} {set svg_root_id ${objName}_docs}
+	set str_js  ""
+	set str_svg ""
+	if {$send_to_client} {
+		 append str_svg {<?xml version="1.0" encoding="UTF-8"?>}
+		 append str_svg "\n<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n"
+		}
 	
-	# Get from http
-	set token   [::http::geturl $GDD_node_url]
-	set str_xml [::http::data $token]
-	::http::cleanup $token
+	# Get ressource
+	set str_xml [this get_ressource $GDD_node_url]
 	
 	# Parse GDD node and produce SVG description
 	 if {[catch {set doc [dom parse $str_xml]} err]} {
@@ -476,7 +480,7 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url} {
 		 foreach n_bind [$n_annotation selectNodes "./binding"] {
 			 set n__related_doc    [$n_bind selectNodes "./document"]
 			 set related_id        [$n__related_doc getAttribute ref]
-			 Add_list L_animated_id "${GDD_node_url}_#_$related_id"
+			 Add_list L_animated_id [list ${GDD_node_url}_#_$related_id]
 			 
 			 set n__related_anchor [$n_bind selectNodes "./anchor"]
 			 if {[$n__related_anchor getAttribute "type"] == "image_mapping" && !$annotation_added} {
@@ -501,7 +505,9 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url} {
 			 # Add to each node the index of the animation to maintain
 			 append str_js "T_tmp = \['" [join $L_animated_id "','"] "'\];\n"
 			 append str_js "for(var i in T_tmp) {\n"
-			 append str_js "\tvar tmp_node = document.getElementById(T_tmp\[i\]); var tmp_str =  tmp_node.getAttribute('annotations_CB');\n"
+			 append str_js "\tvar tmp_node = document.getElementById(T_tmp\[i\]);\n"
+			 append str_js "\tif(tmp_node == null) {console.log('Alert no element identified by ' + T_tmp\[i\]); continue;}\n"
+			 append str_js "\tvar tmp_str =  tmp_node.getAttribute('annotations_CB');\n"
 			 append str_js "\tif(tmp_str == '') {tmp_node.setAttribute('annotations_CB', '$L_id_segments');} else {tmp_node.setAttribute('annotations_CB', tmp_str + ' $L_id_segments');}\n"
 			 append str_js "}\n"
 			}
@@ -510,19 +516,20 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url} {
 		}
 
 	$doc delete
-	append str_svg "</svg>\n"
+	if {$send_to_client} {append str_svg "</svg>\n"}
 	
-	set    msg "Load_SVG('${objName}_docs', true, false, \""
-	append msg [string map [list "\"" {\"} "\n" {\n}] $str_svg] "\", true);\n; Load_SVG('${objName}_links', true, false, '', true);\n$str_js"
-	this send_jquery_message Display__$GDD_node_url $msg
+	if {$send_to_client} {
+		 set    msg "Load_SVG('${svg_root_id}', true, false, \""
+		 append msg [string map [list "\"" {\"} "\n" {\n}] $str_svg] "\", true);\n; Load_SVG('${objName}_links', true, false, '', true);\n$str_js"
+		 this send_jquery_message Display__$GDD_node_url $msg
+		}
 	
-	return "$str_svg\n_____\n$str_js"
+	return [list $str_svg $str_js]
 }
 
 #___________________________________________________________________________________________________________________________________________
 #_____________________________________________ View of the design process (path/pb/solutions) ______________________________________________
 #___________________________________________________________________________________________________________________________________________
-
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________

@@ -23,23 +23,6 @@ Methodes_get_LC CometEditorGDD2_PM_FC_basic [P_L_methodes_get_CometEditorGDD2] {
 Generate_PM_setters CometEditorGDD2_PM_FC_basic [P_L_methodes_set_CometEditorGDD2_COMET_RE_FC]
 
 #___________________________________________________________________________________________________________________________________________
-method CometEditorGDD2_PM_FC_basic get_ressource {URL} {
-	set content ""
-	if {[string equal -length 7 "http://" [string tolower $URL]]} {
-		 # Get the ressource from the net
-		} else {
-	if {[string equal -length 3 "c:/" [string tolower $URL]]} {
-		 # Get the ressource locally
-		 set f [open $URL]; fconfigure $f -encoding utf-8
-		 set content [read $f]
-		 close $f
-		} 
-	}
-	
-	return $content
-}
-
-#___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 Inject_code CometEditorGDD2_PM_FC_basic Query_GDD {} {
