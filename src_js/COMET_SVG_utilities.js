@@ -260,6 +260,11 @@ function set_svg_origine(id,x,y) {
 }
 
 //___________________________________________________________________________________________________________________________________________
+function Clear_descendants_of(node) {
+	while(node.childNodes.length > 0) {node.removeChild( node.childNodes[0] );}
+}
+
+//___________________________________________________________________________________________________________________________________________
 //_____________________________________________________ Load SVG description ______________________________________________________
 //___________________________________________________________________________________________________________________________________________
 function Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string) {
@@ -267,7 +272,7 @@ function Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string)
 	if (node_root == null) {alert("There is no root node to plug SVG:\n\tid_root : " + id_root + "\n\tSVG : " + SVG_str); return;}
 	
 	if(clear_descendants) {
-		 while(node_root.childNodes.length > 0) {node_root.removeChild( node_root.childNodes[0] );}
+		 Clear_descendants_of(node_root);
 		}
 		
 	if(add_svg_tag) {SVG_descr = '<svg xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">' + SVG_descr + '</svg>';}
