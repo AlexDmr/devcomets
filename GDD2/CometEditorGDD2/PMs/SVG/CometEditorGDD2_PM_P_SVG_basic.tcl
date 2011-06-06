@@ -241,12 +241,18 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_node {GDD_id} {
 	# Create node
 	if {[$node hasAttribute href]} {set href [$node getAttribute href]} else {set href ""}
 	if {$href != ""} {
-		 lassign [this Load_GDD_node $href "" 0] str_svg str_js
-		 set str_svg [this Encode_param_for_JS "<g id=\"$name_frame_node\">${str_svg}</g>"]
-		 append msg "Load_SVG('${objName}_docs', false, true, " $str_svg ", true);"
+		 set str_svg_win ""; set str_js_win ""; set id_win [CPool get_a_unique_name]
+		 set D_win_ids [this Generate_windows_descr $id_win 0 0 640 480 20 str_svg_win str_js_win]
+		 append msg "Load_SVG('${objName}_docs', false, true, " [this Encode_param_for_JS $str_svg_win] ", true);" $str_js_win
+		 
+		 set id_node_svg [CPool get_a_unique_name]; set S 999999999; set str_svg ""; set str_js ""
+		 lassign [this Load_GDD_node $href ${id_node_svg}_docs ${id_node_svg}_links $id_node_svg 0] str_svg str_js
+		 set str_svg [this Encode_param_for_JS "<g id=\"$id_node_svg\"><rect id=\"BG_$id_node_svg\" x=\"-$S\" y=\"-$S\" width=\"[expr 2*$S]\" height=\"[expr 2*$S]\" fill=\"rgb(200,200,200)\"/><g id=\"${id_node_svg}_docs\">${str_svg}</g><g id=\"${id_node_svg}_links\"></g></g>"]
+		 append msg "Load_SVG('[dict get $D_win_ids root_for_daughters]', false, true, " $str_svg ", true); console.log( $str_svg );"
 		 append msg $str_js
+		 append msg "Draggable('${id_node_svg}', \['BG_${id_node_svg}'\], null, null, null);"
+		 append msg "Register_node_id_SVG_zoom_onwheel('${id_node_svg}');"
 		}
-
 
 	this send_jquery_message HTML_Edit_node $msg
 }
@@ -414,7 +420,7 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_doc_to_SVG {n_document str_svg_name st
 }
 
 #___________________________________________________________________________________________________________________________________________
-method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {id id_ellipse_doc str} {
+method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {svg_links_id id_root_docs_links id id_ellipse_doc str} {
 	set str_svg ""; set str_js ""
 	foreach {type params} $str {
 		switch $type {
@@ -422,9 +428,9 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {id id_ellipse_doc s
 					  foreach {p v} $params {append str_svg "$p = \"$v\" "}
 					  append str_svg "/>"
 					  set svg_canvas_id [[this get_HTML_to_SVG_bridge] get_svg_canvas_id]
-					  append str_js "Load_SVG('${objName}_links', false, true, " [this Encode_param_for_JS "<line id=\"${id}_line\" x1=\"0\" y1=\"0\" x2=\"200\" y2=\"100\" style=\"stroke:rgb(99,99,99);stroke-width:4\" />"] ", true);\n"
+					  append str_js "Load_SVG('${svg_links_id}', false, true, " [this Encode_param_for_JS "<line id=\"${id}_line\" x1=\"0\" y1=\"0\" x2=\"200\" y2=\"100\" style=\"stroke:rgb(99,99,99);stroke-width:4\" />"] ", true);\n"
 					  append str_js "Tab_anim_${objName}\['${id}'\] = function() {var svg_line = document.getElementById('${id}_line');"
-					  append str_js "var T = Line_joining_ellipses ('${svg_canvas_id}', '${objName}', '${id}', '${id_ellipse_doc}');"
+					  append str_js "var T = Line_joining_ellipses ('${svg_canvas_id}', '${id_root_docs_links}', '${id}', '${id_ellipse_doc}');"
 					  append str_js "svg_line.x1.baseVal.value = T\[0\];"
 					  append str_js "svg_line.y1.baseVal.value = T\[1\];"
 					  append str_js "svg_line.x2.baseVal.value = T\[2\];"
@@ -437,8 +443,8 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {id id_ellipse_doc s
 }
 
 #___________________________________________________________________________________________________________________________________________
-method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url {svg_root_id {}} {send_to_client 1}} {
-	if {$svg_root_id == ""} {set svg_root_id ${objName}_docs}
+method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url svg_root_id svg_links_id root_docs_links_id send_to_client} {
+	#if {$svg_root_id == ""} {set svg_root_id ${objName}_docs}
 	set str_js  ""
 	set str_svg ""
 	if {$send_to_client} {
@@ -492,7 +498,9 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url {svg_root_id {
 				} else { if {[$n__related_anchor getAttribute "type"] == "image_zone"} {
 							 # Create a SVG description of the zone, plug it into the related image
 							 set id_e [CPool get_a_unique_name]; lappend L_id_segments $id_e
-							 lassign [this GDD_image_zone_to_SVG $id_e "${GDD_node_url}_#_${annotation_id}_centroid_ellipse" [$n__related_anchor asText]] annotation_svg annotation_js
+							 
+							 lassign [this GDD_image_zone_to_SVG  $svg_links_id  $root_docs_links_id  $id_e  "${GDD_node_url}_#_${annotation_id}_centroid_ellipse"  [$n__related_anchor asText]]  annotation_svg  annotation_js
+							 
 							 append str_js "Load_SVG('" ${GDD_node_url}_#_$related_id "', false, true, " [this Encode_param_for_JS $annotation_svg] ", true);\n$annotation_js"
 							}
 					   }
