@@ -384,6 +384,14 @@ method CometEditorGDD2_PM_P_SVG_basic set_PM_root {PM} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_annotation {id} {
+
+}
+Trace CometEditorGDD2_PM_P_SVG_basic HTML_Edit_annotation
+
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
 method CometEditorGDD2_PM_P_SVG_basic GDD_doc_to_SVG {n_document str_svg_name str_js_name id X_name Y_name} {
  upvar $str_svg_name str_svg; upvar $str_js_name str_js
  upvar $X_name X
@@ -420,13 +428,15 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_doc_to_SVG {n_document str_svg_name st
 }
 
 #___________________________________________________________________________________________________________________________________________
-method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {svg_links_id id_root_docs_links id id_ellipse_doc str} {
+method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {PM_HTML_to_SVG svg_links_id id_root_docs_links id id_ellipse_doc str} {
 	set str_svg ""; set str_js ""
 	foreach {type params} $str {
 		switch $type {
-			 ellipse {append str_svg "<ellipse id=\"$id\" class=\"annotation\" "
+			 ellipse {append str_svg "<g id=\"group_$id\">"
+					  append str_svg "<ellipse id=\"$id\" class=\"annotation\" annotations_CB=\"$id\" PM_HTML_to_SVG=\"$PM_HTML_to_SVG\" PM=\"$objName\" "
 					  foreach {p v} $params {append str_svg "$p = \"$v\" "}
 					  append str_svg "/>"
+					  append str_svg "</g>"
 					  set svg_canvas_id [[this get_HTML_to_SVG_bridge] get_svg_canvas_id]
 					  append str_js "Load_SVG('${svg_links_id}', false, true, " [this Encode_param_for_JS "<line id=\"${id}_line\" x1=\"0\" y1=\"0\" x2=\"200\" y2=\"100\" style=\"stroke:rgb(99,99,99);stroke-width:4\" />"] ", true);\n"
 					  append str_js "Tab_anim_${objName}\['${id}'\] = function() {var svg_line = document.getElementById('${id}_line');"
@@ -436,6 +446,11 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {svg_links_id id_roo
 					  append str_js "svg_line.x2.baseVal.value = T\[2\];"
 					  append str_js "svg_line.y2.baseVal.value = T\[3\];"
 					  append str_js "};\nTab_anim_${objName}\['${id}'\]();\n"
+					  append str_js "Draggable('$id', \['$id'\], null, function(n, e) {update_annotations_related_to('${id}');}, null);\n"
+					  # Handles for manipulation (rotation, dimensions, colors, width, ...)
+					  
+					  # Right click
+					  append str_js "document.getElementById('$id').addEventListener('mousedown', CB_annotation_on_right_click);"
 					 }
 			}
 		}
@@ -451,6 +466,8 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url svg_root_id sv
 		 append str_svg {<?xml version="1.0" encoding="UTF-8"?>}
 		 append str_svg "\n<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n"
 		}
+	
+	set PM_HTML_to_SVG [this get_HTML_to_SVG_bridge]
 	
 	# Get ressource
 	set str_xml [this get_ressource $GDD_node_url]
@@ -484,22 +501,20 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url svg_root_id sv
 		 # For each binding, place the annotation
 		 set annotation_added 0; set L_id_segments [list]; set L_animated_id [list ${GDD_node_url}_#_${annotation_id}]; 
 		 foreach n_bind [$n_annotation selectNodes "./binding"] {
-			 set n__related_doc    [$n_bind selectNodes "./document"]
-			 set related_id        [$n__related_doc getAttribute ref]
+			 set related_id    [$n_bind getAttribute ref]
 			 Add_list L_animated_id [list ${GDD_node_url}_#_$related_id]
 			 
-			 set n__related_anchor [$n_bind selectNodes "./anchor"]
-			 if {[$n__related_anchor getAttribute "type"] == "image_mapping" && !$annotation_added} {
+			 if {[$n_bind getAttribute "type"] == "image_mapping" && !$annotation_added} {
 				 set annotation_added 1
 				 append str_js "Load_SVG('" ${GDD_node_url}_#_$related_id "', false, true, " [this Encode_param_for_JS $str] ", true);\n"
 				 append str_js "document.getElementById('" ${GDD_node_url}_#_$annotation_id "').setAttribute('transform', '"
-					foreach {att val} [$n__related_anchor asText] {append str_js $att "(" $val ") "}
+					foreach {att val} [$n_bind asText] {append str_js $att "(" $val ") "}
 				 append str_js "');\n"
-				} else { if {[$n__related_anchor getAttribute "type"] == "image_zone"} {
+				} else { if {[$n_bind getAttribute "type"] == "image_zone"} {
 							 # Create a SVG description of the zone, plug it into the related image
-							 set id_e [CPool get_a_unique_name]; lappend L_id_segments $id_e
+							 set id_e ${GDD_node_url}_#_[CPool get_a_unique_name]; lappend L_id_segments $id_e
 							 
-							 lassign [this GDD_image_zone_to_SVG  $svg_links_id  $root_docs_links_id  $id_e  "${GDD_node_url}_#_${annotation_id}_centroid_ellipse"  [$n__related_anchor asText]]  annotation_svg  annotation_js
+							 lassign [this GDD_image_zone_to_SVG $PM_HTML_to_SVG $svg_links_id  $root_docs_links_id  $id_e  "${GDD_node_url}_#_${annotation_id}_centroid_ellipse"  [$n_bind asText]]  annotation_svg  annotation_js
 							 
 							 append str_js "Load_SVG('" ${GDD_node_url}_#_$related_id "', false, true, " [this Encode_param_for_JS $annotation_svg] ", true);\n$annotation_js"
 							}
@@ -516,8 +531,10 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url svg_root_id sv
 			 append str_js "\tvar tmp_node = document.getElementById(T_tmp\[i\]);\n"
 			 append str_js "\tif(tmp_node == null) {console.log('Alert no element identified by ' + T_tmp\[i\]); continue;}\n"
 			 append str_js "\tvar tmp_str =  tmp_node.getAttribute('annotations_CB');\n"
-			 append str_js "\tif(tmp_str == '') {tmp_node.setAttribute('annotations_CB', '$L_id_segments');} else {tmp_node.setAttribute('annotations_CB', tmp_str + ' $L_id_segments');}\n"
+			 set str_L_id_segments [lindex $L_id_segments 0]; foreach e [lrange $L_id_segments 1 end] {append str_L_id_segments ";" $e}
+			 append str_js "\tif(tmp_str == '') {tmp_node.setAttribute('annotations_CB', '${str_L_id_segments}');} else {tmp_node.setAttribute('annotations_CB', tmp_str + \";$str_L_id_segments\");}\n"
 			 append str_js "}\n"
+			 puts $str_js
 			}
 		 set id_doc ${GDD_node_url}_#_$annotation_id
 		 append str_js "Draggable('$id_doc', \['$id_doc'\], null, function(n, e) {update_annotations_related_to('${GDD_node_url}_#_${annotation_id}');}, null);\n"
@@ -553,7 +570,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
   
   append strm $dec "<script>Tab_anim_$objName = new Array();\n"
   append strm $dec "function update_annotations_related_to (id) {\n"
-  append strm $dec "var node = document.getElementById(id);\nvar T_CB = node.getAttribute('annotations_CB').split(' ');\nfor(i in T_CB) {if(T_CB\[i\] != '') {Tab_anim_$objName\[T_CB\[i\]\]();}}}</script>\n"
+  append strm $dec "var node = document.getElementById(id);\nvar T_CB = node.getAttribute('annotations_CB').split(';');\nfor(i in T_CB) {if(T_CB\[i\] != '') {Tab_anim_$objName\[T_CB\[i\]\]();}}}</script>\n"
 
   this Render_daughters strm "$dec  "
 }
