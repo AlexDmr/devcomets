@@ -389,7 +389,7 @@ function Line_joining_ellipses (id_svg_canvas, id_n_root, id_e_1, id_e_2) {
 	var n_e_1      = document.getElementById(id_e_1);
 	var n_e_2      = document.getElementById(id_e_2);
 
-	if (svg_canvas == null || id_n_root == null || n_e_1 == null || n_e_2 == null) {return null;}
+	if (svg_canvas == null || id_n_root == null || n_e_1 == null || n_e_2 == null) {console.log('Line_joining_ellipses problem, someone is null'); return null;} //else {console.log('Line_joining_ellipses OK');}
 	
 	return Line_joining_node_ellipses(svg_canvas, n_root, n_e_1, n_e_2);
 }
