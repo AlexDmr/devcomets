@@ -8,7 +8,7 @@
  # EZTW32.DLL  http://www.dosadi.com/eztwain1.htm
  # ffidl.dll   http://rutherglen.ics.mq.edu.au/~steffen/tcltk/ffidl/doc/
 
- load ffidl05.dll
+ load ffidl06.dll
 
  #---------------
  # Basic Calls
