@@ -93,7 +93,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render_kasanayan:Graph_to_dot {URL doc roo
 			 switch [$node nodeName] {
 				 kasanayan:Edge       {set id_src    [this get_UID $URL $root [$node getAttribute src]]
 									   set id_dst    [this get_UID $URL $root [$node getAttribute dst]]
-									   set relations [join [$node getAttribute kasanayan:Relation] "\\n"]
+									   set relations [join [$node getAttribute relation] "\\n"]
 									   append str_dot "\t\"$id_src\" -> \"$id_dst\" \[label=\"R:\\n$relations\"\];\n"
 									  }
 				 kasanayan:Node       {set id [this get_UID $URL $root [$node getAttribute id]]
@@ -311,7 +311,7 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_edge {GDD_id__rel_type} {
 	set kasanayan [$root namespaceURI]
 	
 	foreach n [$root selectNodes -namespaces [list kasanayan $kasanayan] "//*\[@src='${id_1}' and @dst='${id_2}'\]"] {
-		 set L_rel [$n getAttribute kasanayan:Relation]
+		 set L_rel [$n getAttribute relation]
 		 
 		 set L_all_rels [list {Sharpens Blurs} {Specializes Generalizes} {Abstracts Concretizes}]
 		 if {[lsearch $L_rel $rel_type] >= 0} {
@@ -385,7 +385,10 @@ method CometEditorGDD2_PM_P_SVG_basic set_PM_root {PM} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_annotation {id} {
-
+	   set msg "switch_on_ellipse_edit('group_${id}', '${id}');"
+	append msg ""
+	
+	this send_jquery_message HTML_Edit_annotation $msg
 }
 Trace CometEditorGDD2_PM_P_SVG_basic HTML_Edit_annotation
 
@@ -433,7 +436,7 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {PM_HTML_to_SVG svg_
 	foreach {type params} $str {
 		switch $type {
 			 ellipse {append str_svg "<g id=\"group_$id\">"
-					  append str_svg "<ellipse id=\"$id\" class=\"annotation\" annotations_CB=\"$id\" PM_HTML_to_SVG=\"$PM_HTML_to_SVG\" PM=\"$objName\" "
+					  append str_svg "<ellipse id=\"$id\" class=\"annotation\" GDD_annotation_id=\"$id\" annotations_CB=\"$id\" PM_HTML_to_SVG=\"$PM_HTML_to_SVG\" PM=\"$objName\" "
 					  foreach {p v} $params {append str_svg "$p = \"$v\" "}
 					  append str_svg "/>"
 					  append str_svg "</g>"
@@ -446,7 +449,7 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {PM_HTML_to_SVG svg_
 					  append str_js "svg_line.x2.baseVal.value = T\[2\];"
 					  append str_js "svg_line.y2.baseVal.value = T\[3\];"
 					  append str_js "};\nTab_anim_${objName}\['${id}'\]();\n"
-					  append str_js "Draggable('$id', \['$id'\], null, function(n, e) {update_annotations_related_to('${id}');}, null);\n"
+					  # append str_js "Draggable('$id', \['$id'\], null, function(n, e) {update_annotations_related_to('${id}');}, null);\n"
 					  # Handles for manipulation (rotation, dimensions, colors, width, ...)
 					  
 					  # Right click
