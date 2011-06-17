@@ -15,6 +15,16 @@ method CometEditorGDD2_CFC Query_GDD {str} {}
 method CometEditorGDD2_CFC Load_XML_schema {URL} {}
 
 #___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_CFC get_URL_from_ressource {str} {
+	if {[string equal -length 9 "kasanayan" [string tolower $str]]} {
+		 set D_params [dict get [lindex $str 1] params]
+		 set URL [dict get $D_params uid]
+		 regexp {^(http://.*)\?.*=.*$} $URL reco URL
+		 return $URL
+		} else {return $str}
+}
+
+#___________________________________________________________________________________________________________________________________________
 method CometEditorGDD2_CFC get_ressource {URL} {
 	set content ""
 	if {[string equal -length 9 "kasanayan" [string tolower $URL]]} {
@@ -72,7 +82,7 @@ method CometEditorGDD2_CFC Add_graph_elements {URL_graph L_elements} {}
 method CometEditorGDD2_CFC Sub_graph_elements {URL_graph L_elements} {}
 
 #___________________________________________________________________________________________________________________________________________
-method CometEditorGDD2_CFC Commit_graph {URL_graph} {}
+method CometEditorGDD2_CFC Commit_graph {URL_graph {URL_write {}}} {}
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -83,6 +93,6 @@ Generate_accessors CometEditorGDD2_CFC [list dom_XML_schema]
 #___________________________________________________________________________________________________________________________________________
 
 #___________________________________________________________________________________________________________________________________________
-proc P_L_methodes_get_CometEditorGDD2 {} {return [list {get_ressource {URL}} {get_dom_XML_schema {}} {get_Query_GDD_result {str}} {exist_Query_GDD_result {str}} ]}
-proc P_L_methodes_set_CometEditorGDD2 {} {return [list {Load_XML_schema {URL}} {set_dom_XML_schema {v}} {Commit_graph {URL_graph}} {set_Query_GDD_result {str res}} {unset_Query_GDD_result {str}} {Add_graph_elements {URL_graph L_elements}} {Sub_graph_elements {URL_graph L_elements}} {Query_GDD {str}} ]}
+proc P_L_methodes_get_CometEditorGDD2 {} {return [list {get_URL_from_ressource {str}} {get_ressource {URL}} {get_dom_XML_schema {}} {get_Query_GDD_result {str}} {exist_Query_GDD_result {str}} ]}
+proc P_L_methodes_set_CometEditorGDD2 {} {return [list {Load_XML_schema {URL}} {set_dom_XML_schema {v}} {Commit_graph {URL_graph {{URL_write {}}}}} {set_Query_GDD_result {str res}} {unset_Query_GDD_result {str}} {Add_graph_elements {URL_graph L_elements}} {Sub_graph_elements {URL_graph L_elements}} {Query_GDD {str}} ]}
 
