@@ -29,27 +29,43 @@ Inject_code CometEditorGDD2_PM_FC_basic Query_GDD {} {
 	# Params : str
 	# Get the content of the ressource in the variable content
 	set content [this get_ressource $str]
+	set URL     [this get_URL_from_ressource $str]
 	
 	# Parse the content
 	 if {![catch {set doc [dom parse $content]} err]} {
-		 if {[this exist_Query_GDD_result $str]} {this prim_unset_Query_GDD_result $str}
-		 this prim_set_Query_GDD_result $str $doc
-		} else  {this prim_set_Query_GDD_result $str [list "ERROR while parsing" $str $err]
+		 if {[this exist_Query_GDD_result $URL]} {this prim_unset_Query_GDD_result $str}
+		 this prim_set_Query_GDD_result $URL $doc
+		} else  {this prim_set_Query_GDD_result $URL [list ERROR parsing $str $err]
 				}
 }
 
 #___________________________________________________________________________________________________________________________________________
 Inject_code CometEditorGDD2_PM_FC_basic Commit_graph {} {
-	# Params : URL_graph
-	if {[string equal -length 3 "c:/" [string tolower $URL_graph]]} {
-		 # open the file, write the serialized dom if it exists, raise ERROR else
-		 if {![file exists $URL_graph]}                 {error "File $URL_graph does not exists"}
-		 if {![this exist_Query_GDD_result $URL_graph]} {error "Graph $URL_graph has not been loaded, it can not be commited"}
-		 set doc [this get_Query_GDD_result $URL_graph]
-		 
-		 set f [open $URL_graph w]; fconfigure $f -encoding utf-8
+	# Params : URL_graph {URL_write {}}
+
+	if {![this exist_Query_GDD_result $URL_graph]} {error "Graph $URL_graph has not been loaded, it can not be commited"}
+	set doc [this get_Query_GDD_result $URL_graph]
+	
+	if {$URL_write == ""} {set URL_write $URL_graph}
+	
+	if {[string equal -length 3 "c:/" [string tolower $URL_write]]} {
+		 # open the file, write the serialized dom 
+		 set f [open $URL_write w]; fconfigure $f -encoding utf-8
 		 $doc asXML -channel $f
 		 close $f
+		}
+	
+	if {[string equal -length 9 "kasanayan" [string tolower $URL_write]]} {
+		 # set url "http://194.199.23.189/kasanayan/bin/processor2.tcl"
+		 # request insertRawXML
+		 # xml_data $DATA
+		 # parentUID $parentUID
+		 # 
+		 set D [lindex $URL_write 1]
+		 set QUERY [eval "::http::formatQuery [dict get $D params] xml_data \[$doc asXML\]"]
+		 set token   [::http::geturl [dict get $D URL] -query $QUERY]
+		 # set rep [::http::data $token]
+		 ::http::cleanup $token
 		}
 }
 
@@ -90,7 +106,7 @@ Inject_code CometEditorGDD2_PM_FC_basic Add_graph_elements {} {
 			}
 		} else {error "Graph $URL_graph has not been loaded, no element can be added...\nIn $objName Add_graph_elements URL_graph L_elements\URL_graph : $URL_graph\nL_elements : $L_elements"}
 }
-Trace CometEditorGDD2_PM_FC_basic Add_graph_elements
+# Trace CometEditorGDD2_PM_FC_basic Add_graph_elements
 #___________________________________________________________________________________________________________________________________________
 Inject_code CometEditorGDD2_PM_FC_basic Sub_graph_elements {} {
 	# Params : URL_graph L_elements
@@ -101,7 +117,9 @@ Inject_code CometEditorGDD2_PM_FC_basic Sub_graph_elements {} {
 		 
 		 # Import elements into the original doc
 		 foreach e $L_elements {
-			 foreach node [$doc selectNodes -namespaces [list kasanayan $kasanayan] "//*\[@id=\"$e\"\]"] {
+			 set GDD_id $e
+			 regexp {^http://.*\?(.*)=(.*)$} $GDD_id reco type id
+			 foreach node [$doc selectNodes -namespaces [list kasanayan $kasanayan] "//*\[@id=\"$GDD_id\" or @id=\"$id\"\]"] {
 				 puts "Delete [$node nodeName] $node"
 				 # If it is a node, delete also related edges
 				 # If it is an edge, delete references of related nodes
