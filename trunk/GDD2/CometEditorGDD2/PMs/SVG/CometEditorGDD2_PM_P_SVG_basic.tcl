@@ -22,8 +22,8 @@ method CometEditorGDD2_PM_P_SVG_basic constructor {name descr args} {
  
  set this(C_UPNP) [CPool get_singleton CometUPNP]
  # Subscribe to the apparition/disparition of a service converting dot graphs into SVG files
- $this(C_UPNP) Subscribe_to_set_item_of_dict_devices    $objName [list $objName New_UPNP_device_appears \$keys \$val]
- $this(C_UPNP) Subscribe_to_remove_item_of_dict_devices $objName [list $objName New_UPNP_device_disappears \$UDN]
+ $this(C_UPNP) Subscribe_to_set_item_of_dict_devices    $objName "$objName New_UPNP_device_appears \$keys \$val"
+ $this(C_UPNP) Subscribe_to_remove_item_of_dict_devices $objName "$objName New_UPNP_device_disappears \$UDN"
 
  eval "$objName configure $args"
  return $objName
@@ -42,13 +42,13 @@ Generate_PM_setters CometEditorGDD2_PM_P_SVG_basic [P_L_methodes_set_CometEditor
 method CometEditorGDD2_PM_P_SVG_basic New_UPNP_device_appears {keys val} {
 
 }
-Trace CometEditorGDD2_PM_P_SVG_basic New_UPNP_device_appears
+# Trace CometEditorGDD2_PM_P_SVG_basic New_UPNP_device_appears
 
 #___________________________________________________________________________________________________________________________________________
 method CometEditorGDD2_PM_P_SVG_basic New_UPNP_device_disappears {UDN} {
 
 }
-Trace CometEditorGDD2_PM_P_SVG_basic New_UPNP_device_disappears
+# Trace CometEditorGDD2_PM_P_SVG_basic New_UPNP_device_disappears
 
 #___________________________________________________________________________________________________________________________________________
 #______________________________________________________________ Graph dot and SVG __________________________________________________________
@@ -186,7 +186,7 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_Sub_graph_elements {e} {
 
 #___________________________________________________________________________________________________________________________________________
 method CometEditorGDD2_PM_P_SVG_basic HTML_Sub_graph_edge {GDD_edge} {
-	regexp {^(.*)\?id=(.*)->(.*)\?id=(.*)$} $GDD_edge reco URL_graph_1 id_1 URL_graph_2 id_2
+	regexp {^(.*)\?Node=(.*)->(.*)\?Node=(.*)$} $GDD_edge reco URL_graph_1 id_1 URL_graph_2 id_2
 
 	set doc  [this get_Query_GDD_result $URL_graph_1]
 	set root [$doc documentElement]
@@ -198,6 +198,13 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_Sub_graph_edge {GDD_edge} {
 		 if {$URL_graph_1 != $URL_graph_2} {this prim_Sub_graph_elements $URL_graph_2 $id}
 		}
 }
+Trace CometEditorGDD2_PM_P_SVG_basic HTML_Sub_graph_edge
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic HTML_Save_graph {URL_graph} {
+	this prim_Commit_graph $URL_graph
+}
+Trace CometEditorGDD2_PM_P_SVG_basic HTML_Save_graph
 
 #___________________________________________________________________________________________________________________________________________
 method CometEditorGDD2_PM_P_SVG_basic HTML_Add_a_new_node {URL_graph} {
@@ -334,8 +341,10 @@ method CometEditorGDD2_PM_P_SVG_basic HTML_Edit_edge {GDD_id__rel_type} {
 		 
 		 $n setAttribute relation $L_rel
 		}
-		
-	
+								 
+	set root_1      [$doc documentElement]
+	set str_dot ""
+	this Render_kasanayan:Graph_to_dot $URL_graph_1 $doc $root_1 str_dot
 }
 Trace CometEditorGDD2_PM_P_SVG_basic HTML_Edit_edge
 
@@ -564,8 +573,40 @@ method CometEditorGDD2_PM_P_SVG_basic Load_GDD_node {GDD_node_url svg_root_id sv
 }
 
 #___________________________________________________________________________________________________________________________________________
+#_____________________________________________________ Edition of the annotations __________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic Render_editor_HTML_part {L_URL_graphs str_name str_js_name} {
+	upvar $str_name    str
+	upvar $str_js_name str
+	
+	append str "<div>"
+	append str   "<div class=\"annotations list\">"
+	append str     "<p>Annotations</p>"
+	
+	foreach URL_graph $L_URL_graphs {
+		set doc  [this get_Query_GDD_result $URL_graph]
+		set root [$doc documentElement]
+		foreach annotation [$root selectNodes -namespace [list kasanayan http://194.199.23.189/kasanayan] "//kasanayan:Node"] {
+			 this Render_annotation_HTML_part $annotation str str_js
+			}
+		}
+	append str   "</div>"
+	append str "</div>"
+}
+
+#___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic Render_annotation_HTML_part {dom_annotation str_name str_js_name} {
+	upvar $str_name    str
+	upvar $str_js_name str
+	
+	append str "<p>[$dom_annotation getAttribute id]</p>"
+}
+
+#___________________________________________________________________________________________________________________________________________
 #_____________________________________________ View of the design process (path/pb/solutions) ______________________________________________
 #___________________________________________________________________________________________________________________________________________
+
+
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________

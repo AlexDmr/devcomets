@@ -118,7 +118,8 @@ Inject_code CometEditorGDD2_PM_FC_basic Sub_graph_elements {} {
 		 # Import elements into the original doc
 		 foreach e $L_elements {
 			 set GDD_id $e
-			 regexp {^http://.*\?(.*)=(.*)$} $GDD_id reco type id
+			 set id $GDD_id
+			 regexp {^.*\?(.*)=(.*)$} $GDD_id reco type id
 			 foreach node [$doc selectNodes -namespaces [list kasanayan $kasanayan] "//*\[@id=\"$GDD_id\" or @id=\"$id\"\]"] {
 				 puts "Delete [$node nodeName] $node"
 				 # If it is a node, delete also related edges
@@ -159,6 +160,7 @@ Inject_code CometEditorGDD2_PM_FC_basic Sub_graph_elements {} {
 		 
 		} else {error "Graph $URL_graph has not been loaded, no element can be removed...\nIn $objName Sub_graph_elements URL_graph L_elements\URL_graph : $URL_graph\nL_elements : $L_elements"}
 }
+Trace CometEditorGDD2_PM_FC_basic Sub_graph_elements
 
 #___________________________________________________________________________________________________________________________________________
 Inject_code CometEditorGDD2_PM_FC_basic Load_XML_schema {} {
