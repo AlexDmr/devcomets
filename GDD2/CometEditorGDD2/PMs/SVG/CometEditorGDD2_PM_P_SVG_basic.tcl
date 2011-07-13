@@ -100,8 +100,12 @@ method CometEditorGDD2_PM_P_SVG_basic Render_kasanayan:Graph_to_dot {URL doc roo
 			 switch [$node nodeName] {
 				 kasanayan:Edge       {set id_src    [this get_UID $URL $root [$node getAttribute src] Node]
 									   set id_dst    [this get_UID $URL $root [$node getAttribute dst] Node]
+									   set id_edge   [$node getAttribute id]
 									   set relations [join [$node getAttribute relation] "\\n"]
 									   append str_dot "\t\"$id_src\" -> \"$id_dst\" \[label=\"R:\\n$relations\"\];\n"
+									   # append str_dot "\"$id_edge\" \[label=\"R:\\n$relations\"\];\n"
+									   # append str_dot "\t\"$id_src\" -> \"$id_edge\";\n"
+									   # append str_dot "\"$id_edge\" -> \"$id_dst\";\n"
 									  }
 				 kasanayan:Node       {set id [this get_UID $URL $root [$node getAttribute id] Node]
 									   append str_dot "\t\"$id\" \[style=filled, shape=[dict get $Shape [$node getAttribute precision]], fillcolor=[dict get $Color [$node getAttribute abstraction]], label=\"[$node getAttribute name]\"\];\n"
@@ -130,6 +134,15 @@ method CometEditorGDD2_PM_P_SVG_basic get_SVG_from_dot {type str_dot_name CB} {
 }
 
 #___________________________________________________________________________________________________________________________________________
+method CometEditorGDD2_PM_P_SVG_basic get_JS_tab_from_DOM {L} {
+	set nL [list]
+	foreach e $L {lappend nL "'[$e getAttribute id]'"}
+	set    rep "\["
+	append rep [join $nL ", "] "\]"
+	return $rep
+}
+
+#___________________________________________________________________________________________________________________________________________
 method CometEditorGDD2_PM_P_SVG_basic Update_SVG {URL_graph str_svg} {
 	set str_svg [string range $str_svg [string first "<svg " $str_svg] end]
 	
@@ -145,6 +158,13 @@ method CometEditorGDD2_PM_P_SVG_basic Update_SVG {URL_graph str_svg} {
 	append str_load [string map [list "\"" {\"} "\n" {\n}] $str_svg] "\", true)\[0\]"
 	
 	set C_html_to_SVG [CSS++ $objName "#$objName <--< Container_PM_P_HTML_to_SVG"]
+	
+	# set doc       [this get_Query_GDD_result $URL_graph]
+	# set root      [$doc documentElement]
+	# set kasanayan [$root namespaceURI]
+	# set Tab_nodes [this get_JS_tab_from_DOM [$root selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Node"] ]
+	# set Tab_edges [this get_JS_tab_from_DOM [$root selectNodes -namespaces [list kasanayan $kasanayan] "//kasanayan:Edge"] ]
+	
 	set    msg "Clear_descendants_of(document.getElementById('${objName}_links')); Process_SVG_dot_to_add_interaction('${URL_graph}', '${C_html_to_SVG}', '${objName}', $str_load );\n"
 	#Load_SVG(id_root, clear_descendants, add_svg_tag, SVG_descr, is_string)
 	this send_jquery_message Update_SVG $msg
@@ -470,7 +490,7 @@ method CometEditorGDD2_PM_P_SVG_basic GDD_image_zone_to_SVG {PM_HTML_to_SVG svg_
 					  # Handles for manipulation (rotation, dimensions, colors, width, ...)
 					  
 					  # Right click
-					  append str_js "document.getElementById('$id').addEventListener('mousedown', CB_annotation_on_right_click);"
+					  append str_js "document.getElementById('$id').addEventListener('mousedown', CB_annotation_on_right_click, false);"
 					 }
 			}
 		}
@@ -618,6 +638,20 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
   append strm $dec "<rect id=\"${objName}_BG_rect\" x=\"-10000000\" y=\"-10000000\" width=\"20000000\" height=\"20000000\" transform=\"\" style=\"fill:rgb(0,0,255);stroke-width:1;\"/>\n"
   append strm $dec "<g id=\"${objName}_docs\"  transform=\"\"></g>\n"
   append strm $dec "<g id=\"${objName}_links\" transform=\"\"></g>\n"
+  
+  append strm $dec "<g id=\"g1_test\">"
+  append strm $dec   "<rect id=\"rect_1\" x=\"0\" y=\"0\" width=\"100\" height=\"70\" style=\"fill:rgb(255,255,0);stroke-width:1;stroke:rgb(0,0,0)\" />"
+  append strm $dec   "<circle id=\"circle_1\" cx=\"0\" cy=\"0\" r=\"50\" style=\"fill:rgb(255,0,255);stroke-width:1;stroke:rgb(0,0,0)\" />"
+  append strm $dec "</g>\n"
+  append strm $dec "<g id=\"g2_test\">"
+  append strm $dec   "<rect id=\"rect_2\" x=\"300\" y=\"400\" width=\"200\" height=\"300\" style=\"fill:rgb(0,255,128);stroke-width:10;stroke:rgb(255,0,0)\" />"
+  append strm $dec   "<circle id=\"circle_2\" cx=\"500\" cy=\"700\" r=\"50\" style=\"fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,255,0)\" />"
+  append strm $dec "</g>\n"
+  append strm $dec "<g id=\"g3_drop\">"
+  append strm $dec   "<circle id=\"circle_3\" cx=\"700\" cy=\"300\" r=\"50\" style=\"fill:rgb(0,0,0);stroke-width:30;stroke:rgb(255,0,0)\" />"
+  append strm $dec "</g>\n"
+  
+  
   append strm $dec "</g>\n"
   
   append strm $dec "<script>Tab_anim_$objName = new Array();\n"
@@ -636,12 +670,16 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
   }
  append strm "Draggable('$objName', \['${objName}_BG_rect'\], null, null, null);\n"
  append strm "Register_node_id_SVG_zoom_onwheel('$objName');\n"
- append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click);\n"
+ append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
  
  set C_html_to_SVG [CSS++ $objName "#$objName <--< Container_PM_P_HTML_to_SVG"]
  append strm "document.getElementById('${objName}_BG_rect').setAttribute('PM', '${objName}');\n"
  append strm "document.getElementById('${objName}_BG_rect').setAttribute('PM_HTML_to_SVG', '${C_html_to_SVG}');\n"
- append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click);\n"
+ append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
+ 
+ append strm "Draggable('g1_test', \['rect_1'\], null, null, null);\n"
+ append strm "Draggable('g2_test', \['rect_2', 'circle_2'\], null, null, null);\n"
+ append strm "Drop_zone('g3_drop', '#g1_test', function() {console.log('start');}, function() {console.log('feedback_hover');}, function() {console.log('feedback_out');}, function() {console.log('feedback_done');}, function() {console.log('feedback_undone');}, function() {console.log('fct');});\n"
  
  this Render_daughters_post_JS strm $dec
 }

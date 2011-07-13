@@ -8,8 +8,11 @@ function Drag_info_obj() {
 	this.Tab_drag = new Array();
 	this.Tab_drop = new Array();
 	
-	this.Tab_drop_actives = new Array();
+	this.Tab_active_drags = new Array(); // Contains id of nodes
+	this.Tab_drop_actives = new Array(); // Contains id of nodes
 	this.last_drop_zone_hover = null;
+	
+	this.Tab_tmp_SVG_point = new Array();
 }
 
 var drag_info_obj = new Drag_info_obj();
@@ -17,130 +20,294 @@ var drag_info_obj = new Drag_info_obj();
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________ Drag nodes _____________________________________________________
 //___________________________________________________________________________________________________________________________________________
-function COMET_SVG_start_drag(id_grp, id_drag, evt) {
-	evt.stopPropagation();
-	var node_grp  = document.getElementById(id_grp);
-	if(node_grp == null) {alert('Problem starting a drag with unknow id ' + id_grp); return;}
+function COMET_SVG_start_drag_touch_from_SVG_in_opera(event) {
+	// console.log('COMET_SVG_start_drag_touch_from_SVG_in_opera');
+	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
+	// Call getIntersectionList to get the SVG_elements
+	for(var i in event.changedTouches) {
+		 var svg_canvas = event.target;
+		 var coord  = convert_coord_from_page_to_node(event.changedTouches[i].pageX, event.changedTouches[i].pageY, svg_canvas);
+			 drag_info_obj.Tab_tmp_SVG_point[svg_canvas].x = coord['x'];
+			 drag_info_obj.Tab_tmp_SVG_point[svg_canvas].y = coord['y'];
+		 var L_svg_elements = svg_canvas.getIntersectionList(drag_info_obj.Tab_tmp_SVG_point[svg_canvas], null);
+		 if(L_svg_elements.length > 0) {
+			 event.changedTouches[i].target = L_svg_elements[L_svg_elements.length - 1];
+			 var currentTarget = event.changedTouches[0].target;
+				while(!currentTarget.hasAttribute('ontouchstart')) {currentTarget = currentTarget.parentNode;}
+			 Register_drag_node(currentTarget, event.changedTouches[i].identifier, event.changedTouches[i] );
+			}
+		 // console.log('Touch on SVG canvas, there is ' + L_svg_elements.length + ' below touches');
+		}
+}
+
+//___________________________________________________________________________________________________________________________________________
+function COMET_SVG_start_drag_touch(event) {
+	// console.log('COMET_SVG_start_drag_touch ' + event.changedTouches[0].target.getAttribute('id') );
+	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
+	var currentTarget = event.changedTouches[0].target;
+		while(!currentTarget.hasAttribute('ontouchstart')) {currentTarget = currentTarget.parentNode;}
+		
+	Register_drag_node(currentTarget, event.changedTouches[0].identifier, event.changedTouches[0] );
+}
+
+//___________________________________________________________________________________________________________________________________________
+function COMET_SVG_start_drag_mouse(event) {
+	if(event.button != 0) {return;}
+	
+	// console.log('COMET_SVG_start_drag_mouse ' + event.currentTarget.getAttribute('id') );
+	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
+	Register_drag_node(event.currentTarget, 'mouse', event );
+}
+
+//___________________________________________________________________________________________________________________________________________
+function Register_drag_node(node, source, event) {
+	// console.log('event drag on node: ' + node + ' source: ' + source );
+	var grp_node = drag_info_obj.Tab_drag[node.id].grp_node;
+
+	// Is the group node still being dragged ?
+	for(var i in drag_info_obj.Tab_active_drags) {
+		 if (drag_info_obj.Tab_drag[ drag_info_obj.Tab_active_drags[i] ].grp_node == grp_node) {console.log('still dragging this node ' + node); return;}
+		}
+	
+	// Register the node as an active dragging node
+	drag_info_obj.Tab_active_drags.push( node.id );
+	drag_info_obj.Tab_drag[node.id].pointer = source;
 	
 	// Express the current transformation of the node on the form of a Matrix
-	var coord  = convert_coord_from_page_to_node(evt.pageX, evt.pageY, node_grp.parentNode);
+	var coord  = convert_coord_from_page_to_node(event.pageX, event.pageY, grp_node.parentNode);
 	var x = coord['x'];
 	var y = coord['y'];
-	var ma_matrice = node_grp.getCTM();
-	var dCTM = node_grp.parentNode.getCTM().inverse().multiply(ma_matrice);
-	node_grp.setAttribute('transform', "matrix("+dCTM.a+","+dCTM.b+","+dCTM.c+","+dCTM.d+","+dCTM.e+","+dCTM.f+")");
+	var ma_matrice = grp_node.getCTM();
+	var dCTM = grp_node.parentNode.getCTM().inverse().multiply(ma_matrice);
+	grp_node.setAttribute('transform', "matrix("+dCTM.a+","+dCTM.b+","+dCTM.c+","+dCTM.d+","+dCTM.e+","+dCTM.f+")");
+	drag_info_obj.Tab_drag[node.id].ox = x;
+	drag_info_obj.Tab_drag[node.id].oy = y;
+	drag_info_obj.Tab_drag[node.id].original_CTM = grp_node.getAttribute('transform');
 	
-	// Save the onmove event of the root in a special attribute of the node_grp
-	node_grp.setAttribute('html_onmousemove_save', document.body.getAttribute('onmousemove'));
-	node_grp.setAttribute('html_onmouseup_save'  , document.body.getAttribute('onmouseup')  );
-	
-	// Replace values by the one necessary for a good drag
-	document.body.setAttribute('onmousemove', "COMET_SVG_drag     ('"+id_grp+"', '"+id_drag+"', '" + node_grp.getAttribute('transform') + "', " + x + ", " + y + ", event);" );
-	document.body.setAttribute('onmouseup'  , "COMET_SVG_stop_drag('"+id_grp+"', '"+id_drag+"', event);" );
-	
-	if(drag_info_obj.Tab_drag[id_drag][0] != null) {drag_info_obj.Tab_drag[id_drag][0](node_grp, evt);}
+	// Trigger the related drag start function
+	if(drag_info_obj.Tab_drag[node.id].fct_start != null) {drag_info_obj.Tab_drag[node.id].fct_start(grp_node, event);}
 	
 	// Unplug and replug on top the current node so that it is displayed above its sibling
-	var parentNode = node_grp.parentNode;
-	parentNode.removeChild( node_grp );
-	parentNode.appendChild( node_grp );
-	//document.getElementById('Ajax_Raw').innerHTML = "document.getElementById('" + id_grp + "')";
+	var parentNode = grp_node.parentNode;
+	parentNode.removeChild( grp_node );
+	parentNode.appendChild( grp_node );
 	
 	// Manage drop zones
-	drag_info_obj.svg_canvas     = get_svg_canvas_of(node_grp);
-	drag_info_obj.svg_rect       = drag_info_obj.svg_canvas.createSVGRect();
-	drag_info_obj.svg_rect.width = drag_info_obj.svg_rect.height = 1;
-	drag_info_obj.pt_src = drag_info_obj.svg_canvas.createSVGPoint();;
-	drag_info_obj.pt_dst = drag_info_obj.svg_canvas.createSVGPoint();;
+	drag_info_obj.Tab_drag[node.id].svg_rect       = drag_info_obj.Tab_drag[node.id].svg_canvas.createSVGRect();
+	drag_info_obj.Tab_drag[node.id].svg_rect.width = drag_info_obj.Tab_drag[node.id].svg_rect.height = 1;
+	drag_info_obj.Tab_drag[node.id].pt_src 		   = drag_info_obj.Tab_drag[node.id].svg_canvas.createSVGPoint();
+	drag_info_obj.Tab_drag[node.id].pt_dst 		   = drag_info_obj.Tab_drag[node.id].svg_canvas.createSVGPoint();
+	drag_info_obj.Tab_drag[node.id].last_drop_zone = null;
 	
 	for(var i in drag_info_obj.Tab_drop) {
-		 var L_nodes = $(drag_info_obj.Tab_drop[i][0]);
+		 var L_nodes = $(drag_info_obj.Tab_drop[i].accept_class);
 		 var contains = false;
-		 for (var j=0; j < L_nodes.length; j++) {if(L_nodes[j] == node_grp) {contains = true; break;}}
+		 for (var j=0; j < L_nodes.length; j++) {if(L_nodes[j] == grp_node) {contains = true; break;}}
 		 if(contains) {
-			 // Trigger the start drag function associated to the drop zone
-			 var node_drop_zone = document.getElementById(i);
-			 if (drag_info_obj.Tab_drop[i][1] != null) {drag_info_obj.Tab_drop[i][1](node_drop_zone, node_grp);}
-			 // Register the drop zone a a currently active one
-			 drag_info_obj.Tab_drop_actives[node_drop_zone] = drag_info_obj.Tab_drop[i];
+			 //Trigger the start drag function associated to the drop zone
+			 var node_drop_zone = drag_info_obj.Tab_drop[i].node;
+			 if (drag_info_obj.Tab_drop[i].feedback_start != null) {drag_info_obj.Tab_drop[i].feedback_start(node_drop_zone, grp_node, event);}
+			 //Register the drop zone a a currently active one
+			 drag_info_obj.Tab_drop_actives[node_drop_zone.id] = drag_info_obj.Tab_drop[i];
+			 // console.log('drag_info_obj.Tab_drop_actives :');
+			 // for(var i_dz in drag_info_obj.Tab_drop_actives) {
+				 // console.log(i_dz + ': ' + drag_info_obj.Tab_drop_actives[i_dz] );
+				// }
+			}
+		}
+		
+}
+
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+function Manage_draggables_mouse(event) {
+	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
+	// Is the mouse dragging something ?
+	for(var i in drag_info_obj.Tab_active_drags) {
+		 if (drag_info_obj.Tab_drag[ drag_info_obj.Tab_active_drags[i] ].pointer == 'mouse') {
+			 var id_node = drag_info_obj.Tab_active_drags[i];
+			 var grp_node = drag_info_obj.Tab_drag[id_node].grp_node;
+			 Drag_group(drag_info_obj.Tab_drag[id_node].node, grp_node, event);
+			 // and its finish
+			 break;
 			}
 		}
 }
 
 //___________________________________________________________________________________________________________________________________________
-function COMET_SVG_drag      (id_grp, id_drag, dCTM, dsx, dsy, evt) {
-	if(evt.button != 0) {return;}
-
-	var node_grp  = document.getElementById(id_grp);
-	if(node_grp == null) {alert('Problem starting a drag with unknow id ' + id_grp); return;}
-	
-	// Express the current transformation of the node on the form of a Matrix
-	var coord  = convert_coord_from_page_to_node(evt.pageX, evt.pageY, node_grp.parentNode);
-	var dx = coord['x'] - dsx; var dy = coord['y'] - dsy;
-	
-	node_grp.setAttribute('transform', " translate(" + dx + "," + dy + ")" + dCTM);
-	
-	// Callback during drag
-	if(drag_info_obj.Tab_drag[id_drag][1] != null) {drag_info_obj.Tab_drag[id_drag][1](node_grp, evt);}
-	
-	// Managing the drop zones
-	drag_info_obj.svg_rect.x = evt.pageX - drag_info_obj.svg_canvas.offsetLeft - 1;
-	drag_info_obj.svg_rect.y = evt.pageY - drag_info_obj.svg_canvas.offsetTop  - 1;
-	
-	var Tab_SVG_elements = drag_info_obj.svg_canvas.getIntersectionList(drag_info_obj.svg_rect, null);
-	var new_drop_zone = null;
-	if(Tab_SVG_elements != null) {
-		 for (var i = 1; i < Tab_SVG_elements.length; i++) {
-			 var drop_zone_tab = drag_info_obj.Tab_drop_actives[ Tab_SVG_elements[i] ];
-			 if(drop_zone_tab != null) {
-				 new_drop_zone = Tab_SVG_elements[i];
+function Manage_draggables_touch(event) {
+	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
+	// console.log('Manage_draggables_touch');
+	// Is the mouse dragging something ?
+	for(var touch_i in event.changedTouches) {
+		var touch_id = event.changedTouches[touch_i].identifier;
+		// console.log('  moving pointer ' + touch_id);
+		for(var i in drag_info_obj.Tab_active_drags) {
+			 if (drag_info_obj.Tab_drag[ drag_info_obj.Tab_active_drags[i] ].pointer == touch_id) {
+				 var id_node = drag_info_obj.Tab_active_drags[i];
+				 var grp_node = drag_info_obj.Tab_drag[id_node].grp_node;
+				 // console.log("  let's drag it!");
+				 Drag_group(drag_info_obj.Tab_drag[id_node].node, grp_node, event.changedTouches[touch_i]);
+				 // and its finish
 				 break;
 				}
 			}
 		}
-	if(new_drop_zone != drag_info_obj.last_drop_zone_hover) {
-		 if(drag_info_obj.last_drop_zone_hover != null) {drag_info_obj.Tab_drop_actives[ drag_info_obj.last_drop_zone_hover ][3](drag_info_obj.last_drop_zone_hover, node_grp, evt);}
-		 if(                     new_drop_zone != null) {drag_info_obj.Tab_drop_actives[ new_drop_zone                      ][2](new_drop_zone, node_grp, evt);}
-		 drag_info_obj.last_drop_zone_hover = new_drop_zone;
-		}
-	
-	//document.getElementById('CPool_COMET_3_PM_P_1_debug_rect').setAttribute('transform', 'translate('+drag_info_obj.svg_rect.x+', '+drag_info_obj.svg_rect.y+')');
 }
 
 //___________________________________________________________________________________________________________________________________________
-function COMET_SVG_stop_drag (id_grp, id_drag, evt) {
-	var node_grp  = document.getElementById(id_grp);
-	if(node_grp == null) {alert('Problem starting a drag with unknow id ' + id_grp); return;}
+function Drag_group(node, grp_node, event) {
+	// Express the current transformation of the node on the form of a Matrix
+	var coord  = convert_coord_from_page_to_node(event.pageX, event.pageY, grp_node.parentNode);
+	var dx = coord['x'] - drag_info_obj.Tab_drag[node.id].ox; var dy = coord['y'] - drag_info_obj.Tab_drag[node.id].oy;
+
+	grp_node.setAttribute('transform', " translate(" + dx + "," + dy + ")" + drag_info_obj.Tab_drag[node.id].original_CTM);
+
+	// Callback during drag
+	if(drag_info_obj.Tab_drag[node.id].fct_drag != null) {drag_info_obj.Tab_drag[node.id].fct_drag(grp_node, event);}
 	
-	document.body.setAttribute('onmousemove', node_grp.getAttribute('html_onmousemove_save') );
-	document.body.setAttribute('onmouseup'  , node_grp.getAttribute('html_onmouseup_save')   );
-	node_grp.setAttribute('html_onmousemove_save', '' );
-	node_grp.setAttribute('html_onmouseup_save'  , '' );
+	// Managing the drop zones
+	drag_info_obj.Tab_drag[node.id].svg_rect.x = event.pageX - drag_info_obj.Tab_drag[node.id].svg_canvas.offsetLeft - 1;
+	drag_info_obj.Tab_drag[node.id].svg_rect.y = event.pageY - drag_info_obj.Tab_drag[node.id].svg_canvas.offsetTop  - 1;
+
+	var Tab_SVG_elements = drag_info_obj.Tab_drag[node.id].svg_canvas.getIntersectionList(drag_info_obj.Tab_drag[node.id].svg_rect, null);
+	var new_drop_zone = null;
+	if(Tab_SVG_elements != null) {
+		 // console.log('#Tab_SVG_elements: ' + Tab_SVG_elements.length);
+		 for (var i = 1; i < Tab_SVG_elements.length; i++) {
+			 var current_drop_zone = Tab_SVG_elements[i];
+			 while( current_drop_zone.nodeName != 'svg'
+				  &&current_drop_zone.nodeName != 'svg:svg'
+				  &&drag_info_obj.Tab_drop_actives[ current_drop_zone.id ] == undefined) {current_drop_zone = current_drop_zone.parentNode;}
+			 var drop_zone_tab = drag_info_obj.Tab_drop_actives[ current_drop_zone.id ];
+
+			 if(drop_zone_tab != undefined && drop_zone_tab != null) {
+				 // console.log('found new drop zone ' + current_drop_zone.id);
+				 new_drop_zone = current_drop_zone;
+				 break;
+				}
+			}
+		}
+	if(new_drop_zone != drag_info_obj.Tab_drag[node.id].last_drop_zone) {
+		 if(drag_info_obj.Tab_drag[node.id].last_drop_zone != null) {drag_info_obj.Tab_drop_actives[ drag_info_obj.Tab_drag[node.id].last_drop_zone.id ].feedback_out(drag_info_obj.last_drop_zone_hover, grp_node, event);}
+		 if(                                 new_drop_zone != null) {drag_info_obj.Tab_drop_actives[ new_drop_zone.id                      ].feedback_hover(new_drop_zone, grp_node, event);}
+		 drag_info_obj.Tab_drag[node.id].last_drop_zone = new_drop_zone;
+		}
+		
 	
-	if(drag_info_obj.Tab_drag[id_drag][2] != null) {drag_info_obj.Tab_drag[id_drag][2](node_grp, evt);}
+}
+
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+//___________________________________________________________________________________________________________________________________________
+function Stop_draggables_mouse(event) {
+	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
+	// Is the mouse dragging something ?
+	for(var i in drag_info_obj.Tab_active_drags) {
+		 if (drag_info_obj.Tab_drag[ drag_info_obj.Tab_active_drags[i] ].pointer == 'mouse') {
+			 var id_node = drag_info_obj.Tab_active_drags[i];
+			 var grp_node = drag_info_obj.Tab_drag[id_node].grp_node;
+			 Stop_draggables_pointer(drag_info_obj.Tab_drag[id_node].node, grp_node, event);
+			 // and its finish
+			 break;
+			}
+		}
+}
+
+//___________________________________________________________________________________________________________________________________________
+function Stop_draggables_touch(event) {
+	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
+	// console.log('Stop_draggables_touch ');
+	for(var touch_i in event.changedTouches) {
+		 var touch_id = event.changedTouches[touch_i].identifier;
+		 // console.log('  id: ' + touch_id);
+		 for(var i in drag_info_obj.Tab_active_drags) {
+			 if (drag_info_obj.Tab_drag[ drag_info_obj.Tab_active_drags[i] ].pointer == touch_id) {
+				 var id_node = drag_info_obj.Tab_active_drags[i];
+				 var grp_node = drag_info_obj.Tab_drag[id_node].grp_node;
+				 Stop_draggables_pointer(drag_info_obj.Tab_drag[id_node].node, grp_node, event.changedTouches[touch_i]);
+				 // and its finish
+				 break;
+				}
+			}
+		}
+}
+
+//___________________________________________________________________________________________________________________________________________
+function Stop_draggables_pointer(node, grp_node, event) {
+	// Trigger stop drag callback
+	if(drag_info_obj.Tab_drag[node.id].fct_stop != null) {drag_info_obj.Tab_drag[node.id].fct_stop(grp_node, event);}
 	
-	// Callbacks
-	if(drag_info_obj.last_drop_zone_hover != null) {
-		 var fct = drag_info_obj.Tab_drop_actives[ drag_info_obj.last_drop_zone_hover ][4];
-		 if(fct != null) {fct(drag_info_obj.last_drop_zone_hover, node_grp, evt);}
-		 var fct = drag_info_obj.Tab_drop_actives[ drag_info_obj.last_drop_zone_hover ][6];
-		 if(fct != null) {fct(drag_info_obj.last_drop_zone_hover, node_grp, evt);} else {alert(drag_info_obj.Tab_drop_actives.length);}
+	// Manage drop zones
+	if(drag_info_obj.Tab_drag[node.id].last_drop_zone != null) {
+		 var fct = drag_info_obj.Tab_drop_actives[ drag_info_obj.Tab_drag[node.id].last_drop_zone.id ].feedback_done;
+			if(fct != null) {fct(drag_info_obj.Tab_drag[node.id].last_drop_zone, grp_node, event);}
+		 var fct = drag_info_obj.Tab_drop_actives[ drag_info_obj.Tab_drag[node.id].last_drop_zone.id ].fct;
+			if(fct != null) {fct(drag_info_obj.Tab_drag[node.id].last_drop_zone, grp_node, event);} 
+		}
+	// Trigger callbacks for feedback undone
+	for(var i in drag_info_obj.Tab_drop_actives) {
+		 // console.log('? undone for '+ i + ': ' + drag_info_obj.Tab_drop_actives[i] + ' in ' + drag_info_obj.Tab_drag[node.id].last_drop_zone.id);
+		 if(drag_info_obj.Tab_drop[ i ].node != drag_info_obj.Tab_drag[node.id].last_drop_zone) {
+			 var fct = drag_info_obj.Tab_drop[ i ].feedback_undone;
+			 if(fct) {fct(drag_info_obj.Tab_drop_actives[i], grp_node, event);}
+			}
 		}
 	
 	// Manage/Clear drop zones
 	drag_info_obj.Tab_drop_actives     = new Array();
-	drag_info_obj.last_drop_zone_hover = null;
+	drag_info_obj.Tab_drag[node.id].last_drop_zone = null;
+	
+	// Remove node from actives drags
+	var i = drag_info_obj.Tab_active_drags.indexOf(node.id);
+	drag_info_obj.Tab_active_drags.splice(i, 1);
 }
 
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
 //___________________________________________________________________________________________________________________________________________
+function init_draggable() {
+	document.removeEventListener('mousemove', Manage_draggables_mouse, false);
+	document.addEventListener   ('mousemove', Manage_draggables_mouse, false);
+	document.removeEventListener('mouseup'  , Stop_draggables_mouse  , false);
+	document.addEventListener   ('mouseup'  , Stop_draggables_mouse  , false);
+	
+	document.removeEventListener('touchmove', Manage_draggables_touch, false);
+	document.addEventListener   ('touchmove', Manage_draggables_touch, false);
+	document.removeEventListener('touchend', Stop_draggables_touch, false);
+	document.addEventListener   ('touchend', Stop_draggables_touch, false);
+}
+
+//___________________________________________________________________________________________________________________________________________
 function Draggable(id_grp, L_id_drag, fct_start, fct_drag, fct_stop) {
+	var grp_node = document.getElementById( id_grp );
+	if(grp_node == null) {alert('Problem initializing a drag with unknow group id ' + id_grp); return;}
+	
 	for(var i=0; i<L_id_drag.length; i++) {
-		 var node = document.getElementById( L_id_drag[i] );
-		 if(node == null) {alert('Problem initializing a drag with unknow id ' + L_id_drag[i]); return;}
-		 drag_info_obj.Tab_drag[L_id_drag[i]] = [fct_start, fct_drag, fct_stop];
-		 node.setAttribute('onmousedown', "COMET_SVG_start_drag('"+id_grp+"', '"+L_id_drag[i]+"', event);" );
+		 var id_node = L_id_drag[i];
+		 var node = document.getElementById( id_node );
+		 if(node == null) {alert('Problem initializing a drag with unknow id ' + L_id_drag[i]); continue;}
+		 node.setAttribute('ontouchstart', 'COMET_SVG_start_drag_touch');
+		 node.ontouchstart = COMET_SVG_start_drag_touch;
+		 
+		 drag_info_obj.Tab_drag[id_node] = new Object();
+			drag_info_obj.Tab_drag[id_node].grp_node  = grp_node; //console.log(node.getAttribute('id') + ' is associated to group ' + grp_node.getAttribute('id') );
+			drag_info_obj.Tab_drag[id_node].node      = node;
+			drag_info_obj.Tab_drag[id_node].fct_start = fct_start;
+			drag_info_obj.Tab_drag[id_node].fct_drag  = fct_drag;
+			drag_info_obj.Tab_drag[id_node].fct_stop  = fct_stop;
+			drag_info_obj.Tab_drag[id_node].last_drop_zone_hover = null;
+			drag_info_obj.Tab_drag[id_node].svg_canvas = get_svg_canvas_of(grp_node);
+			var rect_svg = drag_info_obj.Tab_drag[id_node].svg_canvas.createSVGRect();
+				rect_svg.width = rect_svg.height = 1;
+				drag_info_obj.Tab_tmp_SVG_point[drag_info_obj.Tab_drag[id_node].svg_canvas] = rect_svg;
+			
+		 // node.setAttribute('onmousedown', "COMET_SVG_start_drag('"+id_grp+"', '"+L_id_drag[i]+"', evt);" );
+		 node.addEventListener('mousedown', COMET_SVG_start_drag_mouse, false);
+		 node.addEventListener('touchstart' , COMET_SVG_start_drag_touch, false);
+		 // In case where events are not dispatched to the SVG elements inside an SVG document, subscribe at the SVG document level:
+		 drag_info_obj.Tab_drag[node.id].svg_canvas.addEventListener('touchstart', COMET_SVG_start_drag_touch_from_SVG_in_opera, false);
 		}
 }
 
@@ -151,7 +318,15 @@ function Drop_zone(id_node, accept_class, feedback_start, feedback_hover, feedba
 	var node  = document.getElementById(id_node);
 	if(node == null) {alert('Problem initializing a drop zone with unknow id ' + id_node); return;}
 	
-	drag_info_obj.Tab_drop[id_node] = [accept_class, feedback_start, feedback_hover, feedback_out, feedback_done, feedback_undone, fct];
+	drag_info_obj.Tab_drop[id_node] = new Object();
+		drag_info_obj.Tab_drop[id_node].node            = node;
+		drag_info_obj.Tab_drop[id_node].accept_class    = accept_class;
+		drag_info_obj.Tab_drop[id_node].feedback_start  = feedback_start;
+		drag_info_obj.Tab_drop[id_node].feedback_hover  = feedback_hover;
+		drag_info_obj.Tab_drop[id_node].feedback_out    = feedback_out;
+		drag_info_obj.Tab_drop[id_node].feedback_done   = feedback_done;
+		drag_info_obj.Tab_drop[id_node].feedback_undone = feedback_undone;
+		drag_info_obj.Tab_drop[id_node].fct             = fct;
 }
 
 //___________________________________________________________________________________________________________________________________________
@@ -198,7 +373,7 @@ function SVG_zoom_onwheel(e) {
 		}
 	
 	var svg_canvas = get_svg_canvas_of(e.currentTarget);
-	SVG_zoom(svg_canvas, e.currentTarget, window.pageXOffset + e.clientX - svg_canvas.offsetLeft, window.pageYOffset + e.clientY - svg_canvas.offsetTop, nDelta<0?0.9:1.1);
+	SVG_zoom(svg_canvas, e.currentTarget, window.pageXOffset + e.clientX - svg_canvas.parentNode.offsetLeft, window.pageYOffset + e.clientY - svg_canvas.parentNode.offsetTop, nDelta<0?0.9:1.1);
 //	alert(e.currentTarget);
 
 	return false;
@@ -226,14 +401,16 @@ function convert_coord_from_page_to_node(x,y,node) {
 	coord['y'] = y;                      										
 	var current_node = node;	                      							
 
-	while(current_node.nodeName != 'HTML' && current_node.nodeName != 'svg' && current_node.nodeName != 'svg:svg') {  
+	while(current_node.nodeName != 'HTML' && current_node.nodeName != 'html' && current_node.nodeName != 'svg' && current_node.nodeName != 'svg:svg') {  
 		current_node = current_node.parentNode;                      			
 		}
 
-	if(current_node.nodeName == 'svg' || current_node.nodeName != 'svg:svg') {										
-		coord['x'] -= current_node.offsetLeft;								
-		coord['y'] -= current_node.offsetTop;									
-		var ma_matrice = current_node.createSVGMatrix();						
+	if(current_node.nodeName == 'svg' || current_node.nodeName != 'svg:svg') {
+		// console.log('current_node: ' + current_node.getAttribute('id') );
+		coord['x'] -= current_node.parentNode.offsetLeft;								
+		coord['y'] -= current_node.parentNode.offsetTop;									
+		var ma_matrice = current_node.createSVGMatrix();
+		// console.log('matrice e: ' + coord['x'] + ' f:' + coord['y']);
 		ma_matrice.e = coord['x'];										
 		ma_matrice.f = coord['y'];										
 		var matriceres = node.getCTM().inverse().multiply(ma_matrice);			
@@ -243,7 +420,7 @@ function convert_coord_from_page_to_node(x,y,node) {
 		}																			
 
 	return coord;																
-} 																			
+}
 
  
 //___________________________________________________________________________________________________________________________________________
