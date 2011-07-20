@@ -1,4 +1,4 @@
-cd {C:/These/Projet Interface/COMETS/devCOMETS/Comets/}
+cd {$::env(ROOT_COMETS)/Comets}
   set debug 0
   source source_ordre.tcl_spe
 cd ..
@@ -20,7 +20,7 @@ CometRoot   cr2 "Comet root for inspector" {NO DESCRIPTION} ._Inspector
   DSL_ECA       dsl_ECA               ; cr set_DSL_ECA       dsl_ECA
   [gmlObject info objects DSL_interface_interpretor] set_dsl_gdd dsl_q
   
-C_GDD_Editor   GDD_Edit      "GDD editor" {} -Load_types_from_file GDD/GDD_repository/GDD_types_def.txt
+C_GDD_Editor   GDD_Edit      "GDD editor" {} -Load_types_from_file $::env(GDD)/GDD_repository/GDD_types_def.txt
 GDD_Edit set_GDD_DSL dsl_q
 
 #___________________________________________________________________

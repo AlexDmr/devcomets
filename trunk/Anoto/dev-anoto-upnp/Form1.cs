@@ -32,8 +32,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Intel.UPNP;
-using Intel.DeviceBuilder;
+
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
@@ -71,19 +70,21 @@ namespace Intel.DeviceBuilder
 
 		public Form1()
 		{
+			System.Console.WriteLine("Form1") ;
 			InitializeComponent();
-
+			System.Console.WriteLine("Component Ok") ;
 			// initialize
 			nextColor = 0;
 			imageWidth = this.pictureBox.Width;
 			imageHeight = this.pictureBox.Height;
 			// init drawing area
 			ClearBackgroundImage();
+			System.Console.WriteLine("Bg cleaned") ; 
 			anotoDevices = new System.Collections.ArrayList();
-
+			System.Console.WriteLine("Collection Ok ") ; 
 			// create the AnotoGenericStreamer COM object
 			gspm = new AnotoGenericStreamer.PenManagerClass();
-
+			System.Console.Write("Anoto Streamer ") ; 
 			// register event handlers for AnotoGenericStreamer
 			gspm.PenConnected += HandlePenConnected;
 			gspm.PenDisconnected += HandlePenDisconnected;
@@ -91,12 +92,16 @@ namespace Intel.DeviceBuilder
 			gspm.PenDown += HandlePenDown;
 			gspm.NewCoordinate += HandleNewCoordinate;
 			gspm.PenDecodingStatus += HandlePenDecodingStatus;
-			
+			System.Console.WriteLine("Configured ; ") ; 
 			//tcp
 			ar_clients = new ArrayList(); 
+			System.Console.WriteLine("Ar client ok") ;
 			this.tcpListener = new TcpListener(IPAddress.Any, 0);
+			System.Console.WriteLine("Listener Ok") ;
      		this.listenThread = new Thread(new ThreadStart(ListenForClients));
+     		System.Console.WriteLine("Thread ok") ; 
       		this.listenThread.Start();
+      		System.Console.WriteLine("Thread running") ;
 		}
 		
 		//TCP
@@ -379,11 +384,11 @@ namespace Intel.DeviceBuilder
 			//Console.WriteLine("page"+page);
 			//Console.WriteLine("force"+force);
 			//Console.WriteLine("x:"+x+"  y:"+y);
-			upnpDevice.ImportedService_setSerial(deviceSerial);
-			upnpDevice.ImportedService_setPage(page);
-			upnpDevice.ImportedService_setForce(force);
-			upnpDevice.ImportedService_setX(x);
-			upnpDevice.ImportedService_setY(y);
+//			upnpDevice.ImportedService_setSerial(deviceSerial);
+//			upnpDevice.ImportedService_setPage(page);
+//			upnpDevice.ImportedService_setForce(force);
+//			upnpDevice.ImportedService_setX(x);
+//			upnpDevice.ImportedService_setY(y);
 			//DrawNewCoord(deviceSerial, x, y);
 			
 			//TCP

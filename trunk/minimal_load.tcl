@@ -23,7 +23,7 @@ CometRoot   cr "Comet root" {NO DESCRIPTION} ._COMETS
 #_____________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 if {![gmlObject info exists object GDD_Edit]} {
-	C_GDD_Editor   GDD_Edit      "GDD editor" {} -Load_types_from_file GDD/GDD_repository/GDD_types_def.txt
+	C_GDD_Editor   GDD_Edit      "GDD editor" {} -Load_types_from_file  $::env(GDD)/GDD_repository/GDD_types_def.txt
  }
 GDD_Edit Load_GDD Comets/CSS_STYLESHEETS/GDD/INRIA.gdd
 
