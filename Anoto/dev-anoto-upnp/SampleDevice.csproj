@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns:Conversion="urn:Conversion">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns:Conversion="urn:Conversion">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,12 +8,11 @@
     <RootNamespace>SampleDevice</RootNamespace>
     <AssemblyName>SampleDevice</AssemblyName>
     <OutputType>Exe</OutputType>
-    <ApplicationIcon />
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <PreBuildEvent />
     <PostBuildEvent />
-    <StartupObject />
     <NoConfig>false</NoConfig>
+    <ReferencePath>C:\Program Files %28x86%29\Anoto\SPCD_1.3.0\</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoStdLib />
@@ -53,23 +53,16 @@
       <HintPath>..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll</HintPath>
       <Private />
     </Reference>
-    <Reference Include="UPnP">
-      <HintPath>UPnP.dll</HintPath>
-      <Private />
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnotoDevice.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Form1.cs" />
     <Compile Include="Form1.Designer.cs" />
-    <Compile Include="ImportedService.cs" />
     <Compile Include="SampleDevice.cs" />
     <Compile Include="Main.cs" />
     <EmbeddedResource Include="Form1.resx" />
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup />
   <ItemGroup>
     <COMReference Include="AnotoGenericStreamer">
       <Guid>{EA3227C1-546D-4825-BEE7-BB0A28E0B451}</Guid>
@@ -79,6 +72,9 @@
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
     <Folder Include="Properties" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

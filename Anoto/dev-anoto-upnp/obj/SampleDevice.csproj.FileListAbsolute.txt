@@ -9,3 +9,13 @@ E:\Doctorat\dev-anoto-upnp\obj\Debug\SampleDevice.csproj.GenerateResource.Cache
 E:\Doctorat\dev-anoto-upnp\obj\Debug\Interop.AnotoGenericStreamer.dll
 E:\Doctorat\dev-anoto-upnp\obj\Debug\SampleDevice.csproj.ResolveComReference.cache
 E:\Doctorat\dev-anoto-upnp\bin\Debug\Interop.AnotoGenericStreamer.dll
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\bin\Debug\SampleDevice.exe
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\bin\Debug\SampleDevice.pdb
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\bin\Debug\Interop.AnotoGenericStreamer.dll
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\obj\Debug\Interop.AnotoGenericStreamer.dll
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\obj\Debug\SampleDevice.csproj.ResolveComReference.cache
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\obj\Debug\SampleDevice.Form1.resources
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\obj\Debug\SampleDevice.csproj.GenerateResource.Cache
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\obj\Debug\SampleDevice.exe
+C:\Users\massond\workspace\Comets\Anoto\dev-anoto-upnp\obj\Debug\SampleDevice.pdb
