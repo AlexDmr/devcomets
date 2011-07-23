@@ -639,16 +639,27 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
   append strm $dec "<g id=\"${objName}_docs\"  transform=\"\"></g>\n"
   append strm $dec "<g id=\"${objName}_links\" transform=\"\"></g>\n"
   
-  append strm $dec "<g id=\"g1_test\">"
-  append strm $dec   "<rect id=\"rect_1\" x=\"0\" y=\"0\" width=\"100\" height=\"70\" style=\"fill:rgb(255,255,0);stroke-width:1;stroke:rgb(0,0,0)\" />"
-  append strm $dec   "<circle id=\"circle_1\" cx=\"0\" cy=\"0\" r=\"50\" style=\"fill:rgb(255,0,255);stroke-width:1;stroke:rgb(0,0,0)\" />"
-  append strm $dec "</g>\n"
-  append strm $dec "<g id=\"g2_test\">"
-  append strm $dec   "<rect id=\"rect_2\" x=\"300\" y=\"400\" width=\"200\" height=\"300\" style=\"fill:rgb(0,255,128);stroke-width:10;stroke:rgb(255,0,0)\" />"
-  append strm $dec   "<circle id=\"circle_2\" cx=\"500\" cy=\"700\" r=\"50\" style=\"fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,255,0)\" />"
-  append strm $dec "</g>\n"
   append strm $dec "<g id=\"g3_drop\">"
   append strm $dec   "<circle id=\"circle_3\" cx=\"700\" cy=\"300\" r=\"50\" style=\"fill:rgb(0,0,0);stroke-width:30;stroke:rgb(255,0,0)\" />"
+  append strm $dec "</g>\n"
+
+  append strm $dec "<g id=\"g1_test\">"
+  append strm $dec   "<circle id=\"circle_1\" cx=\"0\" cy=\"0\" r=\"50\" style=\"fill:rgb(255,0,255);stroke-width:1;stroke:rgb(0,0,0)\" />"
+  append strm $dec   "<rect id=\"rect_1\" x=\"0\" y=\"0\" width=\"100\" height=\"70\" style=\"fill:rgb(255,255,0);stroke-width:1;stroke:rgb(0,0,0)\" />"
+  append strm $dec "</g>\n"
+  append strm $dec "<g id=\"g2_test\" transform=\"rotate(-45) translate(300,400)\">"
+  append strm $dec   "<rect id=\"rect_2\" x=\"0\" y=\"0\" width=\"200\" height=\"300\" style=\"fill:rgb(0,255,128);stroke-width:10;stroke:rgb(255,0,0)\" />\n"
+  append strm $dec   "<circle id=\"circle_2\" cx=\"200\" cy=\"300\" r=\"50\" style=\"fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,255,0)\" />\n"
+  # append strm $dec   "<video xlink:href=\"JasperNationalPark-AthabascaFalls.ogv\" x=\"200\" y=\"50\" width=\"200\" height=\"200\" type=\"video/ogg\" />\n"
+  append strm $dec   "<video id=\"SVG_video_test\" xlink:href=\"usura.ogg\" x=\"200\" y=\"0\" width=\"200\" height=\"200\" initialVisibility=\"always\" />\n"
+  append strm $dec   "<foreignObject width=\"320\" height=\"240\">
+						<div xmlns=\"http://www.w3.org/1999/xhtml\">
+							<video id=\"video_test\" xmlns=\"http://www.w3.org/1999/xhtml\" width=\"320\" height=\"240\" >
+								<source xmlns=\"http://www.w3.org/1999/xhtml\" src=\"usura.ogg\" type=\"video/ogg\" />
+								<source xmlns=\"http://www.w3.org/1999/xhtml\" src=\"usura.mp4\" type=\"video/mp4\" />
+							</video>
+						</div>
+					  </foreignObject>\n"
   append strm $dec "</g>\n"
   
   
@@ -668,7 +679,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
  if {$this(mode) == "edition"} {
    # append strm "test_dd('${objName}', '${objName}_drag', '${objName}_drop_circle', '${objName}_pipo_circle', '${objName}_pipo_line');\n"
   }
- append strm "Draggable('$objName', \['${objName}_BG_rect'\], null, null, null);\n"
+ append strm "RotoZoomable('$objName', \['${objName}_BG_rect'\], null, null, null, null, null, null);\n"
  append strm "Register_node_id_SVG_zoom_onwheel('$objName');\n"
  append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
  
@@ -678,7 +689,12 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
  append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
  
  append strm "Draggable('g1_test', \['rect_1'\], null, null, null);\n"
- append strm "Draggable('g2_test', \['rect_2', 'circle_2'\], null, null, null);\n"
+ append strm "RotoZoomable('g2_test', \['rect_2', 'circle_2'\], function() {console.log('Rotozoom fct_start');}"
+ append strm 												 ", function() {/*console.log('RotoZoom fct_drag');*/}"
+ append strm 												 ", function() {console.log('Rotozoom fct_start_rotozoom');}"
+ append strm 												 ", function() {console.log('Rotozoom fct_rotozoom');}"
+ append strm 												 ", function() {console.log('Rotozoom fct_stop_rotozoom');}"
+ append strm 												 ", function() {console.log('Rotozoom fct_stop');} );\n"
  append strm "Drop_zone('g3_drop', '#g1_test', function() {console.log('start');}, function() {console.log('feedback_hover');}, function() {console.log('feedback_out');}, function() {console.log('feedback_done');}, function() {console.log('feedback_undone');}, function() {console.log('fct');});\n"
  
  this Render_daughters_post_JS strm $dec
