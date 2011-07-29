@@ -508,7 +508,7 @@ function COMET_SVG_new_point_for_rotozoom_touch(event) {
 	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
 	for(var i = 0; i < event.changedTouches.length; i++) {
 		 var touch = event.changedTouches.item(i);
-		 // console.log('new point for touch ' + touch.identifier);
+		 console.log('new point for touch ' + touch.identifier);
 		 Register_new_point_for_rotozoom(touch.target, touch.pageX, touch.pageY, touch.identifier, touch);
 		 // Register_new_point_for_rotozoom(event.changedTouches[i].target, event.changedTouches[i].pageX, event.changedTouches[i].pageY, event.changedTouches[i].identifier, event.changedTouches[i]);
 		}
@@ -516,8 +516,10 @@ function COMET_SVG_new_point_for_rotozoom_touch(event) {
 
 //___________________________________________________________________________________________________________________________________________
 function Register_new_point_for_rotozoom(svg_element, pageX, pageY, identifier, event) {
+	console.log('Register_new_point_for_rotozoom ' + svg_element.id + ' ' + pageX + ' ' + pageY + ' ' + identifier + ' ' + event);
 	// Are we in dragging mode or in rotozoom mode
 	if(drag_info_obj.Tab_drag[svg_element.id]) {
+		 console.log('    drag possible');
 		 // At least the drag is possible, is it also ready for rotozoom?
 		 var grp_node = drag_info_obj.Tab_drag[svg_element.id].grp_node;
 		 if(drag_info_obj.Tab_rotozoom[grp_node.id]) {
