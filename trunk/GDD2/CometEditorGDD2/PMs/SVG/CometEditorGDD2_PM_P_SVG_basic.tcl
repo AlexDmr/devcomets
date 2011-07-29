@@ -652,7 +652,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
   append strm $dec   "<circle id=\"circle_2\" cx=\"200\" cy=\"300\" r=\"50\" style=\"fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,255,0)\" />\n"
   # append strm $dec   "<video xlink:href=\"JasperNationalPark-AthabascaFalls.ogv\" x=\"200\" y=\"50\" width=\"200\" height=\"200\" type=\"video/ogg\" />\n"
   append strm $dec   "<video id=\"SVG_video_test\" xlink:href=\"usura.ogg\" x=\"200\" y=\"0\" width=\"200\" height=\"200\" initialVisibility=\"always\" />\n"
-  append strm $dec   "<foreignObject width=\"320\" height=\"240\">
+  append strmXXX $dec   "<foreignObject width=\"320\" height=\"240\">
 						<div xmlns=\"http://www.w3.org/1999/xhtml\">
 							<video id=\"video_test\" xmlns=\"http://www.w3.org/1999/xhtml\" width=\"320\" height=\"240\" >
 								<source xmlns=\"http://www.w3.org/1999/xhtml\" src=\"usura.ogg\" type=\"video/ogg\" />
@@ -662,9 +662,18 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
 					  </foreignObject>\n"
   append strm $dec "</g>\n"
   
-  
+  set this(L_img) [list]; set i 0
+  foreach img [concat [glob *.png] [glob *.jpg]] {
+	 incr i
+	 set id ${objName}_img_$i; lappend this(L_img) $id
+	 set pos [expr 30 * $i]
+	 append strm $dec "<g id=\"$id\"><image x=\"$pos\" y=\"$pos\" width=\"320px\" height=\"200px\" xlink:href=\"$img\" /></g>"
+	}
+	
+	
   append strm $dec "</g>\n"
   
+
   append strm $dec "<script>Tab_anim_$objName = new Array();\n"
   append strm $dec "function update_annotations_related_to (id) {\n"
   append strm $dec "var node = document.getElementById(id);\nvar T_CB = node.getAttribute('annotations_CB').split(';');\nfor(i in T_CB) {if(T_CB\[i\] != '') {Tab_anim_$objName\[T_CB\[i\]\]();}}}</script>\n"
@@ -697,6 +706,9 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
  append strm 												 ", function() {console.log('Rotozoom fct_stop');} );\n"
  append strm "Drop_zone('g3_drop', '#g1_test', function() {console.log('start');}, function() {console.log('feedback_hover');}, function() {console.log('feedback_out');}, function() {console.log('feedback_done');}, function() {console.log('feedback_undone');}, function() {console.log('fct');});\n"
  
+ foreach img $this(L_img) {
+	 append strm "RotoZoomable('${img}', \['${img}'\], null, null, null, null, null, null);"
+	}
  this Render_daughters_post_JS strm $dec
 }
 
