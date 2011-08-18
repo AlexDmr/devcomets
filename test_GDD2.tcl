@@ -1,4 +1,4 @@
-source c:/These/Projet\ Interface/COMETS/devCOMETS/minimal_load.tcl
+source $::env(ROOT_COMETS)/minimal_load.tcl
 Init_HTML
 
 Do_rec_source ./GDD2/CometEditorGDD2/
