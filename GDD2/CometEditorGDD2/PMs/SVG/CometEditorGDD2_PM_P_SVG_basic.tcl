@@ -662,14 +662,13 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
 					  </foreignObject>\n"
   append strm $dec "</g>\n"
   
-  set this(L_img) [list]; set i 0
+  set i 0
   foreach img [concat [glob *.png] [glob *.jpg]] {
 	 incr i
-	 set id ${objName}_img_$i; lappend this(L_img) $id
+	 set id ${objName}_img_$i; 
 	 set pos [expr 30 * $i]
 	 append strm $dec "<g id=\"$id\"><image x=\"$pos\" y=\"$pos\" width=\"320px\" height=\"200px\" xlink:href=\"$img\" /></g>"
 	}
-	
 	
   append strm $dec "</g>\n"
   
@@ -685,6 +684,13 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
 method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
  upvar $strm_name strm
  this inherited strm
+ 
+  set this(L_img) [list]; set i 0
+  foreach img [concat [glob *.png] [glob *.jpg]] {
+	 incr i
+	 set id ${objName}_img_$i; lappend this(L_img) $id
+	}
+	
  if {$this(mode) == "edition"} {
    # append strm "test_dd('${objName}', '${objName}_drag', '${objName}_drop_circle', '${objName}_pipo_circle', '${objName}_pipo_line');\n"
   }
