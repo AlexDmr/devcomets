@@ -508,7 +508,7 @@ function COMET_SVG_new_point_for_rotozoom_touch(event) {
 	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
 	for(var i = 0; i < event.changedTouches.length; i++) {
 		 var touch = event.changedTouches.item(i);
-		 console.log('new point for touch ' + touch.identifier);
+		 console.log('new point for touch ' + touch.identifier + "---" + touch.target);
 		 Register_new_point_for_rotozoom(touch.target, touch.pageX, touch.pageY, touch.identifier, touch);
 		 // Register_new_point_for_rotozoom(event.changedTouches[i].target, event.changedTouches[i].pageX, event.changedTouches[i].pageY, event.changedTouches[i].identifier, event.changedTouches[i]);
 		}
@@ -753,9 +753,17 @@ function RotoZoomable(id_grp, L_id_actives, fct_start, fct_drag, fct_start_rotoz
 					  drag_info_obj.get_drop_zone = get_drop_zone_via_SVG;
 					 } catch(err) {drag_info_obj.get_drop_zone = get_drop_zone_via_HTML;}
 				}
-			
+		 
 		 node.addEventListener('mousedown'  , COMET_SVG_new_point_for_rotozoom_mouse, false);
-		 node.addEventListener('touchstart' , COMET_SVG_new_point_for_rotozoom_touch, false);
+		 node.addEventListener('touchstart' , function(event){
+				 for (var i = 0; i < event.changedTouches.length; i++) {
+					 if(event.changedTouches.setTarget) {
+						 event.changedTouches.setTarget(i, node);
+						}
+					}
+				 event.target = node;
+				 COMET_SVG_new_point_for_rotozoom_touch(event);
+				}, false);
 		 // In case where events are not dispatched to the SVG elements inside an SVG document, subscribe at the SVG document level:
 		 drag_info_obj.Tab_drag[node.id].svg_canvas.addEventListener('touchstart', COMET_SVG_new_point_for_rotozoom_touch_for_SVG_in_opera, false);
 		}

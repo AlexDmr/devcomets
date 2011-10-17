@@ -663,7 +663,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
   append strm $dec "</g>\n"
   
   set i 0
-  foreach img [concat [glob *.png] [glob *.jpg]] {
+  foreach img [concat [glob *.svg]] {
 	 incr i
 	 set id ${objName}_img_$i; 
 	 set pos [expr 30 * $i]
@@ -686,7 +686,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
  this inherited strm
  
   set this(L_img) [list]; set i 0
-  foreach img [concat [glob *.png] [glob *.jpg]] {
+  foreach img [concat [glob *.svg]] {
 	 incr i
 	 set id ${objName}_img_$i; lappend this(L_img) $id
 	}
