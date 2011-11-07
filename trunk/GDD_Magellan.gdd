@@ -270,7 +270,7 @@
 </node>
 <node id="CUI_Interleaving_Table" set_type="GDD_CUI" set_descriptions="" set_ptf="*">
 </node>
-<node id="FUI_HTML_Interleaving_Table" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_HTML">
+<node id="FUI_HTML_Interleaving_Table" set_type="GDD_FUI" set_descriptions="" set_ptf="Ptf_BIGre">
 <factory id="Interleaving_PM_P_HTML_Table"></factory>
 <factory id=""></factory>
 </node>
