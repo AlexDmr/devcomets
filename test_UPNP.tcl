@@ -14,42 +14,53 @@ UPNP_device UD 20
 UD Generate_device_description_for_comets [CSS++ cr *]
 UD send_heartbeat 1
 
-#___________________________________________________________________________________________________________________________________________
-#___________________________________________________________________________________________________________________________________________
-#___________________________________________________________________________________________________________________________________________
-method Pipo_WComp constructor {} {
-	set this(CU) [CPool get_singleton CometUPNP]
-	set this(dico_UDN_metadata) [dict create]
-	$this(CU) Subscribe_to_set_item_of_dict_devices $objName "$objName New_UPNP_device \$keys \$val"
-	dict for {k v} [$this(CU) get_dict_devices] {
-		 if {[catch {this New_UPNP_device $k $v} err]} {puts stderr "Problem adding a device registered in the CometUPNP (UDN is $k):\n$err"}
-		}
-}
+source $::env(ROOT_COMETS)/Comets/UPNP/UPNP_Pipo_WComp.tcl  
 
 #___________________________________________________________________________________________________________________________________________
-method Pipo_WComp New_UPNP_device {k v} {
-	if {[llength $k] == 1} {
-		 set rep [$this(CU) Search_UDN_service_action [list {UDN} "\$UDN == \"$k\""] \
-											 [list serviceId {$serviceId == "urn:upnp-org:serviceId:Metadata"}] \
-											 [list "" {$D_name == "GetMetadata"}]	]
-		 if {[llength $rep]} {
-			 # Call the GetMetadata action
-			 $this(CU) soap_call $k "urn:upnp-org:serviceId:Metadata" "GetMetadata" [list] "$objName Add_device_and_metadata [list $k] \$UPNP_res"
-			}
-		}
-}
-
 #___________________________________________________________________________________________________________________________________________
-method Pipo_WComp Add_device_and_metadata {UDN UPNP_res} {
-	set metadata [dict get $UPNP_res _ReturnValue]
-	puts "$UDN : $metadata"
-	set D_metadata [dict create]
-	foreach varval [split $metadata "&"] {
-		 lassign [split $varval "="] var val
-		 dict set D_metadata [string trim $var] [string trim $val]
-		}
-	dict set this(dico_UDN_metadata) $UDN $D_metadata
-}
-
 #___________________________________________________________________________________________________________________________________________
-puts "Pipo_WComp PIPO"
+Pipo_WComp PIPO_UPNP_WCOMP 120
+
+
+PIPO_UPNP_WCOMP AddAA [dict create AlexRule [dict create \
+												condition [dict create Zones virtual=true&type=presenceDetector&location=office Lamps virtual=true&type=tableLamp&location=office] \
+												action {this OnEvent AlexRule $Zones OccupancyState {if {$OccupancyState == "Occupied"} {set newTarget True} else {set newTarget False}
+																														 foreach L $Lamps {
+																															 puts "\t=> Light on lamp $L with cause one zone is now $OccupancyState"
+																															 this soap_call $L  urn:upnp-org:serviceId:SwitchPower \
+																																				SetTarget \
+																																				[list $newTarget] \
+																																				"puts \"\t\tLight on $newTarget!\""
+																															 this soap_call $L  urn:upnp-org:serviceId:Dimming \
+																																				SetLoadLevelTarget  \
+																																				[list 255] \
+																																				"puts \"\t\tIntensity to 255!\""
+																															}
+																														} $D_vars}
+											]]
+
+PIPO_UPNP_WCOMP AddAA [dict create MultiRule [dict create \
+												condition [dict create Zones virtual=true&type=presenceDetector&location=office \
+																	   Spots virtual=true&type=spotLight&location=office \
+																	   Door virtual=true&type=openingDetector&location=office \
+														  ] \
+												action {this OnEvents AlexMultiRule [list $Zones OccupancyState $Door OpeningState] {
+																					 if {$OccupancyState == "Occupied" && $OpeningState == "Closed"} {set newTarget True} else {set newTarget False}
+																														 foreach S $Spots {
+																															 puts "\t=> Light on spot $S with cause one zone is now $OccupancyState"
+																															 this soap_call $S  urn:upnp-org:serviceId:SwitchPower \
+																																				SetTarget \
+																																				[list $newTarget] \
+																																				"puts \"\t\t$S : Light on $newTarget!\""
+																															 this soap_call $S  urn:upnp-org:serviceId:Dimming \
+																																				SetLoadLevelTarget  \
+																																				[list 255] \
+																																				"puts \"\t\t$S : Intensity to 255!\""
+																															}
+																														} $D_vars}
+											]]
+
+puts "PIPO_UPNP_WCOMP Apply_rule AlexRule"
+# type=tableLamp&location=office
+	# urn:upnp-org:serviceId:SwitchPower  SetTarget [list newTargetValue True]
+	# urn:upnp-org:serviceId:Dimming      SetLoadLevelTarget [list NewLoadLevelTarget 255]
