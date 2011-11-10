@@ -39,10 +39,27 @@ PIPO_UPNP_WCOMP AddAA [dict create AlexRule [dict create \
 																														} $D_vars}
 											]]
 
+PIPO_UPNP_WCOMP AddAA [dict create DomusRule [dict create \
+												condition [dict create Zones virtual=false&type=presenceDetectorIn&location=kitchen Lamps type=lightAlarm,switchOnAbleLigh&location=bedroom&virtual=false ] \
+												action {this OnEvent DomusRule $Zones OccupancyState {puts EVENTsOnDomusZone; if {$OccupancyState == "Unoccupied"} {set newTarget True} else {set newTarget False}
+																														 foreach L $Lamps {
+																															 puts "\t=> Light on lamp $L with cause one zone is now $OccupancyState"
+																															 this soap_call $L  urn:upnp-org:serviceId:SwitchPower \
+																																				SetTarget \
+																																				[list $newTarget] \
+																																				"puts \"\t\tLight on $newTarget!\""
+																															 this soap_call $L  urn:upnp-org:serviceId:Dimming \
+																																				SetLoadLevelTarget  \
+																																				[list 255] \
+																																				"puts \"\t\tIntensity to 255!\""
+																															}
+																														} $D_vars}
+											]]
+
 PIPO_UPNP_WCOMP AddAA [dict create MultiRule [dict create \
 												condition [dict create Zones virtual=true&type=presenceDetector&location=office \
 																	   Spots virtual=true&type=spotLight&location=office \
-																	   Door virtual=true&type=openingDetector&location=office \
+																	   Door  virtual=true&type=openingDetector&location=office \
 														  ] \
 												action {this OnEvents AlexMultiRule [list $Zones OccupancyState $Door OpeningState] {
 																					 if {$OccupancyState == "Occupied" && $OpeningState == "Closed"} {set newTarget True} else {set newTarget False}
