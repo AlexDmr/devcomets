@@ -27,12 +27,10 @@ PIPO_UPNP_WCOMP AddAA [dict create AlexRule [dict create \
 												action {this OnEvent AlexRule $Zones OccupancyState {if {$OccupancyState == "Occupied"} {set newTarget True} else {set newTarget False}
 																														 foreach L $Lamps {
 																															 puts "\t=> Light on lamp $L with cause one zone is now $OccupancyState"
-																															 this soap_call $L  urn:upnp-org:serviceId:SwitchPower \
-																																				SetTarget \
+																															 this soap_call $L  SetTarget \
 																																				[list $newTarget] \
 																																				"puts \"\t\tLight on $newTarget!\""
-																															 this soap_call $L  urn:upnp-org:serviceId:Dimming \
-																																				SetLoadLevelTarget  \
+																															 this soap_call $L  SetLoadLevelTarget  \
 																																				[list 255] \
 																																				"puts \"\t\tIntensity to 255!\""
 																															}
@@ -44,12 +42,10 @@ PIPO_UPNP_WCOMP AddAA [dict create DomusRule [dict create \
 												action {this OnEvent DomusRule $Zones OccupancyState {puts EVENTsOnDomusZone; if {$OccupancyState == "Unoccupied"} {set newTarget True} else {set newTarget False}
 																														 foreach L $Lamps {
 																															 puts "\t=> Light on lamp $L with cause one zone is now $OccupancyState"
-																															 this soap_call $L  urn:upnp-org:serviceId:SwitchPower \
-																																				SetTarget \
+																															 this soap_call $L  SetTarget \
 																																				[list $newTarget] \
 																																				"puts \"\t\tLight on $newTarget!\""
-																															 this soap_call $L  urn:upnp-org:serviceId:Dimming \
-																																				SetLoadLevelTarget  \
+																															 this soap_call $L  SetLoadLevelTarget  \
 																																				[list 255] \
 																																				"puts \"\t\tIntensity to 255!\""
 																															}
@@ -65,12 +61,10 @@ PIPO_UPNP_WCOMP AddAA [dict create MultiRule [dict create \
 																					 if {$OccupancyState == "Occupied" && $OpeningState == "Closed"} {set newTarget True} else {set newTarget False}
 																														 foreach S $Spots {
 																															 puts "\t=> Light on spot $S with cause one zone is now $OccupancyState"
-																															 this soap_call $S  urn:upnp-org:serviceId:SwitchPower \
-																																				SetTarget \
+																															 this soap_call $S  SetTarget \
 																																				[list $newTarget] \
 																																				"puts \"\t\t$S : Light on $newTarget!\""
-																															 this soap_call $S  urn:upnp-org:serviceId:Dimming \
-																																				SetLoadLevelTarget  \
+																															 this soap_call $S  SetLoadLevelTarget  \
 																																				[list 255] \
 																																				"puts \"\t\t$S : Intensity to 255!\""
 																															}
