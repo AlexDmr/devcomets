@@ -20,14 +20,15 @@ source $::env(ROOT_COMETS)/Comets/UPNP/UPNP_Pipo_PresenceZones.tcl
 toplevel ._PIPO_PresenceZones
 canvas   ._PIPO_PresenceZones.canvas; pack ._PIPO_PresenceZones.canvas -fill both -expand 1
 Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    60 ._PIPO_PresenceZones.canvas "0 0 200 0 200 400 0 400" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=office"
-Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   60 ._PIPO_PresenceZones.canvas "205 0 405 0 405 400 205 400" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bedroom"
+Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   60 ._PIPO_PresenceZones.canvas "205 0 405 0 405 400 205 400 205 205 305 205 305 95 205 95" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bedroom"
 Pipo_UPNP_PresenceZones Pipo_Zone_SalleBain 60 ._PIPO_PresenceZones.canvas "410 0 505 0 505 95 410 95" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bathroom"
 Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   60 ._PIPO_PresenceZones.canvas "510 0 700 0 700 400 410 400 410 100 510 100" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=kitchen"
+Pipo_UPNP_PresenceZones Pipo_Zone_Bed       60 ._PIPO_PresenceZones.canvas "205 100 300 100 300 200 205 200" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bed"
 puts YOOOO
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
-Pipo_WComp PIPO_UPNP_WCOMP 120
+# Pipo_WComp PIPO_UPNP_WCOMP 120
 
 
 return
