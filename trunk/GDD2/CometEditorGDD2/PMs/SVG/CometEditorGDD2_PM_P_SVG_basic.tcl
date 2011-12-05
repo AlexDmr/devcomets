@@ -696,12 +696,12 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
   }
  append strm "RotoZoomable('$objName', \['${objName}_BG_rect'\], null, null, null, null, null, null);\n"
  append strm "Register_node_id_SVG_zoom_onwheel('$objName');\n"
- append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
+ # append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
  
  set C_html_to_SVG [CSS++ $objName "#$objName <--< Container_PM_P_HTML_to_SVG"]
  append strm "document.getElementById('${objName}_BG_rect').setAttribute('PM', '${objName}');\n"
  append strm "document.getElementById('${objName}_BG_rect').setAttribute('PM_HTML_to_SVG', '${C_html_to_SVG}');\n"
- append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
+ # append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
  
  append strm "Draggable('g1_test', \['rect_1'\], null, null, null);\n"
  append strm "RotoZoomable('g2_test', \['rect_2', 'circle_2'\], function() {console.log('Rotozoom fct_start');}"
