@@ -10,9 +10,9 @@ cr set_daughters_R [list $CU [CometVideo CV n d]]
 cr set_daughters_R [list $CU CV]
 
 
-UPNP_device UD 20
-UD Generate_device_description_for_comets [CSS++ cr *]
-UD send_heartbeat 1
+# UPNP_device UD 20
+# UD Generate_device_description_for_comets [CSS++ cr *]
+# UD send_heartbeat 1
 
 source $::env(ROOT_COMETS)/Comets/UPNP/UPNP_Pipo_WComp.tcl  
 source $::env(ROOT_COMETS)/Comets/UPNP/UPNP_Pipo_PresenceZones.tcl  
