@@ -24,6 +24,10 @@ Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   60 ._PIPO_PresenceZones.canvas "205 
 Pipo_UPNP_PresenceZones Pipo_Zone_SalleBain 60 ._PIPO_PresenceZones.canvas "410 0 505 0 505 95 410 95" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bathroom"
 Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   60 ._PIPO_PresenceZones.canvas "510 0 700 0 700 400 410 400 410 100 510 100" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=kitchen"
 Pipo_UPNP_PresenceZones Pipo_Zone_Bed       60 ._PIPO_PresenceZones.canvas "205 100 300 100 300 200 205 200" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bed"
+
+# Proxy_UPNP_Sonos Pipo_SONOS_1 60 RINCON_000E583223C401400 "virtual=true&type=audioAlarm"
+Proxy_UPNP_Sonos Pipo_SONOS_2 60 RINCON_000E5823924C01400 "virtual=true&type=audioAlarm"
+# Proxy_UPNP_Sonos Pipo_SONOS_3 60 RINCON_000E58249C7E01400 "virtual=true&type=audioAlarm"
 puts YOOOO
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
