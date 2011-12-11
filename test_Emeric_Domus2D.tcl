@@ -5,13 +5,44 @@ set CU [CPool get_singleton CometUPNP]
 
 toplevel ._PIPO_PresenceZones
 canvas   ._PIPO_PresenceZones.canvas; pack ._PIPO_PresenceZones.canvas -fill both -expand 1
-Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    7200 ._PIPO_PresenceZones.canvas "0 0 200 0 200 400 0 400" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=office"                                    Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   7200 ._PIPO_PresenceZones.canvas "205 0 405 0 405 400 205 400 205 205 305 205 305 95 205 95" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bedroom" Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_SalleBain 7200 ._PIPO_PresenceZones.canvas "410 0 505 0 505 95 410 95" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bathroom"                                Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   7200 ._PIPO_PresenceZones.canvas "510 0 700 0 700 400 410 400 410 100 510 100" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=kitchen"               Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Bed       7200 ._PIPO_PresenceZones.canvas "205 100 300 100 300 200 205 200" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bed"                               Simulation
+._PIPO_PresenceZones.canvas create polygon 0 0 1215 0 1215 550 0 550 -fill black
 
-Proxy_Pipo_Sonos Pipo_Sonos 7200 "virtual=true" ._PIPO_PresenceZones.canvas 400 250
+# Presence Zones :
+Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    60 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=office"                                Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   60 ._PIPO_PresenceZones.canvas "455 15 830 15 830 225 540 225 540 420 820 420 820 535 455 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bedroom" Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_SalleBain 60 ._PIPO_PresenceZones.canvas "255 205 455 205 455 535 255 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bathroom"                              Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   60 ._PIPO_PresenceZones.canvas "15 15 455 15 455 195 245 195 245 535 15 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=kitchen"                   Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Bed       60 ._PIPO_PresenceZones.canvas "820 225 540 225 540 420 820 420" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bed"                                   Simulation
+._PIPO_PresenceZones.canvas create rect 405 305 455 420 -fill white
+Pipo_UPNP_PresenceZones Pipo_serviette      60 ._PIPO_PresenceZones.canvas "410 310 455 310 455 415 410 415" "virtual=true&type=drying&location=towel"
+
+
+._PIPO_PresenceZones.canvas create polygon 450 415 450 125 460 125 460 415 -fill black
+._PIPO_PresenceZones.canvas create polygon 820 415 820 125 830 125 830 415 -fill black
+._PIPO_PresenceZones.canvas create polygon 820 225 540 225 540 420 820 420 820 415 545 415 545 230 820 230 -fill white
+
+# SONOS :
+Proxy_Pipo_Sonos Pipo_Sonos 7200 "type=audioAlarm&virtual=true" ._PIPO_PresenceZones.canvas 460 325
+
+# Lights :
+Pipo_UPNP_Light LightSdB      7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=bathroom&virtual=true" ._PIPO_PresenceZones.canvas 310 450
+Pipo_UPNP_Light LightCuisine  7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=kitchen&virtual=true" ._PIPO_PresenceZones.canvas 200 400
+Pipo_UPNP_Light LightCuisine2 7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=kitchen&virtual=true" ._PIPO_PresenceZones.canvas 300 100
+Pipo_UPNP_Light LightChambre1 7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=bedroom&virtual=true" ._PIPO_PresenceZones.canvas 650 100
+Pipo_UPNP_Light LightChambre2 7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=bedroom&virtual=true" ._PIPO_PresenceZones.canvas 650 450
+
+# Buttons :
+Pipo_UPNP_Button StartButton 7200 "type=button&virtual=true" ._PIPO_PresenceZones.canvas 815 215 15
+
+# Shutters
+Pipo_UPNP_Volet VoletSalon   7200 "type=opennable,closable&location=office&virtual=true"   ._PIPO_PresenceZones.canvas 830 530 1200 550
+Pipo_UPNP_Volet VoletChambre 7200 "type=opennable,closable&location=bedroom&virtual=true"  ._PIPO_PresenceZones.canvas 455 530 820 550
+Pipo_UPNP_Volet VoletSdB     7200 "type=opennable,closable&location=bathroom&virtual=true" ._PIPO_PresenceZones.canvas 255 530 445 550
+Pipo_UPNP_Volet VoletCuisine 7200 "type=opennable,closable&location=kitchen&virtual=true"  ._PIPO_PresenceZones.canvas 15 530 245 550
+
+# Temperature Display and Manager
+Pipo_UPNP_TemperatureDisplay TempDisplay 7200 "type=temperatureDisplay&virtual=true" ._PIPO_PresenceZones.canvas 250 425
+Pipo_UPNP_TemperatureManager TempManager 7200 "type=heatAble,temperatureObservable&virtual=true"
 
 
 
