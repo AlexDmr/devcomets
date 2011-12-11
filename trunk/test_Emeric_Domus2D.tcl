@@ -73,6 +73,7 @@ proc Move {x y} {
 
 
 proc CB_for_UPNP_MSEARCH {dt} {
+	global CU
 	$CU M-SEARCH "upnp:rootdevice"
 	after $dt "CB_for_UPNP_MSEARCH $dt"
 }
