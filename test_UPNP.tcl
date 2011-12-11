@@ -2,12 +2,12 @@ if {[info exists ::env(ROOT_COMETS)]} {cd $::env(ROOT_COMETS)} else {puts "Pleas
 source minimal_load.tcl
 
 set CU [CPool get_singleton CometUPNP]
+cr set_daughters_R [list $CU]
 
-
-cr set_daughters_R [list $CU [CometVideo CV n d]]
-[CSS++ cr "#cr->PMs.PM_TK CV"] set_cmd_placement {pack $p}
-[CSS++ cr "#cr->PMs.PM_TK CV"] Play_audio_stream_locally 1
-cr set_daughters_R [list $CU CV]
+# cr set_daughters_R [list $CU [CometVideo CV n d]]
+# [CSS++ cr "#cr->PMs.PM_TK CV"] set_cmd_placement {pack $p}
+# [CSS++ cr "#cr->PMs.PM_TK CV"] Play_audio_stream_locally 1
+# cr set_daughters_R [list $CU CV]
 
 
 # UPNP_device UD 20
@@ -26,7 +26,7 @@ Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   60 ._PIPO_PresenceZones.canvas "510 
 Pipo_UPNP_PresenceZones Pipo_Zone_Bed       60 ._PIPO_PresenceZones.canvas "205 100 300 100 300 200 205 200" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bed"
 
 # Proxy_UPNP_Sonos Pipo_SONOS_1 60 RINCON_000E583223C401400 "virtual=true&type=audioAlarm"
-Proxy_UPNP_Sonos Pipo_SONOS_2 60 RINCON_000E5823924C01400 "virtual=false&type=switchOffAbleAudio,switchOnAbleAudio"
+# Proxy_UPNP_Sonos Pipo_SONOS_2 60 RINCON_000E5823924C01400 "virtual=false&type=switchOffAbleAudio,switchOnAbleAudio"
 # Proxy_UPNP_Sonos Pipo_SONOS_3 60 RINCON_000E58249C7E01400 "virtual=true&type=audioAlarm"
 
 proc CB_for_UPNP_MSEARCH {dt} {
@@ -39,67 +39,4 @@ after [expr 1000 * 60 * 10] "CB_for_UPNP_MSEARCH [expr 1000 * 60 * 10]"
 #___________________________________________________________________________________________________________________________________________
 Pipo_WComp PIPO_UPNP_WCOMP 120
 
-
 return
-
-PIPO_UPNP_WCOMP AddAA {
-advice presenceDetectorOut_opennable_154_false():
-dict create condition [dict create presenceDetectorOut virtual=false&type=presenceDetectorOut&location=bathroom opennable virtual=false&type=opennable] action {this OnEvent presenceDetectorOut_opennable_154_false $presenceDetectorOut OccupancyState {if {$OccupancyState == "UnOccuped"} {set newTarget True} else {set newTarget False}
-foreach L $opennable {
- this soap_call $L Open
- }
-} $D_vars}
-}
-PIPO_UPNP_WCOMP AddAA [dict create AlexRule [dict create \
-												condition [dict create Zones virtual=true&type=presenceDetector&location=office Lamps virtual=true&type=tableLamp&location=office] \
-												action {this OnEvent AlexRule $Zones OccupancyState {if {$OccupancyState == "Occupied"} {set newTarget True} else {set newTarget False}
-																														 foreach L $Lamps {
-																															 puts "\t=> Light on lamp $L with cause one zone is now $OccupancyState"
-																															 this soap_call $L  SetTarget \
-																																				[list $newTarget] \
-																																				"puts \"\t\tLight on $newTarget!\""
-																															 this soap_call $L  SetLoadLevelTarget  \
-																																				[list 255] \
-																																				"puts \"\t\tIntensity to 255!\""
-																															}
-																														} $D_vars}
-											]]
-
-PIPO_UPNP_WCOMP AddAA [dict create DomusRule [dict create \
-												condition [dict create Zones virtual=false&type=presenceDetectorIn&location=bathroom Lamps type=lightAlarm,switchOnAbleLigh&location=bedroom&virtual=false ] \
-												action {this OnEvent DomusRule $Zones OccupancyState {puts "A zone is now $OccupancyState"; if {$OccupancyState == "Unoccupied"} {set newTarget True} else {set newTarget False}
-																														 foreach L $Lamps {
-																															 puts "\t=> Light on lamp $L with cause one zone is now $OccupancyState"
-																															 this soap_call $L  SetTarget \
-																																				[list $newTarget] \
-																																				"puts \"\t\tLight on $newTarget!\""
-																															 this soap_call $L  SetLoadLevelTarget  \
-																																				[list 255] \
-																																				"puts \"\t\tIntensity to 255!\""
-																															}
-																														} $D_vars}
-											]]
-
-PIPO_UPNP_WCOMP AddAA [dict create MultiRule [dict create \
-												condition [dict create Zones virtual=true&type=presenceDetector&location=office \
-																	   Spots virtual=true&type=spotLight&location=office \
-																	   Door  virtual=true&type=openingDetector&location=office \
-														  ] \
-												action {this OnEvents AlexMultiRule [list $Zones OccupancyState $Door OpeningState] {
-																					 if {$OccupancyState == "Occupied" && $OpeningState == "Closed"} {set newTarget True} else {set newTarget False}
-																														 foreach S $Spots {
-																															 puts "\t=> Light on spot $S with cause one zone is now $OccupancyState"
-																															 this soap_call $S  SetTarget \
-																																				[list $newTarget] \
-																																				"puts \"\t\t$S : Light on $newTarget!\""
-																															 this soap_call $S  SetLoadLevelTarget  \
-																																				[list 255] \
-																																				"puts \"\t\t$S : Intensity to 255!\""
-																															}
-																														} $D_vars}
-											]]
-
-puts "PIPO_UPNP_WCOMP Apply_rule AlexRule"
-# type=tableLamp&location=office
-	# urn:upnp-org:serviceId:SwitchPower  SetTarget [list newTargetValue True]
-	# urn:upnp-org:serviceId:Dimming      SetLoadLevelTarget [list NewLoadLevelTarget 255]

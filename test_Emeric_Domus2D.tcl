@@ -69,3 +69,11 @@ proc Move {x y} {
 			}
 		}
 }
+
+
+
+proc CB_for_UPNP_MSEARCH {dt} {
+	$CU M-SEARCH "upnp:rootdevice"
+	after $dt "CB_for_UPNP_MSEARCH $dt"
+}
+after [expr 1000 * 60 * 10] "CB_for_UPNP_MSEARCH [expr 1000 * 60 * 10]"
