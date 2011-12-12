@@ -37,7 +37,7 @@ Pipo_UPNP_PresenceZones Pipo_serviette      7200 ._PIPO_PresenceZones.canvas "41
 ._PIPO_PresenceZones.canvas create polygon 820 225 540 225 540 420 820 420 820 415 545 415 545 230 820 230 -fill white
 
 # SONOS :
-Proxy_Pipo_Sonos Pipo_Sonos 7200 "type=audioAlarm&virtual=true" ._PIPO_PresenceZones.canvas 460 325
+Proxy_Pipo_Sonos Pipo_Sonos 7200 "type=audioAlarm,switchOffAbleAudio&virtual=true" ._PIPO_PresenceZones.canvas 460 325
 
 # Lights :
 Pipo_UPNP_Light LightSdB      7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=bathroom&virtual=true" ._PIPO_PresenceZones.canvas 310 450
