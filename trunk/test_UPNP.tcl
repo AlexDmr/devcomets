@@ -25,16 +25,17 @@ canvas   ._PIPO_PresenceZones.canvas; pack ._PIPO_PresenceZones.canvas -fill bot
 ._PIPO_PresenceZones.canvas create polygon 0 0 1215 0 1215 550 0 550 -fill black
 
 # Presence Zones :
-Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    7200 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=office"                                Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   7200 ._PIPO_PresenceZones.canvas "455 15 830 15 830 225 540 225 540 420 820 420 820 535 455 535" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bedroom" Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_SalleBain 7200 ._PIPO_PresenceZones.canvas "255 205 455 205 455 535 255 535" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bathroom"                              Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   7200 ._PIPO_PresenceZones.canvas "15 15 455 15 455 195 245 195 245 535 15 535" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=kitchen"                   Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Bed       7200 ._PIPO_PresenceZones.canvas "820 225 540 225 540 420 820 420" "virtual=false&type=presenceDetectorOut,presenceDetectorIn&location=bed"                                   Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    [list "friendlyName" "Proxy Zone bureau"] 7200 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=false&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=office"                                Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   [list "friendlyName" "Proxy Zone Chambre"] 7200 ._PIPO_PresenceZones.canvas "455 15 830 15 830 535 455 535" "virtual=false&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=bedroom" Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_SalleBain [list "friendlyName" "Proxy Zone Salle de bain"] 7200 ._PIPO_PresenceZones.canvas "255 205 455 205 455 535 255 535" "virtual=false&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=bathroom"                              Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   [list "friendlyName" "Proxy Zone Cuisine"] 7200 ._PIPO_PresenceZones.canvas "15 15 455 15 455 195 245 195 245 535 15 535" "virtual=false&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=kitchen"                   Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Bed       [list "friendlyName" "Proxy Zone Lit"] 7200 ._PIPO_PresenceZones.canvas "820 225 540 225 540 420 820 420" "virtual=false&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=bed"                                   Simulation
 ._PIPO_PresenceZones.canvas create rect 405 305 455 420 -fill white
-Pipo_UPNP_PresenceZones Pipo_serviette      7200 ._PIPO_PresenceZones.canvas "410 310 455 310 455 415 410 415" "virtual=false&type=drying&location=towel"
+._PIPO_PresenceZones.canvas create rect 820 535 830 400 -fill black
+Pipo_UPNP_PresenceZones Pipo_serviette      [list "friendlyName" "Proxy Zone serviette"] 7200 ._PIPO_PresenceZones.canvas "410 310 455 310 455 415 410 415" "virtual=false&type=drying&location=towel"
 
 # SONOS proxy :
-Proxy_UPNP_Sonos Pipo_SONOS_proxy 7200 RINCON_000E5823924C01400 "type=audioAlarm,switchOffAbleAudio&virtual=false"
+Proxy_UPNP_Sonos Pipo_SONOS_proxy [list "friendlyName" "Proxy SONOS"] 7200 RINCON_000E5823924C01400 "type=audioAlarm,switchOffAbleAudio&virtual=false"
 
 
 
