@@ -9,13 +9,13 @@ canvas   ._PIPO_PresenceZones.canvas; pack ._PIPO_PresenceZones.canvas -fill bot
 
 after 30000 {
 # Presence Zones :
-Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    60 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=office"                                Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   60 ._PIPO_PresenceZones.canvas "455 15 830 15 830 225 540 225 540 420 820 420 820 535 455 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bedroom" Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_SalleBain 60 ._PIPO_PresenceZones.canvas "255 205 455 205 455 535 255 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bathroom"                              Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   60 ._PIPO_PresenceZones.canvas "15 15 455 15 455 195 245 195 245 535 15 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=kitchen"                   Simulation
-Pipo_UPNP_PresenceZones Pipo_Zone_Bed       60 ._PIPO_PresenceZones.canvas "820 225 540 225 540 420 820 420" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bed"                                   Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    7200 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=office"                                Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   7200 ._PIPO_PresenceZones.canvas "455 15 830 15 830 225 540 225 540 420 820 420 820 535 455 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bedroom" Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_SalleBain 7200 ._PIPO_PresenceZones.canvas "255 205 455 205 455 535 255 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bathroom"                              Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Cuisine   7200 ._PIPO_PresenceZones.canvas "15 15 455 15 455 195 245 195 245 535 15 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=kitchen"                   Simulation
+Pipo_UPNP_PresenceZones Pipo_Zone_Bed       7200 ._PIPO_PresenceZones.canvas "820 225 540 225 540 420 820 420" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bed"                                   Simulation
 ._PIPO_PresenceZones.canvas create rect 405 305 455 420 -fill white
-Pipo_UPNP_PresenceZones Pipo_serviette      60 ._PIPO_PresenceZones.canvas "410 310 455 310 455 415 410 415" "virtual=true&type=drying&location=towel"
+Pipo_UPNP_PresenceZones Pipo_serviette      7200 ._PIPO_PresenceZones.canvas "410 310 455 310 455 415 410 415" "virtual=true&type=drying&location=towel"
 
 
 ._PIPO_PresenceZones.canvas create polygon 450 415 450 125 460 125 460 415 -fill black
