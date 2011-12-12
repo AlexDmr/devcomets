@@ -7,6 +7,7 @@ toplevel ._PIPO_PresenceZones
 canvas   ._PIPO_PresenceZones.canvas; pack ._PIPO_PresenceZones.canvas -fill both -expand 1
 ._PIPO_PresenceZones.canvas create polygon 0 0 1215 0 1215 550 0 550 -fill black
 
+after 30000 {
 # Presence Zones :
 Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    60 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=office"                                Simulation
 Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   60 ._PIPO_PresenceZones.canvas "455 15 830 15 830 225 540 225 540 420 820 420 820 535 455 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bedroom" Simulation
@@ -43,7 +44,7 @@ Pipo_UPNP_Volet VoletCuisine 7200 "type=opennable,closable&location=kitchen&virt
 # Temperature Display and Manager
 Pipo_UPNP_TemperatureDisplay TempDisplay 7200 "type=temperatureDisplay&virtual=true" ._PIPO_PresenceZones.canvas 250 425
 Pipo_UPNP_TemperatureManager TempManager 7200 "type=heatAble,temperatureObservable&virtual=true"
-
+}
 
 
 
