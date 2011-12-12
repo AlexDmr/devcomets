@@ -39,6 +39,10 @@ Pipo_UPNP_PresenceZones Pipo_serviette      7200 ._PIPO_PresenceZones.canvas "41
 # SONOS :
 Proxy_Pipo_Sonos Pipo_Sonos 7200 "type=audioAlarm,switchOffAbleAudio&virtual=true" ._PIPO_PresenceZones.canvas 460 325
 
+# Caffetière
+# type=switchOnAbleCoffe,switchOffAbleCoffe&virtual=false
+
+
 # Lights :
 Pipo_UPNP_Light LightSdB      7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=bathroom&virtual=true" ._PIPO_PresenceZones.canvas 310 450
 Pipo_UPNP_Light LightCuisine  7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=kitchen&virtual=true" ._PIPO_PresenceZones.canvas 200 400
