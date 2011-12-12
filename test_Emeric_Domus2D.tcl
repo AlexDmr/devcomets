@@ -73,7 +73,7 @@ set D_BONHOMME [dict create is_dragging 0 last_x 0 last_y 0 L_zones [gmlObject i
 
 proc CB_for_UPNP_MSEARCH {dt} {
 	global CU
-	$CU M-SEARCH "upnp:rootdevice"
+	$CU Do_a_SSDP_M-SEARCH
 	after $dt "CB_for_UPNP_MSEARCH $dt"
 }
 after [expr 1000 * 60 * 10] "CB_for_UPNP_MSEARCH [expr 1000 * 60 * 10]"

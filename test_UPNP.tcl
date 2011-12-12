@@ -33,6 +33,11 @@ Pipo_UPNP_PresenceZones Pipo_Zone_Bed       7200 ._PIPO_PresenceZones.canvas "82
 ._PIPO_PresenceZones.canvas create rect 405 305 455 420 -fill white
 Pipo_UPNP_PresenceZones Pipo_serviette      7200 ._PIPO_PresenceZones.canvas "410 310 455 310 455 415 410 415" "virtual=false&type=drying&location=towel"
 
+# SONOS proxy :
+Proxy_UPNP_Sonos Pipo_SONOS_proxy 7200 RINCON_000E5823924C01400 "type=audioAlarm&virtual=false"
+
+
+
 
 ._PIPO_PresenceZones.canvas create polygon 450 415 450 125 460 125 460 415 -fill black
 ._PIPO_PresenceZones.canvas create polygon 820 415 820 125 830 125 830 415 -fill black
@@ -69,7 +74,7 @@ proc Move {x y} {
 
 proc CB_for_UPNP_MSEARCH {dt} {
 	global CU
-	$CU M-SEARCH "upnp:rootdevice"
+	$CU Do_a_SSDP_M-SEARCH
 	after $dt "CB_for_UPNP_MSEARCH $dt"
 }
 after [expr 1000 * 60 * 10] "CB_for_UPNP_MSEARCH [expr 1000 * 60 * 10]"
