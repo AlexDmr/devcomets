@@ -44,9 +44,6 @@ Pipo_UPNP_Volet VoletCuisine 7200 "type=opennable,closable&location=kitchen&virt
 # Temperature Display and Manager
 Pipo_UPNP_TemperatureDisplay TempDisplay 7200 "type=temperatureDisplay&virtual=true" ._PIPO_PresenceZones.canvas 250 425
 Pipo_UPNP_TemperatureManager TempManager 7200 "type=heatAble,temperatureObservable&virtual=true"
-}
-
-
 
 image create photo photo_of_BONHOMME -file $::env(ROOT_COMETS)Comets/UPNP/homer-simpson.gif
 ._PIPO_PresenceZones.canvas create image 100 100 -image photo_of_BONHOMME -tags [list BONHOMME]
@@ -70,7 +67,7 @@ proc Move {x y} {
 			}
 		}
 }
-
+}
 
 
 proc CB_for_UPNP_MSEARCH {dt} {
