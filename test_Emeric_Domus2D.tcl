@@ -7,7 +7,21 @@ toplevel ._PIPO_PresenceZones
 canvas   ._PIPO_PresenceZones.canvas; pack ._PIPO_PresenceZones.canvas -fill both -expand 1
 ._PIPO_PresenceZones.canvas create polygon 0 0 1215 0 1215 550 0 550 -fill black
 
-after 15000 {
+proc Move {x y} {
+	global D_BONHOMME
+	if {[dict get $D_BONHOMME is_dragging]} {
+		 set dx [expr $x - [dict get $D_BONHOMME last_x]]; set dy [expr $y - [dict get $D_BONHOMME last_y]]
+		 dict set D_BONHOMME last_x $x; dict set D_BONHOMME last_y $y
+		 ._PIPO_PresenceZones.canvas move BONHOMME $dx $dy
+		 lassign [._PIPO_PresenceZones.canvas bbox BONHOMME] x1 y1 x2 y2
+		 set cx [expr int( ($x1 + $x2)/2 )]; set cy [expr int( ($y1 + $y2)/2 )]
+		 foreach z [dict get $D_BONHOMME L_zones] {
+			 $z Simulation_OccupancyState_at $cx $cy
+			}
+		}
+}
+
+# after 15000 {
 # Presence Zones :
 Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    7200 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=office"                                Simulation
 Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   7200 ._PIPO_PresenceZones.canvas "455 15 830 15 830 225 540 225 540 420 820 420 820 535 455 535" "virtual=true&type=presenceDetectorOut,presenceDetectorIn&location=bedroom" Simulation
@@ -54,20 +68,7 @@ bind ._PIPO_PresenceZones.canvas <Motion> "Move %x %y"
 
 set D_BONHOMME [dict create is_dragging 0 last_x 0 last_y 0 L_zones [gmlObject info objects Pipo_UPNP_PresenceZones]]
 
-proc Move {x y} {
-	global D_BONHOMME
-	if {[dict get $D_BONHOMME is_dragging]} {
-		 set dx [expr $x - [dict get $D_BONHOMME last_x]]; set dy [expr $y - [dict get $D_BONHOMME last_y]]
-		 dict set D_BONHOMME last_x $x; dict set D_BONHOMME last_y $y
-		 ._PIPO_PresenceZones.canvas move BONHOMME $dx $dy
-		 lassign [._PIPO_PresenceZones.canvas bbox BONHOMME] x1 y1 x2 y2
-		 set cx [expr int( ($x1 + $x2)/2 )]; set cy [expr int( ($y1 + $y2)/2 )]
-		 foreach z [dict get $D_BONHOMME L_zones] {
-			 $z Simulation_OccupancyState_at $cx $cy
-			}
-		}
-}
-}
+# }
 
 
 proc CB_for_UPNP_MSEARCH {dt} {
