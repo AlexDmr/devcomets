@@ -34,7 +34,7 @@ Pipo_UPNP_PresenceZones Pipo_Zone_Bed       7200 ._PIPO_PresenceZones.canvas "82
 Pipo_UPNP_PresenceZones Pipo_serviette      7200 ._PIPO_PresenceZones.canvas "410 310 455 310 455 415 410 415" "virtual=false&type=drying&location=towel"
 
 # SONOS proxy :
-Proxy_UPNP_Sonos Pipo_SONOS_proxy 7200 RINCON_000E5823924C01400 "type=audioAlarm&virtual=false"
+Proxy_UPNP_Sonos Pipo_SONOS_proxy 7200 RINCON_000E5823924C01400 "type=audioAlarm,switchOffAbleAudio&virtual=false"
 
 
 
