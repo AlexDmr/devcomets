@@ -76,6 +76,37 @@ proc Move {x y} {
 		}
 }
 
+button .b_virtual -text "Reset Virtual Domus" -font "Arial 50" -command [list Reset true]; pack .b_virtual -expand 1 -fill both
+button .breal -text "Reset Real Domus" -font "Arial 50" -command [list Reset false]; pack .breal -expand 1 -fill both
+
+proc Reset {virtual} {
+	foreach dev [PIPO_UPNP_WCOMP get_L_UDN_having_metadata type=opennable,closable&virtual=$virtual] {
+		PIPO_UPNP_WCOMP soap_call $dev Close
+		puts "Close $dev"		
+	}
+
+	foreach dev [PIPO_UPNP_WCOMP get_L_UDN_having_metadata type=lightAlarm,switchOnAbleLight,switchOffAbleLight&virtual=$virtual] {
+		PIPO_UPNP_WCOMP soap_call $dev SetTarget [list 0] 
+		PIPO_UPNP_WCOMP soap_call $dev SetLoadLevelTarget [list 0] 
+		puts "Switch off $dev"		
+	}
+	
+	# SONOS
+	foreach dev [PIPO_UPNP_WCOMP get_L_UDN_having_metadata type=audioAlarm,switchOffAbleAudio&virtual=$virtual] {
+		 PIPO_UPNP_WCOMP soap_call $dev SetMute [list 0 Master 1]
+		}
+			
+	# CAFFE
+	foreach dev [PIPO_UPNP_WCOMP get_L_UDN_having_metadata type=switchOnAbleCoffe,switchOffAbleCoffe&virtual=$virtual] {
+		 PIPO_UPNP_WCOMP soap_call $dev SetTarget [list 0]
+		}
+		
+	# Chauffe eau à 12
+	foreach dev [PIPO_UPNP_WCOMP get_L_UDN_having_metadata type=temperatureDisplay&virtual=$virtual] {
+		 PIPO_UPNP_WCOMP soap_call $dev SetValue [list 12]
+		}
+		
+}
 
 
 proc CB_for_UPNP_MSEARCH {dt} {
