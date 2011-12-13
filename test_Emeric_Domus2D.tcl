@@ -21,7 +21,7 @@ proc Move {x y} {
 		}
 }
 
-# after 15000 {
+after 15000 {
 # Presence Zones :
 Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    [list "friendlyName" "Pipo Zone Bureau"] 7200 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=true&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=office"                                Simulation
 Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   [list "friendlyName" "Pipo Zone Chambre"] 7200 ._PIPO_PresenceZones.canvas "455 15 830 15 830 535 455 535" "virtual=true&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=bedroom" Simulation
@@ -44,7 +44,7 @@ Proxy_Pipo_Sonos Pipo_Sonos [list "friendlyName" "Pipo SONOS"] 7200 "type=audioA
 Pipo_UPNP_BinaryCaffetiere Caffetiere [list "friendlyName" "Pipo Caffetière"] 7200 "type=switchOnAbleCoffe,switchOffAbleCoffe&virtual=true" ._PIPO_PresenceZones.canvas 220 325
 
 # Lights :
-Pipo_UPNP_Light LightSdB      [list "friendlyName" "Pipo Light Salle de bain"] 7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=bathroom&virtual=true" ._PIPO_PresenceZones.canvas 310 450
+Pipo_UPNP_Light LightSdB      [list "friendlyName" "Pipo Light Salle de bain"] 7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=bathroom&virtual=true" ._PIPO_PresenceZones.canvas 330 400
 Pipo_UPNP_Light LightCuisine  [list "friendlyName" "Pipo Light Cuisine 1"] 7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=kitchen&virtual=true" ._PIPO_PresenceZones.canvas 200 400
 Pipo_UPNP_Light LightCuisine2 [list "friendlyName" "Pipo Light Cuisine 2"] 7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=kitchen&virtual=true" ._PIPO_PresenceZones.canvas 300 100
 Pipo_UPNP_Light LightChambre1 [list "friendlyName" "Pipo Light Chambre 1"] 7200 "type=lightAlarm,switchOnAbleLight,switchOffAbleLight&location=bedroom&virtual=true" ._PIPO_PresenceZones.canvas 650 100
@@ -72,7 +72,7 @@ bind ._PIPO_PresenceZones.canvas <Motion> "Move %x %y"
 
 set D_BONHOMME [dict create is_dragging 0 last_x 0 last_y 0 L_zones [gmlObject info objects Pipo_UPNP_PresenceZones]]
 
-# }
+}
 
 
 proc CB_for_UPNP_MSEARCH {dt} {

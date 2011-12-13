@@ -24,6 +24,7 @@ toplevel ._PIPO_PresenceZones
 canvas   ._PIPO_PresenceZones.canvas; pack ._PIPO_PresenceZones.canvas -fill both -expand 1
 ._PIPO_PresenceZones.canvas create polygon 0 0 1215 0 1215 550 0 550 -fill black
 
+after 5000 {
 # Presence Zones :
 Pipo_UPNP_PresenceZones Pipo_Zone_Bureau    [list "friendlyName" "Proxy Zone bureau"] 7200 ._PIPO_PresenceZones.canvas "830 15 1200 15 1200 535 830 535" "virtual=false&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=office"                                Simulation
 Pipo_UPNP_PresenceZones Pipo_Zone_Chambre   [list "friendlyName" "Proxy Zone Chambre"] 7200 ._PIPO_PresenceZones.canvas "455 15 830 15 830 535 455 535" "virtual=false&type=presenceDetectorIn,presenceDetectorOut,presenceDetectorInstIn,presenceDetectorInstOut&location=bedroom" Simulation
@@ -33,16 +34,20 @@ Pipo_UPNP_PresenceZones Pipo_Zone_Bed       [list "friendlyName" "Proxy Zone Lit
 ._PIPO_PresenceZones.canvas create rect 405 305 455 420 -fill white
 ._PIPO_PresenceZones.canvas create rect 820 535 830 400 -fill black
 Pipo_UPNP_PresenceZones Pipo_serviette      [list "friendlyName" "Proxy Zone serviette"] 7200 ._PIPO_PresenceZones.canvas "410 310 455 310 455 415 410 415" "virtual=false&type=drying&location=towel"
+._PIPO_PresenceZones.canvas create polygon 450 415 450 125 460 125 460 415 -fill black
+._PIPO_PresenceZones.canvas create polygon 820 415 820 125 830 125 830 415 -fill black
+._PIPO_PresenceZones.canvas create polygon 820 225 540 225 540 420 820 420 820 415 545 415 545 230 820 230 -fill white
 
 # SONOS proxy :
 Proxy_UPNP_Sonos Pipo_SONOS_proxy [list "friendlyName" "Proxy SONOS"] 7200 RINCON_000E5823924C01400 "type=audioAlarm,switchOffAbleAudio&virtual=false"
 
+# Buttons :
+Pipo_UPNP_Button PipoStartButton [list "friendlyName" "Proxy Start button"] 7200 "type=button&virtual=false" ._PIPO_PresenceZones.canvas 815 215 15
 
 
 
-._PIPO_PresenceZones.canvas create polygon 450 415 450 125 460 125 460 415 -fill black
-._PIPO_PresenceZones.canvas create polygon 820 415 820 125 830 125 830 415 -fill black
-._PIPO_PresenceZones.canvas create polygon 820 225 540 225 540 420 820 420 820 415 545 415 545 230 820 230 -fill white
+
+
 
 # Proxy_UPNP_Sonos Pipo_SONOS_1 60 RINCON_000E583223C401400 "virtual=true&type=audioAlarm"
 # Proxy_UPNP_Sonos Pipo_SONOS_2 60 RINCON_000E5823924C01400 "virtual=false&type=switchOffAbleAudio,switchOnAbleAudio"
@@ -84,5 +89,6 @@ after [expr 1000 * 60 * 10] "CB_for_UPNP_MSEARCH [expr 1000 * 60 * 10]"
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 Pipo_WComp PIPO_UPNP_WCOMP 7200
+}
 
 return
