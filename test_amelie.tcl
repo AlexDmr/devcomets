@@ -6,7 +6,6 @@ source [get_B207_files_root]test_fisheyes.tcl
 
 CometVideo C_cam cam "" -set_video_source WEBCAM 0
 #CometVideo C_cam cam "" -set_video_source {C:/Alexandre/Videos/Mississipi burning (A.Parker, 1988).avi} 0
-cr set_daughters_R C_cam
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -17,16 +16,19 @@ method Dessin_c_bien constructor {PM_cam} {
  set this(L_img_temp_svg_for_cancel) [list]
  set this(L_img_svg)                 [list]
  
+ puts "\t1"
  set this(PM_cam) $PM_cam
  set this(poly)   [$this(PM_cam) get_prim_handle]; $this(poly) Translucidite 1
  #set this(visu)   [$this(PM_cam) get_visu_cam]
  set this(visu)   [$this(PM_cam) get_visu_cam]; $this(visu) Translucidite 1
  
+ puts "\t2"
  $this(visu) Ordre_couleur_texture             [GL_bvra]
  $this(visu) Nb_octets_par_pixels_texture      4
  $this(visu) Mode_traitement_image_transparent 3
  $this(visu) Threaded_mode                     1
  
+ puts "\t3"
  this set_ref_color 1 1 1
  this set_param_transparent 0.8 128 128 128
  #this set_param_transparent 0.2 25 25 25
@@ -35,12 +37,14 @@ method Dessin_c_bien constructor {PM_cam} {
  set this(img) [B_image]; if {[$PM_cam get_video_source] != "WEBCAM"} {$this(img) Inverser_y 1}
  $pere Ajouter_fils $this(img)
  
+ puts "\t4"
  set this(rap_press_svg_img) [B_rappel [Interp_TCL]];  $this(rap_press_svg_img) Texte "$objName Press_on_svg_image $this(rap_press_svg_img)"
  
  set this(node_root_UI)   [B_noeud]
  set this(node_L_img_svg) [B_noeud]; $this(node_root_UI) Ajouter_fils $this(node_L_img_svg)
  $pere Ajouter_fils $this(node_root_UI)
  
+  puts "\t5"
  set this(fisheye) ${objName}_my_fisheye
  FishEye_on_Images $this(fisheye) [list]
  $this(fisheye) set_dims [N_i_mere Largeur] [N_i_mere Hauteur]
@@ -51,16 +55,20 @@ method Dessin_c_bien constructor {PM_cam} {
  #"puts {FISHEYE IN !}; $this(fisheye) set_E_for_daughters 0.3; B207_flow $root; B207_position_fisheye $root 4"
  
  $this(node_L_img_svg) Ajouter_fils $root
- $this(img) maj_raw_with_transfo [$this(visu) L] [$this(visu) H] [$this(visu) Ordre_couleur_texture] [$this(visu) Nb_octets_par_pixels_texture] [GL_bvra] 4 NULL
+ # $this(img) maj_raw_with_transfo [$this(visu) L] [$this(visu) H] [$this(visu) Ordre_couleur_texture] [$this(visu) Nb_octets_par_pixels_texture] [GL_bvra] 4 NULL
 
+  puts "\t6"
  this Reset
+ puts "\t7"
  this Full_screen 1
  
+  
 # Init the text zone that will retrieve key pressed
  set this(z_txt) [B_texte 0 0 999999 [fonte_Arial] [B_sim_sds]]
    set this(rap_car) [B_rappel [Interp_TCL] "$objName Char_entered"]
    B_configure $this(z_txt) -Nom_IU $objName -abonner_a_caractere_tape [$this(rap_car) Rappel] -Afficher_boites 0
  
+ puts "\t8"
  $PM_cam Redirect_key_events_to_z_txt $this(z_txt)
  Redirect_key_events_from_to $this(img) $this(z_txt)
  puts "--------> Redirect_key_events_from_to $this(img) $this(z_txt)"
@@ -145,8 +153,11 @@ method Dessin_c_bien Etirement {x y} {
 }
 #___________________________________________________________________________________________________________________________________________
 method Dessin_c_bien Save_for_cancel {} {
+ if {[$this(PM_cam) get_video_source] == "WEBCAM" && ![$this(visu) EstPret]} {puts "In Save_for_cancel, webcam is not ready..."; return}
  set this(current_is_new) 1
  set img [this get_a_new_image]
+ puts "Camera ready : [$this(visu) EstPret]\nvideo source : [$this(PM_cam) get_video_source]"
+ puts [list $img maj_raw [$this(img) L] [$this(img) H] [$this(img) Ordonnancement_couleurs] [$this(img) Nb_octets_par_pixel] [$this(img) Tempon_void]]
  $img maj_raw [$this(img) L] [$this(img) H] [$this(img) Ordonnancement_couleurs] [$this(img) Nb_octets_par_pixel] [$this(img) Tempon_void]
 
  lappend this(L_img_temp_svg_for_cancel) $img
@@ -164,10 +175,13 @@ method Dessin_c_bien Merge {} {
 
 #___________________________________________________________________________________________________________________________________________
 method Dessin_c_bien Reset {} {
+ puts "Save"
  this Save_for_cancel
- 
+ puts "Save is done"
  $this(img) Colorier 255 255 255 255
+ puts "\tmaj_tempon"
  $this(img) maj_tempon
+ puts "\tdone"
  
  $this(img) Vider_peres; $this(node_root_UI) Vider_peres
  set pere [$this(poly) Pere] 
@@ -297,13 +311,16 @@ Generate_accessors Dessin_c_bien [list img poly visu fisheye]
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
-Dessin_c_bien D [CSS++ cr "#cr->PMs.PM_BIGre C_cam"]
+after 2000 {
+	 cr set_daughters_R C_cam]
+	 Dessin_c_bien D [CSS++ cr "#cr->PMs.PM_BIGre C_cam"]
+	}
 
-after 100 "D Reset"
+# after 1000 "D Reset"
 # after 100 "D set_resolution 640 480\; N_i_mere Volume_musique 0 0"
 
-set p [D get_poly]
-set i [D get_img]
+# set p [D get_poly]
+# set i [D get_img]
 
 #$p Origine 0 780
 #N_i_mere Volume_musique 0 0
