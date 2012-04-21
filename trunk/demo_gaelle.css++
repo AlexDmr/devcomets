@@ -1,0 +1,24 @@
+#$current CometImage {
+	FCT_Eval   : $obj set_default_css_style_file          "demo_gaelle_images.css++"
+			---  $obj Apply_default_style
+			---  puts "Apply style for $obj";
+}
+
+#$current->PMs txt_ad {
+	GDD_fct : Implem(TextDisplay_CUI_QRcode);
+	FCT_Eval   : puts "Apply style for $obj";
+}
+
+#$current->PMs.PM_BIGre inter_img {
+	FCT_Raise : high;
+}
+
+#$current->PMs.PM_BIGre txt_ad(>*) {
+	FCT_Raise : high;
+}
+
+#$current->PMs.PM_BIGre {
+	FCT_Allow_raising_for_daughters : 0;
+}
+
+	
