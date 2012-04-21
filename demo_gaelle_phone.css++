@@ -1,0 +1,5 @@
+#$current->PMs.PM_HTML CometChoiceN {
+	GDD_fct : Implem(N_Choice_AUI_basic_CUI_telec);
+	FCT_Eval   : $obj set_html_style [list width 100% border "solid black 1px"]
+			---  puts "Phone : Apply style for $obj";
+}

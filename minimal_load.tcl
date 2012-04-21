@@ -28,7 +28,7 @@ if {![gmlObject info exists object GDD_Edit]} {
 GDD_Edit Load_GDD Comets/CSS_STYLESHEETS/GDD/INRIA.gdd
 
 #___________________________________________________________________________________________________________________________________________
-proc Init_B207 {} {
+proc Init_B207 {{cr cr}} {
   global editeur_tcl; global noeud_partage; global ::env
   if {[info exists editeur_tcl]} {
     puts ICI
@@ -41,15 +41,15 @@ proc Init_B207 {} {
 			} else {puts GO}
 		 cd $P
 		 global noeud_partage; global noeud_editeur_tcl; global f_obs
-		 Root_PM_P_BIGre cr_PM_P_BIGre "COMET.BIGre root" "BIGre root node for comet root cr_PM_P_BIGre" -set_root $noeud_partage
-         cr_LM_LP set_PM_active cr_PM_P_BIGre
+		 Root_PM_P_BIGre ${cr}_PM_P_BIGre "COMET.BIGre root" "BIGre root node for comet root cr_PM_P_BIGre" -set_root $noeud_partage
+         ${cr}_LM_LP set_PM_active ${cr}_PM_P_BIGre
          [N_i_mere Noeud_scene] Retirer_fils $f_obs
          $noeud_partage Retirer_fils $noeud_editeur_tcl
 		 N_i_mere Afficher_souris
 	 	
-		 if {![gmlObject info exists object Liant_mutable]} {
-		   source $::env(B207_LIBRARY)/test_mutable.tcl
-		   Liant_Mutable_sim_ptr Liant_mutable; Liant_mutable startListening 8910
+		 if {![gmlObject info exists object TUIO_sim_ptr]} {
+		   source $::env(B207_LIBRARY)/essai_TUIO.tcl
+		   Liant_TUIO_sim_ptr TUIO_sim_ptr 3333
 		  }
 
 	    } else {puts "Please define an environment variable nammed B207_LIBRARY valuated with the B207 root path."}
@@ -57,8 +57,10 @@ proc Init_B207 {} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-proc Init_HTML {} {
- PhysicalHTML_root cr_PM_P_HTML    "HTML root" {NO DESCR}; cr_LM_LP Add_PM cr_PM_P_HTML;    cr_LM_LP set_PM_active cr_PM_P_HTML
+proc Init_HTML {{cr cr}} {
+ PhysicalHTML_root ${cr}_PM_P_HTML    "HTML root for $cr" {NO DESCR}
+ ${cr}_LM_LP Add_PM ${cr}_PM_P_HTML
+ ${cr}_LM_LP set_PM_active ${cr}_PM_P_HTML
 }
 
 #___________________________________________________________________________________________________________________________________________
