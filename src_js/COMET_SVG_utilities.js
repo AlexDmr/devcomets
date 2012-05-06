@@ -61,7 +61,7 @@ function Drag_info_obj() {
 							 // Add to Tab groups that are descendants of this group id
 							 var L_descendants = get_all_descendants(grp_node);
 							 var L_ancestors   = get_all_ancestors  (grp_node);
-							 for(var i in this.Tab_dependencies) { 
+							 for(var i in this.Tab_dependencies) {
 								 var n = this.Tab_dependencies[i].grp_node;
 								 // Update the descendant dependencies
 								 var p = this.Tab_dependencies[i].dependOn;
@@ -748,12 +748,16 @@ function RotoZoomable(id_grp, L_id_actives, fct_start, fct_drag, fct_start_rotoz
 			var rect_svg = drag_info_obj.Tab_drag[id_node].svg_canvas.createSVGRect();
 				rect_svg.width = rect_svg.height = 1;
 				drag_info_obj.Tab_tmp_SVG_point[drag_info_obj.Tab_drag[id_node].svg_canvas] = rect_svg;
+			// console.log('A');
 			if(drag_info_obj.get_drop_zone == undefined) {
-				 try {drag_info_obj.Tab_drag[id_node].svg_canvas.getIntersectionList(rect_svg, null)
+				 // console.log('drag_info_obj.get_drop_zone == undefined');
+				 if(navigator.appCodeName != 'Mozilla') {
+					  drag_info_obj.Tab_drag[id_node].svg_canvas.getIntersectionList(rect_svg, null);
 					  drag_info_obj.get_drop_zone = get_drop_zone_via_SVG;
-					 } catch(err) {drag_info_obj.get_drop_zone = get_drop_zone_via_HTML;}
+					  console.log('get via SVG canvas ' + drag_info_obj.Tab_drag[id_node].svg_canvas.id); 
+					 } else {drag_info_obj.get_drop_zone = get_drop_zone_via_HTML;}
 				}
-		 
+			// console.log('B'); continue;
 		 node.addEventListener('mousedown'  , COMET_SVG_new_point_for_rotozoom_mouse, false);
 		 node.addEventListener('touchstart' , function(event){
 				 for (var i = 0; i < event.changedTouches.length; i++) {
@@ -767,7 +771,7 @@ function RotoZoomable(id_grp, L_id_actives, fct_start, fct_drag, fct_start_rotoz
 		 // In case where events are not dispatched to the SVG elements inside an SVG document, subscribe at the SVG document level:
 		 drag_info_obj.Tab_drag[node.id].svg_canvas.addEventListener('touchstart', COMET_SVG_new_point_for_rotozoom_touch_for_SVG_in_opera, false);
 		}
-		
+	
 	// Update the dependencies
 	drag_info_obj.addDependency(grp_node, update_rotozoom_group);
 }
@@ -780,6 +784,7 @@ function update_rotozoom_group(grp_node) {
 			 // console.log('Manage_rotozoomables ' + grp_node.id);
 			 if(rotozoom_obj.pointer_2 == null) {
 				 update_drag_group(grp_node);
+				 Manage_rotozoomables(grp_node, grp_node.id, 'PIPO', drag_info_obj.pipo_event);
 				} else {Manage_rotozoomables(grp_node, grp_node.id, 'PIPO', drag_info_obj.pipo_event);}
 			 
 			 break;
