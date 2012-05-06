@@ -636,8 +636,8 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
  
   append strm $dec "<g id=\"${objName}\" transform=\"\">\n"
   append strm $dec "<rect id=\"${objName}_BG_rect\" x=\"-10000000\" y=\"-10000000\" width=\"20000000\" height=\"20000000\" transform=\"\" style=\"fill:rgb(0,0,255);stroke-width:1;\"/>\n"
-  append strm $dec "<g id=\"${objName}_docs\"  transform=\"\"></g>\n"
-  append strm $dec "<g id=\"${objName}_links\" transform=\"\"></g>\n"
+  append strm $dec "<g id=\"${objName}_docs\"  ></g>\n"
+  append strm $dec "<g id=\"${objName}_links\" ></g>\n"
   
   append strm $dec "<g id=\"g3_drop\">"
   append strm $dec   "<circle id=\"circle_3\" cx=\"700\" cy=\"300\" r=\"50\" style=\"fill:rgb(0,0,0);stroke-width:30;stroke:rgb(255,0,0)\" />"
@@ -651,7 +651,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
   append strm $dec   "<rect id=\"rect_2\" x=\"0\" y=\"0\" width=\"200\" height=\"300\" style=\"fill:rgb(0,255,128);stroke-width:10;stroke:rgb(255,0,0)\" />\n"
   append strm $dec   "<circle id=\"circle_2\" cx=\"200\" cy=\"300\" r=\"50\" style=\"fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,255,0)\" />\n"
   # append strm $dec   "<video xlink:href=\"JasperNationalPark-AthabascaFalls.ogv\" x=\"200\" y=\"50\" width=\"200\" height=\"200\" type=\"video/ogg\" />\n"
-  append strm $dec   "<video id=\"SVG_video_test\" xlink:href=\"usura.ogg\" x=\"200\" y=\"0\" width=\"200\" height=\"200\" initialVisibility=\"always\" />\n"
+  append strmXXX $dec   "<video id=\"SVG_video_test\" xlink:href=\"usura.ogg\" x=\"200\" y=\"0\" width=\"200\" height=\"200\" initialVisibility=\"always\" />\n"
   append strmXXX $dec   "<foreignObject width=\"320\" height=\"240\">
 						<div xmlns=\"http://www.w3.org/1999/xhtml\">
 							<video id=\"video_test\" xmlns=\"http://www.w3.org/1999/xhtml\" width=\"320\" height=\"240\" >
@@ -694,7 +694,10 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
  if {$this(mode) == "edition"} {
    # append strm "test_dd('${objName}', '${objName}_drag', '${objName}_drop_circle', '${objName}_pipo_circle', '${objName}_pipo_line');\n"
   }
+  
  append strm "RotoZoomable('$objName', \['${objName}_BG_rect'\], null, null, null, null, null, null);\n"
+ # puts "wait rotozoomable"; return;
+ 
  append strm "Register_node_id_SVG_zoom_onwheel('$objName');\n"
  # append strm "document.getElementById('${objName}_BG_rect').addEventListener('mousedown', CB_GDD_on_right_click, false);\n"
  
