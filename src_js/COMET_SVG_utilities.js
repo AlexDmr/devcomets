@@ -46,8 +46,9 @@ function Drag_info_obj() {
 	this.Tab_dependencies = new Array(); // Index by group id Objects of the form <array of dependant group id, function to be called to update, take group id as parameter>
 	this.displayDependencies = function() {
 		 for(var i in this.Tab_dependencies) { 
-			 console.log(i);
-			 for(var j in this.Tab_dependencies[i]) {console.log('  ' + j + ': ' + this.Tab_dependencies[i][j]);}
+			 // console.log(i);
+			 for(var j in this.Tab_dependencies[i]) {//console.log('  ' + j + ': ' + this.Tab_dependencies[i][j]);
+													}
 			}
 		}
 	this.addDependency = function(grp_node, fct) {
@@ -110,7 +111,7 @@ var drag_info_obj = new Drag_info_obj();
 //___________________________________________________ Drag nodes _____________________________________________________
 //___________________________________________________________________________________________________________________________________________
 function COMET_SVG_start_drag_touch_from_SVG_in_opera(event) {
-	console.log('COMET_SVG_start_drag_touch_from_SVG_in_opera. target: ' + event.target + ' currentTarget: ' + event.currentTarget);
+	// console.log('COMET_SVG_start_drag_touch_from_SVG_in_opera. target: ' + event.target + ' currentTarget: ' + event.currentTarget);
 	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
 	// Call getIntersectionList to get the SVG_elements
 	for(var i = 0; i < event.changedTouches.length; i++) {
@@ -357,7 +358,6 @@ function Stop_draggables_touch(event) {
 	for(var i = 0; i < event.changedTouches.length; i++) {
 		 var touch    = event.changedTouches.item(i);
 		 var touch_id = touch.identifier;
-		 // console.log('  id: ' + touch_id);
 		 for(var i in drag_info_obj.Tab_active_drags) {
 			 if (drag_info_obj.Tab_drag[ drag_info_obj.Tab_active_drags[i] ].pointer == touch_id) {
 				 var id_node = drag_info_obj.Tab_active_drags[i];
@@ -372,6 +372,8 @@ function Stop_draggables_touch(event) {
 
 //___________________________________________________________________________________________________________________________________________
 function Stop_draggables_pointer(node, grp_node, event) {
+	// console.log('Stop_draggables_pointer on node ' + node.id + ' in group ' + grp_node.id);
+	
 	// Trigger stop drag callback
 	if(drag_info_obj.Tab_drag[node.id].fct_stop != null) {drag_info_obj.Tab_drag[node.id].fct_stop(grp_node, event);}
 	
@@ -506,9 +508,12 @@ function COMET_SVG_new_point_for_rotozoom_mouse(event) {
 //___________________________________________________________________________________________________________________________________________
 function COMET_SVG_new_point_for_rotozoom_touch(event) {
 	event.stopPropagation(); event.cancelBubble = true; event.preventDefault(); event.returnValue = false;
+	// if (event.changedTouches.length > 1) {
+		 // console.log('We have got ' + event.changedTouches.length + ' simultaneous touches!');
+		// }
 	for(var i = 0; i < event.changedTouches.length; i++) {
 		 var touch = event.changedTouches.item(i);
-		 console.log('new point for touch ' + touch.identifier + "---" + touch.target);
+		 // console.log('new point for touch ' + touch.identifier + "---" + touch.target);
 		 Register_new_point_for_rotozoom(touch.target, touch.pageX, touch.pageY, touch.identifier, touch);
 		 // Register_new_point_for_rotozoom(event.changedTouches[i].target, event.changedTouches[i].pageX, event.changedTouches[i].pageY, event.changedTouches[i].identifier, event.changedTouches[i]);
 		}
@@ -516,10 +521,10 @@ function COMET_SVG_new_point_for_rotozoom_touch(event) {
 
 //___________________________________________________________________________________________________________________________________________
 function Register_new_point_for_rotozoom(svg_element, pageX, pageY, identifier, event) {
-	console.log('Register_new_point_for_rotozoom ' + svg_element.id + ' ' + pageX + ' ' + pageY + ' ' + identifier + ' ' + event);
+	// console.log('Register_new_point_for_rotozoom ' + svg_element.id + ' ' + pageX + ' ' + pageY + ' ' + identifier + ' ' + event);
 	// Are we in dragging mode or in rotozoom mode
 	if(drag_info_obj.Tab_drag[svg_element.id]) {
-		 console.log('    drag possible');
+		 // console.log('    drag possible');
 		 // At least the drag is possible, is it also ready for rotozoom?
 		 var grp_node = drag_info_obj.Tab_drag[svg_element.id].grp_node;
 		 if(drag_info_obj.Tab_rotozoom[grp_node.id]) {
@@ -527,7 +532,7 @@ function Register_new_point_for_rotozoom(svg_element, pageX, pageY, identifier, 
 			 if(drag_info_obj.Tab_rotozoom[grp_node.id].pointer_2 != null) {console.log('Too much actives point for doing a rotozoom on group ' + grp_node.id); return;}
 			 // Register the position of the point relatively to the group
 			 var coords        = convert_coord_from_page_to_node(pageX, pageY, grp_node);
-			 console.log('Press of pointer ' + identifier + ' on group ' + grp_node.id + ' at <' + coords['x'] + ';' + coords['y'] + '>');
+			 // console.log('Press of pointer ' + identifier + ' on group ' + grp_node.id + ' at <' + coords['x'] + ';' + coords['y'] + '>');
 			 var coords_parent = convert_coord_from_page_to_node(pageX, pageY, grp_node.parentNode);
 			 
 			 // Add the pointer to the list of actives pointers for the group
@@ -554,7 +559,7 @@ function Register_new_point_for_rotozoom(svg_element, pageX, pageY, identifier, 
 						 
 						 // Stop dragging pointer_1 : drag_info_obj.Tab_active_drags
 						 var i = drag_info_obj.Tab_active_drags.indexOf(drag_info_obj.Tab_rotozoom[grp_node.id].target1.id);
-						 console.log('position of the rotozoom pointer in Tab_active_drag is ' + i);
+						 // console.log('position of the rotozoom pointer in Tab_active_drag is ' + i);
 						 drag_info_obj.Tab_active_drags.splice(i, 1);
 						}
 			 drag_info_obj.Tab_rotozoom_actives_pointer[identifier] = grp_node.id;
@@ -675,12 +680,13 @@ function Stop_rotozoomables_touch(event) {
 		 var touch = event.changedTouches.item(i);
 		 Stop_rotozoomables_pointer(touch.identifier);
 		}
+	Stop_draggables_touch(event);
 }
 
 //___________________________________________________________________________________________________________________________________________
 function Stop_rotozoomables_pointer(identifier) {
 	if(drag_info_obj.Tab_rotozoom_actives_pointer[identifier]) {
-		 console.log('Stop Rotozoom with ' + identifier);
+		 // console.log('Stop Rotozoom with ' + identifier);
 		 var id_grp = drag_info_obj.Tab_rotozoom_actives_pointer[identifier]; delete drag_info_obj.Tab_rotozoom_actives_pointer[identifier];
 		 if(drag_info_obj.Tab_rotozoom[id_grp].pointer_1 == identifier) {
 			 if(drag_info_obj.Tab_rotozoom[id_grp].pointer_2 != null) {
@@ -754,7 +760,7 @@ function RotoZoomable(id_grp, L_id_actives, fct_start, fct_drag, fct_start_rotoz
 				 if(navigator.appCodeName != 'Mozilla') {
 					  drag_info_obj.Tab_drag[id_node].svg_canvas.getIntersectionList(rect_svg, null);
 					  drag_info_obj.get_drop_zone = get_drop_zone_via_SVG;
-					  console.log('get via SVG canvas ' + drag_info_obj.Tab_drag[id_node].svg_canvas.id); 
+					  // console.log('get via SVG canvas ' + drag_info_obj.Tab_drag[id_node].svg_canvas.id); 
 					 } else {drag_info_obj.get_drop_zone = get_drop_zone_via_HTML;}
 				}
 			// console.log('B'); continue;

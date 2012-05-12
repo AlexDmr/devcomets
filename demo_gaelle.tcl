@@ -8,6 +8,7 @@ source c:/These/devComets/minimal_load.tcl
 
 CometRoot cr_table  "Root of the table"       "Where the photos can be rotozoomed..."
 	Init_B207 cr_table
+	Init_HTML cr_table
 CometRoot cr_screen "Root of the wall screen" "Where one photo is displayed"
 	Init_HTML cr_screen
 	cr_screen_PM_P_HTML set_Update_interval 200
@@ -33,14 +34,17 @@ cr_phone Add_daughters_R [CometChoiceN telec "Remote controler" "" -set_b_inf 1 
 	cr_phone Apply_default_style
 
 # Toolglass for the table
-source [get_B207_files_root]B_toolglass.tcl
-	B_toolglass toolglass {Plug_image_on_screen [$infos NOEUD]}
-	$noeud_partage Ajouter_fils_au_debut [toolglass attribute n_meta]
-	
-proc Plug_image_on_screen {n_B207} {
-	set PM [$n_B207 Val CometPM]
-	if {$PM != ""} {
-		 set pos [lsearch [inter_img get_daughters] [$PM get_LC]]
-		 if {$pos >= 0} {telec set_val [expr 1 + $pos]}
-		}
+if {[info exists editeur_tcl]} {
+	source [get_B207_files_root]B_toolglass.tcl
+		B_toolglass toolglass {Plug_image_on_screen [$infos NOEUD]}
+		$noeud_partage Ajouter_fils_au_debut [toolglass attribute n_meta]
+		
+	proc Plug_image_on_screen {n_B207} {
+		set PM [$n_B207 Val CometPM]
+		if {$PM != ""} {
+			 set pos [lsearch [inter_img get_daughters] [$PM get_LC]]
+			 if {$pos >= 0} {telec set_val [expr 1 + $pos]}
+			}
+	}
 }
+

@@ -2,7 +2,10 @@
 	FCT_Eval   : set poly_img [$obj get_prim_handle]
 			---  Contact_model $poly_img [expr [Capa_T] + [Capa_R] + [Capa_E]]
 			---  set b_ctc [$poly_img Val_MetaData B_contact]
-			---  $b_ctc pt_rot_actif 0;
+			---  $b_ctc pt_rot_actif 0
+			---  $obj On_wheel_down "$obj Etirement_interne \$infos 1.1 1.1 \$X \$Y"
+			---  set e [expr 1.0/1.1] --- $obj On_wheel_up   "$obj Etirement_interne \$infos $e $e \$X \$Y";
+
 }
 
 #$current->PMs.PM_HTML {
