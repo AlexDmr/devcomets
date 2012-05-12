@@ -651,7 +651,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
   append strm $dec   "<rect id=\"rect_2\" x=\"0\" y=\"0\" width=\"200\" height=\"300\" style=\"fill:rgb(0,255,128);stroke-width:10;stroke:rgb(255,0,0)\" />\n"
   append strm $dec   "<circle id=\"circle_2\" cx=\"200\" cy=\"300\" r=\"50\" style=\"fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,255,0)\" />\n"
   # append strm $dec   "<video xlink:href=\"JasperNationalPark-AthabascaFalls.ogv\" x=\"200\" y=\"50\" width=\"200\" height=\"200\" type=\"video/ogg\" />\n"
-  append strmXXX $dec   "<video id=\"SVG_video_test\" xlink:href=\"usura.ogg\" x=\"200\" y=\"0\" width=\"200\" height=\"200\" initialVisibility=\"always\" />\n"
+  append strm $dec   "<video id=\"SVG_video_test\" xlink:href=\"usura.ogg\" x=\"200\" y=\"0\" width=\"200\" height=\"200\" initialVisibility=\"always\" />\n"
   append strmXXX $dec   "<foreignObject width=\"320\" height=\"240\">
 						<div xmlns=\"http://www.w3.org/1999/xhtml\">
 							<video id=\"video_test\" xmlns=\"http://www.w3.org/1999/xhtml\" width=\"320\" height=\"240\" >
@@ -663,11 +663,11 @@ method CometEditorGDD2_PM_P_SVG_basic Render {strm_name {dec {}}} {
   append strm $dec "</g>\n"
   
   set i 0
-  foreach img [concat [glob *.svg]] {
+  foreach img [concat [glob *.jpg *.png]] {
 	 incr i
 	 set id ${objName}_img_$i; 
 	 set pos [expr 30 * $i]
-	 append strm $dec "<g id=\"$id\"><image x=\"$pos\" y=\"$pos\" width=\"320px\" height=\"200px\" xlink:href=\"$img\" /></g>"
+	 append strm $dec "<g id=\"$id\"><image id=\"svg_img_$id\" x=\"$pos\" y=\"$pos\" width=\"320px\" height=\"200px\" xlink:href=\"$img\" /></g>"
 	}
 	
   append strm $dec "</g>\n"
@@ -686,7 +686,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
  this inherited strm
  
   set this(L_img) [list]; set i 0
-  foreach img [concat [glob *.svg]] {
+  foreach img [concat [glob *.jpg *.png]] {
 	 incr i
 	 set id ${objName}_img_$i; lappend this(L_img) $id
 	}
@@ -716,7 +716,7 @@ method CometEditorGDD2_PM_P_SVG_basic Render_post_JS {strm_name {dec ""}} {
  append strm "Drop_zone('g3_drop', '#g1_test', function() {console.log('start');}, function() {console.log('feedback_hover');}, function() {console.log('feedback_out');}, function() {console.log('feedback_done');}, function() {console.log('feedback_undone');}, function() {console.log('fct');});\n"
  
  foreach img $this(L_img) {
-	 append strm "RotoZoomable('${img}', \['${img}'\], null, null, null, null, null, null);"
+	 append strm "RotoZoomable('${img}', \['svg_img_${img}'\], null, null, null, null, null, null);"
 	}
  this Render_daughters_post_JS strm $dec
 }
