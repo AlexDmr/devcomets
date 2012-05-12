@@ -53,7 +53,7 @@ proc Init_B207 {{cr cr}} {
 		  }
 
 	    } else {puts "Please define an environment variable nammed B207_LIBRARY valuated with the B207 root path."}
-	}
+	} else {puts stderr "B207 is not running... Cannot intialisaze the B207 Comet root."}
 }
 
 #___________________________________________________________________________________________________________________________________________

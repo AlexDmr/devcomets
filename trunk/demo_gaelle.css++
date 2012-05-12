@@ -21,4 +21,6 @@
 	FCT_Allow_raising_for_daughters : 0;
 }
 
-	
+#$current->PMs.PM_HTML inter_img {
+	FCT_Eval  : U_encapsulator_PM $obj "Container_PM_P_HTML_to_SVG(-set_name Bridge_HTML_2_SVG, \$obj())";
+}
