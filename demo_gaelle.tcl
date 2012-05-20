@@ -9,6 +9,8 @@ source c:/These/devComets/minimal_load.tcl
 CometRoot cr_table  "Root of the table"       "Where the photos can be rotozoomed..."
 	Init_B207 cr_table
 	Init_HTML cr_table
+	CometContainer cont_table "Table container" "Container for the table: Photos and QRCode"
+	cr_table Add_daughters_R cont_table
 CometRoot cr_screen "Root of the wall screen" "Where one photo is displayed"
 	Init_HTML cr_screen
 	cr_screen_PM_P_HTML set_Update_interval 200
@@ -25,9 +27,9 @@ CometInterleaving inter_img "Interleaving of images" ""
 		 incr i
 		}
 		 
-cr_table Add_daughters_R [list inter_img [CometText txt_ad "adress of the webpage" "" -set_text "http://${IP}/index.php?Comet_port=[cr_phone_PM_P_HTML get_server_port]"]]
-	cr_table set_default_css_style_file "demo_gaelle.css++"
-	cr_table Apply_default_style
+cont_table Add_daughters_R [list inter_img [CometText txt_ad "adress of the webpage" "" -set_text "http://${IP}/index.php?Comet_port=[cr_phone_PM_P_HTML get_server_port]"]]
+	cont_table set_default_css_style_file "demo_gaelle.css++"
+	cont_table Apply_default_style
 
 cr_phone Add_daughters_R [CometChoiceN telec "Remote controler" "" -set_b_inf 1 -set_b_sup [llength $L_photos] -Subscribe_to_set_val ALEX {if {$v != (1+[lsearch [inter_img get_daughters] [cr_screen get_daughters]])} {cr_screen set_daughters_R [lindex [inter_img get_daughters] [expr $v-1]]}} U]
 	cr_phone set_default_css_style_file "demo_gaelle_phone.css++"

@@ -1,26 +1,31 @@
+#$current->PMs.PM_HTML {
+	GDD_fct : Implem(Container_CUI_bridge_HTML_to_SVG_frame);
+}
+
 #$current CometImage {
 	FCT_Eval   : $obj set_default_css_style_file          "demo_gaelle_images.css++"
 			---  $obj Apply_default_style
 			---  puts "Apply style for $obj";
 }
 
-#$current->PMs txt_ad {
-	GDD_fct : Implem(TextDisplay_CUI_QRcode);
-	FCT_Eval   : puts "Apply style for $obj";
-}
-
 #$current->PMs.PM_BIGre inter_img {
 	FCT_Raise : high;
-}
-
-#$current->PMs.PM_BIGre txt_ad(>*) {
-	FCT_Raise : high;
+	FCT_Allow_raising_for_daughters : 1;
 }
 
 #$current->PMs.PM_BIGre {
 	FCT_Allow_raising_for_daughters : 0;
 }
 
-#$current->PMs.PM_HTML inter_img {
-	FCT_Eval  : U_encapsulator_PM $obj "Container_PM_P_HTML_to_SVG(-set_name Bridge_HTML_2_SVG, \$obj())";
+#$current->PMs txt_ad {
+	GDD_fct : Implem(TextDisplay_CUI_QRcode);
+	FCT_Eval   : puts "Apply style for adress in $obj";
+}
+
+#$current->PMs txt_ad(CometImage) {
+	FCT_Eval  : $obj RotoZoomable;
+}
+
+#$current->PMs.PM_BIGre txt_ad(>*) {
+	FCT_Raise : high;
 }

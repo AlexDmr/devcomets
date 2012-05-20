@@ -771,7 +771,7 @@ function RotoZoomable(id_grp, L_id_actives, fct_start, fct_drag, fct_start_rotoz
 						 event.changedTouches.setTarget(i, node);
 						}
 					}
-				 event.target = node;
+				 //event.target = node;
 				 COMET_SVG_new_point_for_rotozoom_touch(event);
 				}, false);
 		 // In case where events are not dispatched to the SVG elements inside an SVG document, subscribe at the SVG document level:
