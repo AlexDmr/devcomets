@@ -11,3 +11,7 @@
 #$current->PMs.PM_HTML {
 	FCT_Eval  : $obj set_html_style [list width 100%];
 }
+
+#$current->PMs.PM_SVG {
+	FCT_Eval  : $obj RotoZoomable;
+}
