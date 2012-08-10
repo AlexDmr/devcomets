@@ -1,21 +1,19 @@
-Microsoft Visual Studio Solution File, Format Version 7.00
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleDevice", "SampleDevice.csproj", "{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}"
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		ConfigName.0 = Debug
-		ConfigName.1 = Release
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		Release|Default = Release|Default
 	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}.Debug|Default.ActiveCfg = Debug|Any CPU
+		{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}.Debug|Default.Build.0 = Debug|Any CPU
+		{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}.Release|Default.ActiveCfg = Release|Any CPU
+		{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}.Release|Default.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}.Debug.ActiveCfg = Debug|.NET
-		{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}.Debug.Build.0 = Debug|.NET
-		{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}.Release.ActiveCfg = Release|.NET
-		{FE5FA3F9-E2EA-40BE-8CF4-27F33CF6454E}.Release.Build.0 = Release|.NET
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
