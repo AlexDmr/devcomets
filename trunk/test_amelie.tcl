@@ -110,11 +110,7 @@ method Dessin_c_bien Char_entered {} {
   }
  if {$c == [SDSK_LEFT] } {puts "L"; B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px] - \$v * $TX\]"; puts "OK"} else {
  if {$c == [SDSK_RIGHT]} {puts "R"; B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px]\]"; puts "OK"} else {
- if {$c == [SDSK_HOME]}  {this prim_go_to_bgn} else {
- if {$c == [SDSK_END]}   {this prim_go_to_end} else {
- if {$c>=48 && $c<=57} {this Chiffre [Void_vers_char [$this(rap_car) Param]]}
-   }
-  }}}
+  }}
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -312,7 +308,7 @@ Generate_accessors Dessin_c_bien [list img poly visu fisheye]
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 after 2000 {
-	 cr set_daughters_R C_cam]
+	 cr set_daughters_R C_cam
 	 Dessin_c_bien D [CSS++ cr "#cr->PMs.PM_BIGre C_cam"]
 	}
 
