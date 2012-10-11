@@ -60,10 +60,13 @@ proc SWL_Drop_planet {n_zone infos} {
  puts "     n_drop : $n_drop"
  set x [$infos X_au_contact]; set y [$infos Y_au_contact]
  
+ puts "\t* n_dragged?"
  set n_dragged [$ptr Val_MetaData Dragging] 
  set PM [$n_dragged Val_MetaData CometPM]
+   puts "\t$PM Trigger_prim_activate"
    $PM Trigger_prim_activate
-   
+ 
+ puts "\t* planet?"
  set planet [$PM Val_Param planet]
  set ray    [$PM Val_Param ray]
  $planet    set_R $ray
@@ -87,10 +90,10 @@ proc SWL_Drop_planet {n_zone infos} {
 
 	 Detruire $pt_ctc
  
- #puts "set container_PM \[$n_drop Val CometPM\] = $container_PM"
+ puts "set container_PM \[$n_drop Val CometPM\] = $container_PM"
  set L_PM [CSS++ cr "#${planet}->PMs.PM_BIGre \\<--< $container_PM/"]
  set L_nodes ""
- #puts "L_PM = {$L_PM}"
+ puts "L_PM = {$L_PM}"
  foreach PM $L_PM {lappend L_nodes [$PM get_prim_handle]}
  #puts "----- L_nodes : {$L_nodes}"
  # Pb : [lindex $L_PM 0] n'est pas forcément ce que l'on cherche !
