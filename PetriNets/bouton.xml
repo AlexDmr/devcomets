@@ -1,0 +1,104 @@
+<PetriNetView place="P_20">
+	<place>
+		<attribute type="tclid">P_20</attribute>
+		<attribute type="name">P_20</attribute>
+		<attribute type="nested_start_place">P_21</attribute>
+		<attribute type="nested_end_place">P_22</attribute>
+		<attribute type="D_events">event {L_transitions {} cmd_subscribe {} cmd_unsubscribe {}} press {L_transitions T_24 cmd_subscribe {} cmd_unsubscribe {}} release {L_transitions {T_25 T_26} cmd_subscribe {} cmd_unsubscribe {}} enter {L_transitions T_28 cmd_subscribe {} cmd_unsubscribe {}} leave {L_transitions T_29 cmd_subscribe {} cmd_unsubscribe {}}</attribute>
+		<place>
+			<attribute type="tclid">P_21</attribute>
+			<attribute type="name">P_21</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">P_22</attribute>
+			<attribute type="name">P_22</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">P_23</attribute>
+			<attribute type="name">armed</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">P_27</attribute>
+			<attribute type="name">desarmed</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<transition>
+			<attribute type="tclid">T_24</attribute>
+			<attribute type="name">press</attribute>
+			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="event">press</attribute>
+			<attribute type="cmd_trigger">
+</attribute>
+			<attribute type="D_sources">P_21 {StandardEdge P_21 1}</attribute>
+			<attribute type="D_targets">P_23 {StandardEdge P_23 1}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">T_25</attribute>
+			<attribute type="name">releaseKO</attribute>
+			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="event">release</attribute>
+			<attribute type="cmd_trigger">
+</attribute>
+			<attribute type="D_sources">P_27 {StandardEdge P_27 1}</attribute>
+			<attribute type="D_targets">P_21 {StandardEdge P_21 1}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">T_26</attribute>
+			<attribute type="name">releaseOK</attribute>
+			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="event">release</attribute>
+			<attribute type="cmd_trigger">
+</attribute>
+			<attribute type="D_sources">P_23 {StandardEdge P_23 1}</attribute>
+			<attribute type="D_targets">P_21 {StandardEdge P_21 1}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">T_28</attribute>
+			<attribute type="name">enter</attribute>
+			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="event">enter</attribute>
+			<attribute type="cmd_trigger">
+</attribute>
+			<attribute type="D_sources">P_27 {StandardEdge P_27 1}</attribute>
+			<attribute type="D_targets">P_23 {StandardEdge P_23 1}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">T_29</attribute>
+			<attribute type="name">leave</attribute>
+			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="event">leave</attribute>
+			<attribute type="cmd_trigger">
+</attribute>
+			<attribute type="D_sources">P_23 {StandardEdge P_23 1}</attribute>
+			<attribute type="D_targets">P_27 {StandardEdge P_27 1}</attribute>
+		</transition>
+	</place>
+	<presentation type="place" represents="P_21" x="110" y="175" />
+	<presentation type="place" represents="P_22" x="218" y="121" />
+	<presentation type="place" represents="P_23" x="257" y="176" />
+	<presentation type="transition" represents="T_24" x="179" y="179" />
+	<presentation type="transition" represents="T_25" x="172" y="231" />
+	<presentation type="transition" represents="T_26" x="97" y="117" />
+	<presentation type="place" represents="P_27" x="251" y="280" />
+	<presentation type="transition" represents="T_28" x="241" y="232" />
+	<presentation type="transition" represents="T_29" x="287" y="232" />
+	<PetriNetView place="P_21">
+	</PetriNetView>
+	<PetriNetView place="P_22">
+	</PetriNetView>
+	<PetriNetView place="P_23">
+	</PetriNetView>
+	<PetriNetView place="P_27">
+	</PetriNetView>
+</PetriNetView>
