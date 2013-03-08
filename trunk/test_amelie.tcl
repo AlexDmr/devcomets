@@ -1,4 +1,9 @@
 source minimal_load.tcl
+set current_path [pwd]
+
+cd TWAIN 
+	source demo.tcl
+cd $current_path
 
 Init_B207
 
@@ -73,6 +78,10 @@ method Dessin_c_bien constructor {PM_cam} {
  Redirect_key_events_from_to $this(img) $this(z_txt)
  puts "--------> Redirect_key_events_from_to $this(img) $this(z_txt)"
  
+ 
+ this set_resolution [expr int([$this(PM_cam) get_width])] [expr int([$this(PM_cam) get_height])]
+ this Reset
+ 
  return $objName
 }
 
@@ -90,7 +99,7 @@ method Dessin_c_bien Press_on_svg_image {rap} {
 method Dessin_c_bien Char_entered {} {
  set c [Void_vers_int [$this(rap_car) Param]]
  set bbox [$this(img) Boite_noeud_et_fils_glob]
- set TX [$bbox Tx]
+ set TX [$bbox Tx]; set TY [$bbox Ty]
  puts "\t$c"
  switch $c {
    [SDSK_RIGHT] {B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px] - \$v * $TY\]"
@@ -108,9 +117,11 @@ method Dessin_c_bien Char_entered {} {
 			 27 {this Reset
 			    }
   }
- if {$c == [SDSK_LEFT] } {puts "L"; B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px] - \$v * $TX\]"; puts "OK"} else {
- if {$c == [SDSK_RIGHT]} {puts "R"; B_transfo_rap 500 "$objName set_Px \[expr (1-\$v)*[this get_Px]\]"; puts "OK"} else {
-  }}
+ if {$c == [SDSK_LEFT] }  {puts "L"; set cmd "$objName set_Px \[expr (1-\$v)*[this get_Px] - \$v * $TX\]"; B_transfo_rap 500 $cmd; puts "$cmd : OK"} else {
+ if {$c == [SDSK_RIGHT]}  {puts "R"; set cmd "$objName set_Px \[expr (1-\$v)*[this get_Px]\]"; B_transfo_rap 500 $cmd; puts "$cmd : OK"} else {
+ if {$c == [SDSK_UP]}     {puts "T"; set cmd "$objName set_Py \[expr (1-\$v)*[this get_Py] - \$v * $TY\]"; B_transfo_rap 500 $cmd; puts "$cmd : OK"} else {
+ if {$c == [SDSK_DOWN]}   {puts "B"; set cmd "$objName set_Py \[expr (1-\$v)*[this get_Py]\]"; B_transfo_rap 500 $cmd; puts "$cmd : OK"} else {  
+  }}}}
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -121,6 +132,18 @@ method Dessin_c_bien set_Px {v} {
 }
 #___________________________________________________________________________________________________________________________________________
 method Dessin_c_bien get_Px { } {return [$this(img) Px]}
+
+#___________________________________________________________________________________________________________________________________________
+method Dessin_c_bien set_Py {v} {
+ # $this(PM_cam) Py $v
+ # $this(img) Py $v
+ $this(node_root_UI) Py [expr $v + [$this(img) H] * [$this(img) Ey]]
+}
+#___________________________________________________________________________________________________________________________________________
+method Dessin_c_bien get_Py { } {return [$this(img) Py]}
+
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method Dessin_c_bien get_a_new_image {} {
  if {[llength $this(L_Pool_images)]} {
