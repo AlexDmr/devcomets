@@ -82,7 +82,7 @@ method PetriNetView:_:Place recreate_canvas {} {
 		 toplevel ._$objName
 		 set this(frame_edit) ._$objName.fedit
 		 frame $this(frame_edit) -background white
-		 pack $this(frame_edit) -side left -expand 0 -fill y
+		 pack $this(frame_edit) -side right -expand 0 -fill y
 		 
 		 set menu_name ._$objName.menu
 		 menu $menu_name 
@@ -136,12 +136,16 @@ method PetriNetView:_:Place recreate_canvas {} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method PetriNetView:_:Place New_net {} {
-	if {[$this(place) get_nesting_place] == ""} {
-		 $this(place) dispose
-		 set this(place) [this get_unique_id P]
-		 PetriNet:_:Place $this(place) $this(place) ""
-		} else {$this(place) dispose_nested_graph}
-	
+	if {$this(place) != ""} {
+		if {[$this(place) get_nesting_place] == ""} {
+			 $this(place) dispose
+			 set this(place) [this get_unique_id P]
+			 PetriNet:_:Place $this(place) $this(place) ""
+			} else {$this(place) dispose_nested_graph}
+		} else {set this(place) [this get_unique_id P]
+				PetriNet:_:Place $this(place) $this(place) ""
+			   }
+			   
 	set this(D_nested_presentations) [dict create $this(place) [dict create D_presentations [dict create] D_nested_places [dict create]]]
 	this Create_hierarchy_for_place $this(place)
 	
@@ -263,12 +267,48 @@ method PetriNetView:_:Place Delete_or_create_arc {source target} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
+method PetriNetView:_:Place set_D_vars_for_with {place txt} {
+	set txt [string trim $txt]; if {[lindex $txt end] == "\\"} {set txt [string range $txt 0 end-1]}
+	if {[catch {$place set_D_vars [eval [concat "dict create" $txt]]} err]} {
+		 $place set_L_errors [list $err "Command was [concat "dict create" $txt]"]
+		 $this(frame_edit).f_err.ent delete 0.0 end
+		 $this(frame_edit).f_err.ent insert 0.0 [join [$place get_L_errors] "\n"]
+		 $this(frame_edit).f_err.ent configure -background red
+		} else {$place set_L_errors [list]
+				$this(frame_edit).f_err.ent delete 0.0 end
+				$this(frame_edit).f_err.ent configure -background green
+				set txt ""; dict for {var val} [$place get_D_vars] {append txt "[list $var] [list $val] \\\n"}
+				$this(frame_edit).f_nes.ent delete 0.0 end
+				$this(frame_edit).f_nes.ent insert 0.0 $txt
+			   }
+}
+Trace PetriNetView:_:Place set_D_vars_for_with
+#___________________________________________________________________________________________________________________________________________
 method PetriNetView:_:Place Edit_element {type args} {
 	foreach w [winfo children $this(frame_edit)] {destroy $w}
 	eval $this(cmd_deselect)
 	switch $type {
+		 nesting_place {
+			 set place $args
+			 frame $this(frame_edit).f_nes
+				label $this(frame_edit).f_nes.lab -text "Variables : "; pack $this(frame_edit).f_nes.lab -side top -anchor w
+				text $this(frame_edit).f_nes.ent -width 60 -height 8 -background white; pack $this(frame_edit).f_nes.ent -side left -fill x
+				set txt ""; dict for {var val} [$place get_D_vars] {append txt "[list $var] [list $val] \\\n"}
+				# set txt [$place get_D_vars]
+				$this(frame_edit).f_nes.ent insert 0.0 $txt
+			 frame $this(frame_edit).f_err
+				label $this(frame_edit).f_err.lab -text "Errors : "; pack $this(frame_edit).f_err.lab -side top -anchor w
+				text $this(frame_edit).f_err.ent -width 60 -height 6 -background red; pack $this(frame_edit).f_err.ent -side left -fill x
+				$this(frame_edit).f_err.ent insert 0.0 [join [$place get_L_errors] "\n"]
+				if {[llength [$place get_L_errors]]} {
+					 $this(frame_edit).f_err.ent configure -background red
+					} else {$this(frame_edit).f_err.ent configure -background green}
+			 frame $this(frame_edit).f_val
+				button $this(frame_edit).f_val.ok -text "  OK  " -command  "$objName set_D_vars_for_with $place \[$this(frame_edit).f_nes.ent get 0.0 end\]"
+				pack $this(frame_edit).f_val.ok -side right
+			}
 		 place		{
-			 set place $args; $this(canvas) itemconfigure oval_$place -fill #0F0
+			 set place $args; $this(canvas) itemconfigure oval_$place -fill magenta
 							  set this(cmd_deselect) [list $this(canvas) itemconfigure oval_$place -fill white]
 			 frame $this(frame_edit).f_name
 				label $this(frame_edit).f_name.lab -text "Name : "; pack $this(frame_edit).f_name.lab -side left
@@ -281,7 +321,7 @@ method PetriNetView:_:Place Edit_element {type args} {
 				pack $this(frame_edit).f_cmd.ok -side right
 			}
 		 transition	{
-			 set transition $args; $this(canvas) itemconfigure rectangle_$transition -fill #0F0
+			 set transition $args; $this(canvas) itemconfigure rectangle_$transition -fill magenta
 								   set this(cmd_deselect) [list $this(canvas) itemconfigure rectangle_$transition -fill white]
 			 frame $this(frame_edit).f_name
 				label $this(frame_edit).f_name.lab -text "Name : "; pack $this(frame_edit).f_name.lab -side left
@@ -293,18 +333,22 @@ method PetriNetView:_:Place Edit_element {type args} {
 				$this(frame_edit).f_event.ent insert 0 [$transition get_event]
 			 frame $this(frame_edit).f_cmd
 				label $this(frame_edit).f_cmd.lab -text "Command : "; pack $this(frame_edit).f_cmd.lab -side top -anchor w
-				text $this(frame_edit).f_cmd.ent; pack $this(frame_edit).f_cmd.ent -side left -fill x
+				text $this(frame_edit).f_cmd.ent -width 60 -height 10; pack $this(frame_edit).f_cmd.ent -side left -fill x
 				$this(frame_edit).f_cmd.ent insert 0.0 [$transition get_cmd_trigger]
+			 frame $this(frame_edit).f_err
+				label $this(frame_edit).f_err.lab -text "Errors : "; pack $this(frame_edit).f_err.lab -side top -anchor w
+				text $this(frame_edit).f_err.ent -width 60 -height 6 -background red; pack $this(frame_edit).f_err.ent -side left -fill x
+				$this(frame_edit).f_err.ent insert 0.0 [join [$transition get_L_errors] "\n"]
 			 frame $this(frame_edit).f_val
 				button $this(frame_edit).f_val.ok -text "  OK  " -command  "$transition set_name \[$this(frame_edit).f_name.ent get\]
 																			$transition set_event \[$this(frame_edit).f_event.ent get\];
-																		    $transition set_cmd_trigger \[$this(frame_edit).f_cmd.ent get 0.0 end\]
+																		    $transition set_cmd_trigger \[string trim \[$this(frame_edit).f_cmd.ent get 0.0 end\]\]
 																			$objName recreate_and_redraw
 																		   "
 				pack $this(frame_edit).f_val.ok -side right
 			}
 		 arc		{
-			 lassign $args source target; $this(canvas) itemconfigure arc_${source}_$target -fill #0F0
+			 lassign $args source target; $this(canvas) itemconfigure arc_${source}_$target -fill magenta
 										  set this(cmd_deselect) [list $this(canvas) itemconfigure arc_${source}_$target -fill black]
 			 if {[lsearch [gmlObject info classes $source] PetriNet:_:Transition] >= 0} {
 				 set transition $source; set D_name D_targets; set place $target
@@ -319,10 +363,10 @@ method PetriNetView:_:Place Edit_element {type args} {
 				set PetriNetView:_:Place__menu_type_arc [$transition get_item_of_$D_name [list $place type]]
 			 frame $this(frame_edit).f_weight
 				label $this(frame_edit).f_weight.lab -text "Weight : "; pack $this(frame_edit).f_weight.lab -side top -anchor w
-				text  $this(frame_edit).f_weight.txt -width 30 -height 4; pack $this(frame_edit).f_weight.txt -side left -fill x
+				text  $this(frame_edit).f_weight.txt -width 60 -height 10; pack $this(frame_edit).f_weight.txt -side left -fill x
 				$this(frame_edit).f_weight.txt insert 0.0 [$transition get_item_of_$D_name [list $place D_weight]]
 			 frame $this(frame_edit).f_event
-				set cmd "$transition set_item_of_$D_name \[list $place\] \[PetriNet:_:\${PetriNetView:_:Place__menu_type_arc} $place \[$this(frame_edit).f_weight.txt get 0.0 end\]\]
+				set cmd "$transition set_item_of_$D_name \[list $place\] \[PetriNet:_:\${PetriNetView:_:Place__menu_type_arc} $place \[string trim \[$this(frame_edit).f_weight.txt get 0.0 end\]\]\];
 						 $objName recreate_and_redraw
 						"
 				button $this(frame_edit).f_event.ok -text "  OK  " -command $cmd
@@ -353,7 +397,7 @@ method PetriNetView:_:Place Draw_place {{L_places {}} {L_transitions {}}} {
 	if {$this(place) == ""} {return}
 	if { [llength $L_places] == 0
 	   &&[llength $L_transitions] == 0 } {set L_places [$this(place) get_L_nested_places]}
-	
+
 	# Draw places
 	foreach place $L_places {
 		 $this(canvas) delete $place
@@ -393,10 +437,10 @@ method PetriNetView:_:Place Draw_place {{L_places {}} {L_transitions {}}} {
 			 if {$nb_tokens > 0} {set txt_token $nb_tokens}
 			 $this(canvas) create text  [expr ($x1+$x2)/2.0] [expr $y2 + 3] -font "Arial 6" -text $txt_token -tags [list $objName $place in_$place text_nb_token_of_$place just_$place]
 				# Subscribe for token changes
-				$place Subscribe_to_Add_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place]
-				$place Subscribe_to_Sub_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place]
-				$place Subscribe_to_set_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place]
-			 
+				$place Subscribe_to_Add_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place] UNIQUE
+				$place Subscribe_to_Sub_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place] UNIQUE
+				$place Subscribe_to_set_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place] UNIQUE
+
 			 # Ellipse
 			 set nesting_place [$place get_nesting_place]
 			 if {$place == [$nesting_place get_nested_end_place]} { 
@@ -432,9 +476,42 @@ method PetriNetView:_:Place Draw_place {{L_places {}} {L_transitions {}}} {
 			 $this(canvas) create text 0 0 -text [$transition get_name] -anchor nw -tags [list $objName $transition text_$transition transition_text]
 			 lassign [$this(canvas) bbox $transition] x1 y1 x2 y2
 			 
-			 # Ellipse
+			 # Rectangle
 			 $this(canvas) create rectangle [expr $x1 - 3] [expr $y1 - 3] [expr $x2 + 3] [expr $y2 + 3] -fill white -tags [list $objName $transition rectangle_$transition transition_rectangle bg_$transition id:$transition]
-			 $this(canvas) raise  text_$transition 
+			 $this(canvas) raise  text_$transition
+				# Chack if input/output variables are consistent
+				# Input variables must be unique for all input arcs
+				set D_input_var_names [dict create]; set L_errors [list]
+				dict for {place D_place} [$transition get_D_sources] {
+					 dict for {var_name D_weight} [dict get $D_place D_weight] {
+						 if {[dict exists $D_input_var_names $var_name]} {
+							 lappend L_errors "Input variable \"$var_name\" still exists, please rename it (arc from place $place : [$place get_name])"
+							} else {dict set D_input_var_names $var_name [dict create weight [dict get $D_weight w] place $place]
+								   }
+						}
+					}
+				# Output variable must be unique in its output arc
+				dict for {place D_place} [$transition get_D_targets] {
+					 set L_output_var_names [list]
+					 dict for {var_name D_weight} [dict get $D_place D_weight] {
+						 if {[lsearch $L_output_var_names $var_name] >= 0} {
+							 lappend L_errors "Output variable \"$var_name\" still exists, please rename it (arc to $place : [$place get_name])"
+							} else {lappend L_output_var_names $var_name
+									# Chack wether weight are the same in the input variables
+									if { [dict exists $D_input_var_names $var_name]
+									   &&[dict get $D_input_var_names $var_name weight] != [dict get $D_weight w]} {
+									    set in_place [dict get $D_input_var_names $var_name place]
+										lappend L_errors "Output variable $var_name (to place $place : [$place get_name] has weight different from input from $in_place : [$in_place get_name]"
+									   }
+								   }
+						}
+					}
+					
+				# If there are some errors, change rectangle background
+				$transition set_L_errors $L_errors
+				if {[llength $L_errors]} {
+					 $this(canvas) itemconfigure rectangle_$transition -fill red
+					}
 			 
 			 # Interaction
 			 $this(canvas) bind $transition <ButtonPress-1> [list $objName inter_Press 			$transition %x %y]
@@ -460,8 +537,25 @@ method PetriNetView:_:Place Draw_place {{L_places {}} {L_transitions {}}} {
 		}
 	$this(canvas) raise transition
 	$this(canvas) raise place
+	
+	# Subscribe to nested transitions changes
+	# set cmd "$this(canvas) itemconfigure rectangle_\$t -fill \[lindex \[list white green\] \$b\]"
+	set cmd "$objName Update_color_of_transition \$t"
+	$this(place) Subscribe_to_Update_triggerability $objName $cmd UNIQUE
+	
+	foreach transition [$this(place) get_L_nested_transitions] {$this(place) Update_triggerability $transition}
 }
 
+#___________________________________________________________________________________________________________________________________________
+method PetriNetView:_:Place Update_color_of_transition {transition} {
+	set triggerable [[$transition get_nesting_place] get_item_of_D_triggerable_transitions [list $transition triggerable]]
+	if {[llength [[$transition get_nesting_place] get_L_tokens]] == 0} {set triggerable 0}
+	if {[llength [$transition get_L_errors]]} {
+		 set color red
+		} else {set color [lindex [list white green] $triggerable]}
+	$this(canvas) itemconfigure rectangle_$transition -fill $color
+}
+# Trace PetriNetView:_:Place Update_color_of_transition
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -494,7 +588,7 @@ method PetriNetView:_:Place Update_selected_elements_in {x1 y1 x2 y2} {
 		
 	# For each newly selected element, turn outline to blue
 	foreach e $L {
-		 if {[lsearch $this(L_selected_elements) $e] == -1} {$this(canvas) itemconfigure bg_$e -outline green}
+		 if {[lsearch $this(L_selected_elements) $e] == -1} {$this(canvas) itemconfigure bg_$e -outline magenta}
 		}
 		
 	# For each no more selected element, turn outline to black
@@ -543,14 +637,14 @@ method PetriNetView:_:Place inter_Move {x y {dragged_element {}}} {
 				 foreach transition [$place get_L_sources] {
 					 if {![dict exists $this(D_preso) $transition]} {continue}
 					 lassign [this get_place_representing $place] place nested
-					 lassign [this compute_edge $place $transition] ax1 ay1 ax2 ay2
-					 PetriNet:_:Update_arc [$transition get_item_of_D_targets $place] $this(canvas) $transition $place $ax2 $ay2 $ax1 $ay1
+					 lassign [this compute_edge $place $transition -1] ax1 ay1 mx my ax2 ay2
+					 PetriNet:_:Update_arc [$transition get_item_of_D_targets $place] $this(canvas) $transition $place $ax2 $ay2 $mx $my $ax1 $ay1
 					}
 				 foreach transition [$place get_L_targets] {
 					 if {![dict exists $this(D_preso) $transition]} {continue}
 					 lassign [this get_place_representing $place] place nested
-					 lassign [this compute_edge $place $transition] ax1 ay1 ax2 ay2
-					 PetriNet:_:Update_arc [$transition get_item_of_D_sources $place] $this(canvas) $place $transition $ax1 $ay1 $ax2 $ay2
+					 lassign [this compute_edge $place $transition 1] ax1 ay1 mx my ax2 ay2
+					 PetriNet:_:Update_arc [$transition get_item_of_D_sources $place] $this(canvas) $place $transition $ax1 $ay1 $mx $my $ax2 $ay2
 					}
 				 if {[$place get_nested_start_place] != ""} {this inter_Move $x $y [$place get_nested_start_place]}
 				 if {[$place get_nested_end_place  ] != ""} {this inter_Move $x $y [$place get_nested_end_place  ]}
@@ -558,13 +652,13 @@ method PetriNetView:_:Place inter_Move {x y {dragged_element {}}} {
 			 transition	{set transition $dragged_element
 				 dict for {place D_place} [$transition get_D_sources] {
 					 lassign [this get_place_representing $place] place nested
-					 lassign [this compute_edge $place $transition] ax1 ay1 ax2 ay2
-					 PetriNet:_:Update_arc $D_place $this(canvas) $place $transition $ax1 $ay1 $ax2 $ay2
+					 lassign [this compute_edge $place $transition 1] ax1 ay1 mx my ax2 ay2
+					 PetriNet:_:Update_arc $D_place $this(canvas) $place $transition $ax1 $ay1 $mx $my $ax2 $ay2
 					}
 				 dict for {place D_place} [$transition get_D_targets] {
 					 lassign [this get_place_representing $place] place nested
-					 lassign [this compute_edge $place $transition] ax1 ay1 ax2 ay2
-					 PetriNet:_:Update_arc $D_place $this(canvas) $transition $place $ax2 $ay2 $ax1 $ay1
+					 lassign [this compute_edge $place $transition -1] ax1 ay1 mx my ax2 ay2
+					 PetriNet:_:Update_arc $D_place $this(canvas) $transition $place $ax2 $ay2 $mx $my $ax1 $ay1
 					}
 				}
 			}
@@ -814,7 +908,8 @@ method PetriNetView:_:Place Contextual_Press_on_canvas {x y} {
 #_____________________________________________________________________________________________________________
 method PetriNetView:_:Place Contextual_Release_on_canvas {x y} {
 	# puts "Contextual_Release_on_canvas : $this(contextual_source)"
-	# Create an arc ?
+	# Create an arc 
+	# puts "contextual_source : $this(contextual_source)"
 	if { [llength $this(contextual_source)] } {
 		 set start_xy [lrange $this(contextual_source) 1 2]
 		 if {[lindex $this(contextual_source) 0] != $objName} {
@@ -832,9 +927,9 @@ method PetriNetView:_:Place Contextual_Release_on_canvas {x y} {
 		 set this(contextual_source) [list]
 		 $this(canvas) delete feedback
 		 
-		 if {"$x $y" != $start_xy} return
-		} else	{
+		 if {"$x $y" != $start_xy} {return}
 				 # Contextual click on an arc ?
+				 # puts "Contextual click on arc?"
 				 foreach e [$this(canvas) find overlapping [expr $x-3] [expr $y-3] [expr $x+3] [expr $y+3]] {
 					 set L_tags [lassign [$this(canvas) gettags $e] obj type target]
 					 if {$obj == $objName && $type == "arc"} {
@@ -851,12 +946,14 @@ method PetriNetView:_:Place Contextual_Release_on_canvas {x y} {
 						}
 					}
 				}
-	# puts coucou
+				
 	# Contextual menu ?
 	if {$this(last_release) == "$x $y"} {return}
 	set this(last_release) ""
 	set m ._${objName}_Contextual_menu
 	if {![winfo exists $m]} {menu $m} else {$m delete 0 end}
+	$m add command -label "Edit nesting place" -command [list $objName Edit_element nesting_place $this(place)]
+	$m add separator
 	if {[llength $this(L_elements_clipboard)]} {
 		 $m add command -label "Paste"	-command [list $objName Paste $x $y]
 		 $m add separator
@@ -914,10 +1011,12 @@ method PetriNetView:_:Place Contextual_Release_on {type element x y} {
 			 $m add command -label "Edit transition"   -command [list $objName Edit_element transition $element]
 			 $m add command -label "Delete transition" -command [list $objName Delete_elements [list $element]]
 			 $m add separator
-			 if {[$element Triggerable]} {
+			 set D_tmp {}
+			 lassign [$element Triggerable D_tmp] triggerable D_res
+			 if {$triggerable} {
 				 set event 			[$element get_event]
 				 set nesting_place	[$element get_nesting_place]
-				 $m add command -label "Trigger event $event" -command [list $element Trigger]
+				 $m add command -label "Trigger event $event" -command "set D_tmp {}; $element Trigger D_tmp"
 				}
 			}
 		 arc		{
@@ -932,18 +1031,28 @@ method PetriNetView:_:Place Contextual_Release_on {type element x y} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
-method PetriNetView:_:Place compute_edge {oval_id rect_id} {
+method PetriNetView:_:Place compute_edge {oval_id rect_id direction} {
 	lassign [$this(canvas) bbox $oval_id] ox1 oy1 ox2 oy2
 		set ocx [expr ($ox1+$ox2)/2.0]; set ocy [expr ($oy1+$oy2)/2.0]
 		set orx [expr $ocx - $ox1]    ; set ory [expr $ocy - $oy1]
 	lassign [$this(canvas) bbox $rect_id] rx1 ry1 rx2 ry2
 		set rcx [expr ($rx1+$rx2)/2.0]; set rcy [expr ($ry1+$ry2)/2.0]
+	# Compute direction vector v and left perpendicular vecor vp
+		set dx [expr $ocx-$rcx]; set dy [expr $ocy-$rcy]
+		set vect_size [expr sqrt($dx*$dx+$dy*$dy)]
+		set vx [expr $direction*$dx/$vect_size]; set vy [expr $direction*$dy/$vect_size]
+		set vpx [expr -$vy]; set vpy [expr $vx]
+	# Compute middle point
+		set mx [expr 15*$vpx+($ocx+$rcx)/2]; set my [expr 15*$vpy+($ocy+$rcy)/2]
+	
 	
 	lassign [this get_intersections_oval_line      $ocx $ocy $orx $ory $ocx $ocy $rcx $rcy] x1 y1; if {$x1 == ""} {set x1 $ocx; set y1 $ocy}
-	lassign [this get_intersections_rectangle_line $rx1 $ry1 $rx2 $ry2 $ocx $ocy $rcx $rcy] x2 y2; if {$x2 == ""} {set x2 $rcx; set y2 $rcy}
+	# lassign [this get_intersections_rectangle_line $rx1 $ry1 $rx2 $ry2 $ocx $ocy $rcx $rcy] x2 y2; if {$x2 == ""} {set x2 $rcx; set y2 $rcy}
+	lassign [this get_intersections_oval_line      $ocx $ocy $orx $ory $ocx $ocy $mx $my  ] x1 y1; if {$x1 == ""} {set x1 $ocx; set y1 $ocy}
+	lassign [this get_intersections_rectangle_line $rx1 $ry1 $rx2 $ry2 $mx  $my  $rcx $rcy] x2 y2; if {$x2 == ""} {set x2 $rcx; set y2 $rcy}
 	
 	# puts "compute_edge $oval_id $rect_id : [join [list $x1 $y1 $x2 $y2] \;]"
-	return [list $x1 $y1 $x2 $y2]
+	return [list $x1 $y1 $mx $my $x2 $y2]
 }
 
 #___________________________________________________________________________________________________________________________________________

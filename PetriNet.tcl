@@ -12,14 +12,35 @@ method PetriNet:_:TokenPool constructor {} {
 method PetriNet:_:TokenPool get_token {{Tclass PetriNet:_:Token} args} {
 	if {![dict exists $this(D_tokens) $Tclass]} {dict set this(D_tokens) $Tclass [list]}
 	set L [dict get $this(D_tokens) $Tclass]
-	if {[llength $L]} {set L [lassign $L e]} else {incr this(id); set e token_$this(id); $Tclass $e}
-	$e init
+	if {[llength $L]} {
+		 set L [lassign $L e]
+		 dict set this(D_tokens) $Tclass $L
+		} else {incr this(id)
+				set e token_$this(id)
+				$Tclass $e
+			   }
+	eval [concat [list $e init ""] $args]
 	return $e
 }
-	
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:TokenPool get_copy_of_token {token} {
+	set Tclass [$token get_class]
+	set e [this get_token $Tclass]
+	$e init $token
+	return $e
+}
+
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:TokenPool release_tokens {tokens} {
-	eval [concat [list dict lappend this(D_tokens) [$token get_class]] $tokens]
+	set L_tokens [list]
+	foreach token $tokens {
+		 set L [dict get $this(D_tokens) [$token get_class]]
+		 if {[lsearch $L $token] == -1} {
+			 lappend $L $token
+			 dict set this(D_tokens) [$token get_class] $L
+			}
+		}
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -31,27 +52,35 @@ if {![gmlObject info exists object TokenPool]} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Token constructor {} {
-	set this(class_name) [lindex [gmlObject info classes $objName] 0]
-	this init
+	set this(class_name)	[lindex [gmlObject info classes $objName] 0]
+	set this(all_classes)	[gmlObject info classes $objName]
+	this init ""
 }
 
 #___________________________________________________________________________________________________________________________________________
 Generate_accessors PetriNet:_:Token [list time]
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Token init {} {
+method PetriNet:_:Token init {token args} {
 	this update_time
 }
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Token update_time {} {set this(time) [clock milliseconds]}
-method PetriNet:_:Token get_class   {} {return $this(class_name)}
+method PetriNet:_:Token get_time    {} {return $this(time)}
+method PetriNet:_:Token get_age     {} {return [expr [clock milliseconds] - $this(time)]}
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:Token get_class   { } {return $this(class_name)}
+method PetriNet:_:Token is_a		{C} {return [expr [lsearch $this(all_classes) $C] >= 0]}
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place constructor {name {nesting_place {}}} {
 	set this(name)		$name
+	set this(L_errors)	[list]
+	
 	set this(L_tokens)  [list]; set this(id_token) 0
 	set this(L_sources) [list]
 	set this(L_targets) [list]
@@ -65,6 +94,7 @@ method PetriNet:_:Place constructor {name {nesting_place {}}} {
 	
 	set this(D_triggerable_transitions) [dict create]
 	set this(last_test) 0
+	set this(pipo_event) [dict create]
 	# __________________________________________________________________________________________
 	# Events managing __________________________________________________________________________
 	#              name : key    _______________________________________________________________
@@ -72,7 +102,7 @@ method PetriNet:_:Place constructor {name {nesting_place {}}} {
 	#     cmd_subscribe : string _______________________________________________________________
 	#   cmd_unsubscribe : string _______________________________________________________________
 	# __________________________________________________________________________________________
-	set this(D_events) 	[dict create]
+	set this(D_events) 				[dict create]
 	
 	# Time and variables
 	set this(D_afters) 	[dict create]
@@ -109,13 +139,13 @@ method PetriNet:_:Place Substitute_by {place {L_related_places {}}} {
 	foreach t $L_sources {
 		 $place Add_L_sources [list $t]
 		 set D_place [$t get_item_of_D_targets $objName]
-		 $t set_item_of_D_targets $place [PetriNet:_:[dict get $D_place type] $place [dict get $D_place weight]]
+		 $t set_item_of_D_targets $place [PetriNet:_:[dict get $D_place type] $place [dict get $D_place D_weight]]
 		}
 	set L_targets [this get_L_targets]
 	foreach t $L_targets {
 		 $place Add_L_targets [list $t]
 		 set D_place [$t get_item_of_D_sources $objName]
-		 $t set_item_of_D_sources $place [PetriNet:_:[dict get $D_place type] $place [dict get $D_place weight]]
+		 $t set_item_of_D_sources $place [PetriNet:_:[dict get $D_place type] $place [dict get $D_place D_weight]]
 		}
 		
 	# Arcs related to nestes start and and places?
@@ -156,6 +186,7 @@ Generate_List_accessor  PetriNet:_:Place L_sources            L_sources
 Generate_List_accessor  PetriNet:_:Place L_targets            L_targets
 Generate_List_accessor  PetriNet:_:Place L_nested_places      L_nested_places
 Generate_List_accessor  PetriNet:_:Place L_nested_transitions L_nested_transitions
+Generate_List_accessor  PetriNet:_:Place L_errors 			  L_errors
 Generate_dict_accessors PetriNet:_:Place D_triggerable_transitions
 Generate_dict_accessors PetriNet:_:Place D_events
 Generate_dict_accessors PetriNet:_:Place D_vars
@@ -170,7 +201,7 @@ method PetriNet:_:Place Update_triggerable_transitions_from_place {place} {
 	foreach t [$place get_L_targets] {
 		 if {[$t get_id_test] != $this(last_test)} {
 		     $t set_id_test $this(last_test)
-			 if {[$t Triggerable]} {dict set this(D_triggerable_transitions) $t 1} else {dict set this(D_triggerable_transitions) $t 0}
+			 this Update_triggerability $t
 			}
 		}
 }
@@ -180,11 +211,7 @@ method PetriNet:_:Place Update_triggerable_transitions_from_place {place} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place Add_a_token {{id {}}} {
-	if {$id == ""} {
-		 # incr this(id_token)
-		 # set id [dict create id token_$this(id_token) type lambda]
-		 set id [TokenPool get_token]
-		}
+	if {$id == ""} {set id [TokenPool get_token]}
 	return [this Add_L_tokens [list $id]]
 }
 
@@ -201,6 +228,9 @@ Inject_code PetriNet:_:Place Add_L_tokens {} {
 			 # puts "Add_L_tokens qui passe dans $nested_start"
 			 this incr_last_test
 			 this Update_triggerable_transitions_from_place $nested_start
+			}
+		 foreach transition [this get_L_nested_transitions] {
+			 this Update_triggerability $transition
 			}
 		}
 }
@@ -306,16 +336,28 @@ method PetriNet:_:Place OnTransition {name op cmd} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Place TriggerEvent {name} {
+method PetriNet:_:Place TriggerEvent {name {D_event {}}} {
 	set L [list]
 	foreach transition [dict get $this(D_events) $name L_transitions] {
-		 if { [dict get $this(D_triggerable_transitions) $transition] } {lappend L $transition}
-		 # if {[$transition Triggerable]} {lappend L $transition}
+		 if { [dict get $this(D_triggerable_transitions) $transition triggerable] } {
+			 # Should we recompute triggerability because it depends on the event?
+			 if {[dict get $this(D_triggerable_transitions) $transition depends_on_event]} {
+				 this Update_triggerability $transition D_event
+				 if { [dict get $this(D_triggerable_transitions) $transition triggerable] } {set can_be_triggered 1} else {set can_be_triggered 0}
+				} else {set can_be_triggered 1}
+			 if {$can_be_triggered} {lappend L $transition} else {this Update_triggerability $transition}
+			}
 		}
 		
 	# puts "Event $name triggers transitions [join $L {, }]"
-	foreach transition [lsort -command "$objName random_comp" $L] {$transition Trigger}
+	set D_tmp {}
+	foreach transition [lsort -command "$objName random_comp" $L] {
+		 $transition Trigger D_event
+		 this Update_triggerability $transition
+		}
 }
+# Trace PetriNet:_:Place TriggerEvent
+Manage_CallbackList PetriNet:_:Place [list TriggerEvent] end
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -324,9 +366,15 @@ method PetriNet:_:Place get_var {name      } {return [dict get $this(D_vars) $na
 method PetriNet:_:Place set_var {name value} {dict set this(D_vars) $name $value}
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Place Eval {cmd D_vars} {
+method PetriNet:_:Place Eval {cmd D_pool_name D_vars_name args} {
+	upvar $D_vars_name 	D_vars
+	upvar $D_pool_name	D_pool
+	foreach a $args {upvar $a $a}
+	
 	dict for {k v} $this(D_vars) {set $k $v}
+	dict for {k v} $D_pool 		 {set $k [dict get $v L_tokens]}
 	dict for {k v} $D_vars		 {set $k $v}
+	
 	eval $cmd
 }
 
@@ -344,10 +392,35 @@ method PetriNet:_:Place Nest_place {p} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Place Update_triggerability {t} {
-	if {[$t Triggerable 0]} {set triggerable 1} else {set triggerable 0}
-	dict set this(D_triggerable_transitions) $t $triggerable
+#XXX gestion du temps
+method PetriNet:_:Place Update_triggerability {t {D_event_name {}} {mark {}}} {
+	set force 0
+	if {$mark == ""} {
+		 set mark [dict get $this(D_triggerable_transitions) $t mark]
+		 incr mark; set force 1
+		} else {if {$mark < [dict get $this(D_triggerable_transitions) $t mark]} {
+					 # puts stderr "\tOld message, we quit because $mark < [dict get $this(D_triggerable_transitions) $t mark]"
+					 return
+					}
+			   }
+
+	if {$D_event_name != ""} {upvar $D_event_name D_event} else {set D_event $this(pipo_event)}
+
+	lassign [$t Triggerable D_event 0] b D_res ms depends_on_event
+	set time_reeval [dict get $this(D_triggerable_transitions) $t time_reeval]
+		 if { $ms > 0 
+		    && ($force || $time_reeval == 0 || $ms > $time_reeval) } {
+			 set time_reeval $ms
+			 set delta_ms [expr $time_reeval - [clock milliseconds]]
+			 after $delta_ms [list $objName Update_triggerability $t {} $mark]
+			} else {
+					# puts stderr "\tno reevaluation cause :\n\t\tms : $ms\n\t\ttime_reeval : $time_reeval\n\t\t"
+				   }
+
+	dict set this(D_triggerable_transitions) $t [dict create triggerable $b D_res $D_res time_reeval $time_reeval mark $mark depends_on_event $depends_on_event]
 }
+# Trace PetriNet:_:Place Update_triggerability
+Manage_CallbackList PetriNet:_:Place [list Update_triggerability] end
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place Update_event_related_to {t new_event} {
@@ -361,20 +434,25 @@ method PetriNet:_:Place Nest_transition {t event} {
 		 [$t get_nesting_place] UnSubscribe_to_event $event $t
 		 [$t get_nesting_place] remove_item_of_D_nested_transitions [list $t]
 		}
+
 	$t set_nesting_place $objName
 	if {[lsearch $this(L_nested_transitions) $t]} {
 		 lappend this(L_nested_transitions) $t
 		}
-	this Update_triggerability $t
-	this Subscribe_to_event    $event $t
+	dict set this(D_triggerable_transitions) $t [dict create triggerable 0 D_res "" time_reeval 0 mark 0 depends_on_event 0]
+	this Update_triggerability $t this(pipo_event)
+	this Subscribe_to_event    $event $t 
 	
 	# Manage callbacks for arcs modifications
-	$t Subscribe_to_set_event $objName "$objName Update_event_related_to $t \$v"
+	$t Subscribe_to_set_event $objName "$objName Update_event_related_to $t \$v" 
 	foreach mtd [list 	set_D_sources set_item_of_D_sources remove_item_of_D_sources \
 						set_D_targets set_item_of_D_targets remove_item_of_D_targets \
 				] {
-		 $t Subscribe_to_$mtd $objName [list $objName Update_triggerability $t]
+		 $t Subscribe_to_$mtd $objName [list $objName Update_triggerability $t] UNIQUE
 		}
+	
+	# Update triggerability
+	this Update_triggerability $t
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -395,7 +473,9 @@ method PetriNet:_:Place Save_to_stream {node_text stream dec} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Transition constructor {name nesting_place event cmd_trigger D_sources D_targets} {
+	set this(triggering) 0
 	set this(name)		$name
+	set this(L_errors)	[list]
 
 	set this(D_sources) $D_sources; dict for {place D_place} $D_sources {$place Add_L_targets [list $objName]}
 	set this(D_targets) $D_targets; dict for {place D_place} $D_targets {$place Add_L_sources [list $objName]}
@@ -459,17 +539,17 @@ method PetriNet:_:Transition Save_to_stream {node_text stream dec} {
 		}
 	
 	set D [dict create]; 
-		dict for {k v} $this(D_sources) {dict set D $k [list [dict get $v type] $k [dict get $v weight]]}
+		dict for {k v} $this(D_sources) {dict set D $k [list [dict get $v type] $k [dict get $v D_weight]]}
 		$node_text nodeValue $D; puts $stream "${dec}\t<attribute type=\"D_sources\">[$node_text asXML]</attribute>"
 	set D [dict create]; 
-		dict for {k v} $this(D_targets) {dict set D $k [list [dict get $v type] $k [dict get $v weight]]}
+		dict for {k v} $this(D_targets) {dict set D $k [list [dict get $v type] $k [dict get $v D_weight]]}
 		$node_text nodeValue $D; puts $stream "${dec}\t<attribute type=\"D_targets\">[$node_text asXML]</attribute>"
 	puts $stream "${dec}</transition>"
 }
 
 #___________________________________________________________________________________________________________________________________________
-Generate_accessors PetriNet:_:Transition [list name nesting_place event cmd_trigger id_test cond_triggerable]
-
+Generate_accessors 		PetriNet:_:Transition [list name nesting_place event cmd_trigger id_test cond_triggerable]
+Generate_List_accessor	PetriNet:_:Transition L_errors	L_errors
 Generate_dict_accessors PetriNet:_:Transition D_sources
 Generate_dict_accessors PetriNet:_:Transition D_targets
 
@@ -481,55 +561,74 @@ Manage_CallbackList PetriNet:_:Transition [list set_D_sources set_item_of_D_sour
 Manage_CallbackList PetriNet:_:Transition [list set_event] begin
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Transition Triggerable {{in_nesting_context 1}} {
+method PetriNet:_:Transition Triggerable {D_event_name {in_nesting_context 1}} {
 	if {$in_nesting_context && $this(nesting_place) != ""} {
-		 if {[$this(nesting_place) llength_L_tokens] == 0} {return 0}
+		 if {[$this(nesting_place) llength_L_tokens] == 0} {return [list 0 "" 0 0]}
 		}
-	set D_res [dict create]
-	puts "Transition $objName ([this get_name])"
+	upvar $D_event_name D_event
+	set D_res [dict create]; set L_ms [list]; set depends_on_event 0
 	dict for {place D_edge} $this(D_sources) {
 		 set D_weight   		[dict get $D_edge D_weight]
 		 set cond_select		[dict get $D_edge cond]
-		 lassign				[eval $cond_select] res D_vars
-		 puts "\t$place : $res : $D_vars"
-		 if {!$res} {puts "\tAbort"; return 0}
-		 # set cmd_select_tokens	[dict get $D_edge cmd_select_tokens_source]
-		 # set L_tokens 			[eval $cmd_select_tokens]
-		 # if { ![eval $cond] } {return 0}
+		 lassign				[eval $cond_select] res D_vars ms depends_on_event
+		 if {$depends_on_event == ""} {error "NULL with :\ncond_select : $cond_select"}
+		 if {!$res} {return [list 0 "" $ms $depends_on_event]} else {if {$ms >= 0} {lappend L_ms $ms}}
+		 set D_res [dict merge $D_res $D_vars]
 		}
-	
-	return 1
-	# return [eval $this(cond_triggerable)]
-}
 
+	if {[llength $L_ms]} {set ms [lindex [lsort -real $L_ms] 0]} else {set ms -1}
+	# puts "\t[this get_name] is triggerable"
+	return [list 1 $D_res $ms $depends_on_event]
+}
+# Trace PetriNet:_:Transition Triggerable
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Transition Trigger {} {
-	# if {[this Triggerable]} {
-		 set L_tokens [list]
+method PetriNet:_:Transition Trigger {D_event_name} {
+	if {!$this(triggering) && [$this(nesting_place) get_item_of_D_triggerable_transitions [list $objName triggerable]]} {
+		 upvar $D_event_name D_event
+		 set D_vars [dict create event [dict create name $this(event) D_event $D_event]]
 		 
-		 # Remove tokens from source places
+		 set this(triggering) 1
+		 set L_tokens [list]
+		 set D_pool [$this(nesting_place) get_item_of_D_triggerable_transitions [list $objName D_res]]
+
 		 dict for {place D_edge} $this(D_sources) {
-			 set weight   			[dict get $D_edge weight]
-			 set L_tokens_source 	[eval [dict get $D_edge cmd_select_tokens_source]]
-			 set L_tokens 			[concat $L_tokens $L_tokens_source]
-			 # puts "Transition $objName ([this get_name]) :\n\tplace : $place\n\tselect L_tokens : {$L_tokens} from $place\n\t[dict get $D_edge cmd_remove_tokens_source]"
-			 eval 		  			[dict get $D_edge cmd_remove_tokens_source]
+			 set L_tokens_source [list]
+			 dict for {var_name D_var} $D_pool {
+				 if {[dict get $D_var place] == $place} {set L_tokens_source [concat $L_tokens_source [dict get $D_var L_tokens]]}
+				}
+			 # eval	[dict get $D_edge cmd_remove_tokens_source]
+			 dict set D_vars place $place
+			 dict set D_vars L_tokens_source $L_tokens_source
+			 $this(nesting_place) Eval [dict get $D_edge cmd_remove_tokens_source] D_pool D_vars 
 			}
 		 
 		 # Add tokens to target places
+		 set D_used [dict create]
 		 dict for {place D_edge} $this(D_targets) {
-			 set weight   [dict get $D_edge weight]
-			 eval [dict get $D_edge cmd_puts_tokens_target]
+			 set D_weight   [dict get $D_edge D_weight]
+			 # eval [dict get $D_edge cmd_puts_tokens_target]
+			 dict set D_vars place 	  $place
+			 dict set D_vars D_weight $D_weight
+			 $this(nesting_place) Eval [dict get $D_edge cmd_puts_tokens_target] D_pool D_vars D_used
 			}
 		 
+		 # Release unused tokens
+		 dict for {var_name D_var} $D_pool {
+			 if {![dict exists $D_used $var_name]} {TokenPool release_tokens [dict get $D_var L_tokens]}
+			}
+		 
+		 # Eval the trigger command
+		 dict set D_vars place $place
+		 $this(nesting_place) Eval $this(cmd_trigger) D_pool D_vars 
+
 		 # Update triggerable transitions
-		 $this(nesting_place) incr_last_test
+		 $this(nesting_place) incr_last_test; 
 		 dict for {place D_edge} $this(D_sources) {$this(nesting_place) Update_triggerable_transitions_from_place $place}
 		 dict for {place D_edge} $this(D_targets) {$this(nesting_place) Update_triggerable_transitions_from_place $place}
 		 
-		 # Eval the trigger command
-		 $this(nesting_place) Eval $this(cmd_trigger) [dict create L_tokens $L_tokens]
-		# }
+		 # puts "\t[this get_name] => [$this(nesting_place) get_item_of_D_triggerable_transitions [list $objName triggerable]]"
+		 set this(triggering) 0
+		}
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -539,14 +638,19 @@ proc PetriNet:_:Create_arc {D canvas source target x1 y1 x2 y2 L_tags} {
 	if {[lsearch [gmlObject info classes $source] PetriNet:_:Transition] >= 0} {set transition $source} else {set transition $target}
 	lappend L_tags arc arc_${source}_$target arc_related_to_$transition source:$source target:$target
 	
-	set cmd [list $canvas create line $x1 $y1 $x2 $y2 -tags $L_tags]
+	set cmd [list $canvas create line $x1 $y1 $x2 $y2 -smooth bezier -tags $L_tags]
 	set cmd [concat $cmd [dict get $D preso_style_line_config]]
 	eval $cmd
 	
 	# set txt ""
 	# dict for {k v} [dict get $D D_weight] {append txt "$k : $v\n"}
 	set L_txt [list]
-	dict for {k v} [dict get $D D_weight] {lappend L_txt "[dict get $v w] [dict get $v t]"}
+	dict for {k v} [dict get $D D_weight] {
+		 # lappend L_txt "[dict get $v w] [dict get $v t]"
+		 set w 	 [dict get $v w]
+		 set str $k; if {$w != 1} {append str "(${w})"}
+		 lappend L_txt $str
+		}
 	set txt [join $L_txt "\n"]
 	
 	$canvas create text 0 0 -text $txt -tags [concat $L_tags weight_arc_${source}_$target]
@@ -556,15 +660,18 @@ proc PetriNet:_:Create_arc {D canvas source target x1 y1 x2 y2 L_tags} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-proc PetriNet:_:Update_arc {D canvas source target x1 y1 x2 y2} {
-	$canvas coords arc_${source}_$target $x1 $y1 $x2 $y2
+proc PetriNet:_:Update_arc {D canvas source target x1 y1 mx my x2 y2} {
+	$canvas coords arc_${source}_$target $x1 $y1 $mx $my $x2 $y2
 	eval [dict get $D preso_update_end_line]
 	set sign_x [expr ($x2-$x1)<0?-1:1]; set sign_y [expr ($y2-$y1)<0?-1:1]
-	if {$sign_x + $sign_y} {
-		 set anchor sw
-		} else {set anchor nw}
+	
+	if {$sign_x == 1  && $sign_y ==  1} {set anchor sw}
+	if {$sign_x == 1  && $sign_y == -1} {set anchor se}
+	if {$sign_x == -1 && $sign_y ==  1} {set anchor nw}
+	if {$sign_x == -1 && $sign_y == -1} {set anchor ne}
+
 	$canvas itemconfigure	weight_arc_${source}_$target -anchor $anchor
-	$canvas coords 			weight_arc_${source}_$target  [expr ($x1+$x2)/2.0] [expr ($y1+$y2)/2.0]
+	$canvas coords 			weight_arc_${source}_$target  $mx $my
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -572,15 +679,17 @@ proc PetriNet:_:Update_arc {D canvas source target x1 y1 x2 y2} {
 #___________________________________________________________________________________________________________________________________________
 proc PetriNet:_:StandardEdge {place D_weight} {
 	dict for {idT D} $D_weight {
-		 if {![dict exists $D cond]} {dict set D_weight $idT cond {SelectTokens $place D_weight}}
+		 if {![dict exists $D w   ]} {dict set D_weight $idT w 1}
 		 if {![dict exists $D t   ]} {dict set D_weight $idT t Token}
-		 if {![dict exists $D w   ]} {dict set D_weight $idT w {subst 1}}
+		 if {![dict exists $D cond]} {dict set D_weight $idT cond {subst 1}}
+		 if {![dict exists $D time]} {dict set D_weight $idT time {subst -1}}
+		 if {![dict exists $D event_filter]} {dict set D_weight $idT event_filter {}}
 		}
 	set D 	[dict create	type						StandardEdge					\
 							D_weight					$D_weight						\
-							cond						{PetriNet:_:SelectTokens $place D_weight}	\
-							cmd_remove_tokens_source	{TokenPool release_tokens $L_tokens_source; $place Sub_L_tokens $L_tokens_source} \
-							cmd_puts_tokens_target		{if {$weight == "*"} {$place Add_L_tokens $L_tokens} else {for {set i 0} {$i < $weight} {incr i} {$place Add_a_token}}} \
+							cond						{PetriNet:_:SelectTokens $place D_event D_weight}	\
+							cmd_remove_tokens_source	{$place Sub_L_tokens $L_tokens_source} \
+							cmd_puts_tokens_target		{PetriNet:_:PutsTokens $place D_event D_weight D_pool D_used} \
 							preso_style_line_config		[dict create -fill black -width 1 -arrow last]	\
 							preso_create_end_line		""				\
 							preso_update_end_line		""				\
@@ -601,7 +710,7 @@ proc PetriNet:_:ConditionnaldEdge {place D_weight} {
 proc PetriNet:_:inhibitordEdge {place D_weight} {
 	set D [PetriNet:_:StandardEdge $place $D_weight]
 		dict set D type						inhibitordEdge
-		dict set D cond						{expr [llength $L_tokens] < $weight}
+		dict set D cond						"lassign \[[dict get $D cond]\] b_tmp D_tmp ms_tmp dep; list \[expr !\$b_tmp\] \$D_tmp \$ms_tmp \$dep"
 		dict set D cmd_remove_tokens_source {}
 		dict set D preso_style_line_config	-dash 1
 		dict set D preso_style_line_config	-arrow none
@@ -613,32 +722,102 @@ proc PetriNet:_:inhibitordEdge {place D_weight} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
-proc PetriNet:_:SelectTokens {place D_weight_name} {
+proc PetriNet:_:SelectTokens {place D_event_name D_weight_name args} {
 	upvar $D_weight_name D_weight
+	upvar $D_event_name  D_event
+	
 	set L_tokens [$place get_L_tokens]
-	set b_res 1; set D_res [dict create]
+	set b_res 1; set D_res [dict create]; set ms -1; 
+	set is_event [expr [dict size $D_event]>0]
+	set clock [clock milliseconds]
+		set L_ms_ok [list]; set L_ms_ko [list]
+		set arc_depends_on_event 0; 
 	
 	dict for {var_name D} $D_weight {
 		 # Look for [dict get $D w] tokens of type
-		 set type  	[dict get $D t]; 
-		 set weight [dict get $D w]; if {$weight == "*"} {set weight [llength $L_tokens]}
-		 set cond 	[dict get $D cond]
-		 set L_tokens_type [list]
+		 set cond			[dict get $D cond]
+		 set time			[dict get $D time]
+		 set type  			[dict get $D t]; 
+		 set event_filter	[dict get $D event_filter]; if {$event_filter != ""} {set var_depend_on_event 1} else {set var_depend_on_event 0}
+		 set arc_depends_on_event [expr $arc_depends_on_event || $var_depend_on_event]
+		 set weight [dict get $D w]; if {$weight == "*"} {set weight [expr max(1, [llength $L_tokens])]}
+
+		 set L_tokens_type [list]; 
 		 foreach t $L_tokens {
-			 if { "PetriNet:_:$type" == [$t get_class]
+			 set ms [eval $time]
+			 if { [$t is_a PetriNet:_:$type] 
 			    &&[eval $cond]
-				} {
+				&&(!$is_event || !$var_depend_on_event || ($var_depend_on_event && [eval $event_filter])) } {
+				 # The situation is not going to change for this token?
+				 if {$ms != -1} {lappend L_ms_ok $ms}
 				 lappend L_tokens_type $t
-				 if {[llength $L_tokens_type] >= $weight} {break}
-				}
+				 if {$weight != "*" && [llength $L_tokens_type] >= $weight} {break}
+				} else 	{if {$ms != -1} {lappend L_ms_ko $ms}
+						}
 			}
-		 if {[llength $L_tokens_type] >= $weight} {
+		 if { ($weight == "*" && [llength $L_tokens_type])
+		    ||[llength $L_tokens_type] >= $weight} {
 			 set L_tokens [lremove $L_tokens $L_tokens_type]
-			 dict set D_res $var_name $L_tokens_type
+			 dict set D_res $var_name [dict create L_tokens $L_tokens_type place $place]
 			} else {set b_res 0; set D_res ""; break}
 		}
 	
-	return [list $b_res $D_res]
+	if { $b_res && [llength $L_ms_ok]} {set ms [lindex [lsort -real $L_ms_ok] 0]}
+	if {!$b_res && [llength $L_ms_ko]} {set ms [lindex [lsort -real $L_ms_ko] 0]}
+
+	return [list $b_res $D_res $ms $arc_depends_on_event]
 }
 
+#___________________________________________________________________________________________________________________________________________
+proc PetriNet:_:PutsTokens {place D_event_name D_weight_name D_pool_name D_used_name} {
+	upvar $D_weight_name D_weight
+	upvar $D_pool_name   D_pool
+	upvar $D_used_name   D_used
+	upvar $D_event_name	 D_event
+	
+	dict for {var_name D} $D_weight {
+		 if {[dict exists $D_pool $var_name]} {
+			 # puts -nonewline "variable $var_name has been declared"
+			 if {![dict exists $D_used $var_name]} {
+				  # puts " and has not been used previously"
+				  $place Add_L_tokens [dict get $D_pool $var_name L_tokens]
+				  dict set D_used $var_name 1
+				 } else {set L_tmp [list]
+						 # puts " but has been used, so we create a copy"
+						 foreach token [dict get $D_pool $var_name L_tokens] {lappend L_tmp [TokenPool get_copy_of_token $token]}
+						 $place Add_L_tokens $L_tmp
+						}
+			} else {
+					# puts "variable $var_name is unknown in sources"
+					# Look for [dict get $D w] tokens of type
+					set type  	[dict get $D t]
+					set weight	[dict get $D w]
+					# Is it a specialization of Token class?
+					set L_tokens_classes [concat [list PetriNet:_:Token] [gmlObject info specializations PetriNet:_:Token]]
+					if {[lsearch $L_tokens_classes PetriNet:_:$type] >= 0} {
+						 # puts "\ttype is $type"
+						 set L_tmp [list]
+						 for {set i 0} {$i < $weight} {incr i} {lappend L_tokens [TokenPool get_token PetriNet:_:$type]}
+						} else {
+								# puts "\tcombination is $type"
+								# Else it it is combination
+								set L_tokens [eval [concat $type $weight D_pool]]
+							   }
+					# Register variable and puts token in the place
+					$place Add_L_tokens $L_tokens
+					dict set D_pool $var_name [dict create L_tokens $L_tokens]
+					dict set D_used $var_name 1
+				   }
+		}
+	
+}
+
+#___________________________________________________________________________________________________________________________________________
+proc PetriNet:_:Combinate {a b c weight D_pool_name} {
+	upvar $D_pool_name D_pool
+	
+	puts "Combinate $a $b $c $weight $D_pool"
+	
+	return [list [TokenPool get_token PetriNet:_:Token]]
+}
 
