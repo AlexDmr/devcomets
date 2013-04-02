@@ -1,0 +1,62 @@
+<PetriNetView place="place_1">
+	<place>
+		<attribute type="tclid">place_1</attribute>
+		<attribute type="name">P_1</attribute>
+		<attribute type="nested_start_place">place_2</attribute>
+		<attribute type="nested_end_place">place_3</attribute>
+		<attribute type="D_events">event {L_transitions {transition_5 transition_6} cmd_subscribe {} cmd_unsubscribe {}}</attribute>
+		<place>
+			<attribute type="tclid">place_2</attribute>
+			<attribute type="name">P_2</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_3</attribute>
+			<attribute type="name">P_3</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_4</attribute>
+			<attribute type="name">P_4</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<transition>
+			<attribute type="tclid">transition_5</attribute>
+			<attribute type="name">T_5</attribute>
+			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger"></attribute>
+			<attribute type="D_sources"></attribute>
+			<attribute type="D_targets">place_4 {StandardEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1}}}}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">transition_6</attribute>
+			<attribute type="name">T_6</attribute>
+			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger"></attribute>
+			<attribute type="D_sources">place_4 {StandardEdge place_4 {toto {w 1 t Token cond {expr [clock milliseconds]/1000 % 2} time {expr 1000*([clock milliseconds]/1000 + 1)}}
+
+
+}} place_2 {StandardEdge place_2 {idT {w 1 t Token cond {subst 1} time {subst -1}}}}</attribute>
+			<attribute type="D_targets"></attribute>
+		</transition>
+	</place>
+	<presentation type="place" represents="place_2" x="90" y="120" />
+	<presentation type="place" represents="place_3" x="4" y="84" />
+	<presentation type="place" represents="place_4" x="184" y="49" />
+	<presentation type="transition" represents="transition_5" x="103" y="52" />
+	<presentation type="transition" represents="transition_6" x="184" y="125" />
+	<PetriNetView place="place_2">
+	</PetriNetView>
+	<PetriNetView place="place_3">
+	</PetriNetView>
+	<PetriNetView place="place_4">
+	</PetriNetView>
+</PetriNetView>
