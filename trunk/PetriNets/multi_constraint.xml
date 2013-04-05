@@ -1,0 +1,51 @@
+<PetriNetView place="place_17">
+	<place>
+		<attribute type="tclid">place_17</attribute>
+		<attribute type="name">P_14</attribute>
+		<attribute type="nested_start_place">place_18</attribute>
+		<attribute type="nested_end_place">place_19</attribute>
+		<attribute type="D_events">event {L_transitions transition_22 cmd_subscribe {} cmd_unsubscribe {}}</attribute>
+		<place>
+			<attribute type="tclid">place_18</attribute>
+			<attribute type="name">P_18</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_19</attribute>
+			<attribute type="name">P_19</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_20</attribute>
+			<attribute type="name">P_21</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<transition>
+			<attribute type="tclid">transition_22</attribute>
+			<attribute type="name">T_20</attribute>
+			<attribute type="D_cond_triggerable">static {} event {expr [$a get_age] &gt; [$b get_age]}</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger"></attribute>
+			<attribute type="D_sources">place_18 {StandardEdge place_18 {a {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} b {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_20 {StandardEdge place_20 {c {w 2 t Token cond {subst 1} time {subst -1} event_filter {}} d {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_19 {StandardEdge place_19 {c {w 2 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_18 {StandardEdge place_18 {a {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} b {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_20 {StandardEdge place_20 {c {w 2 t Token cond {subst 1} time {subst -1} event_filter {}} d {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+		</transition>
+	</place>
+	<presentation type="place" represents="place_18" x="60" y="37" />
+	<presentation type="place" represents="place_19" x="100" y="199" />
+	<presentation type="transition" represents="transition_22" x="141" y="110" />
+	<presentation type="place" represents="place_20" x="221" y="43" />
+	<PetriNetView place="place_18">
+	</PetriNetView>
+	<PetriNetView place="place_19">
+	</PetriNetView>
+	<PetriNetView place="place_20">
+	</PetriNetView>
+	<PetriNetView place="place_21">
+	</PetriNetView>
+</PetriNetView>

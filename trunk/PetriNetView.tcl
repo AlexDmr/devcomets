@@ -19,6 +19,7 @@ method PetriNetView:_:Place constructor {place} {
 	set this(nesting_PetriNetView) ""
 	
 	# Presentation
+	set this(D_dettached_presentations) [dict create]
 	this recreate_canvas
 	this Draw_place
 }
@@ -30,7 +31,33 @@ Generate_dict_accessors	PetriNetView:_:Place D_nested_presentations
 Generate_dict_accessors	PetriNetView:_:Place D_preso
 
 #___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
 method PetriNetView:_:Place get_place {} {return $this(place)}
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNetView:_:Place detach_place {} {
+	if {$this(place) != ""} {
+		 foreach place [$this(place) get_L_nested_places] {
+			 $place UnSubscribe_to_Add_L_tokens $objName
+			 $place UnSubscribe_to_Sub_L_tokens $objName
+			 $place UnSubscribe_to_set_L_tokens $objName
+			}
+		 $this(place) UnSubscribe_to_Update_triggerability $objName
+		}
+	dict set this(D_dettached_presentations) $this(place) $this(D_nested_presentations)
+	set this(place) ""
+	this New_net 
+}
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNetView:_:Place attach_place {place} {
+	this detach_place
+	set this(place) $place
+	if {[dict exists $this(D_dettached_presentations) $this(place)]} {
+		 set this(D_nested_presentations) [dict get $this(D_dettached_presentations) $this(place)]
+		}
+	this recreate_and_redraw
+}
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNetView:_:Place Copy {L_elements} {
@@ -331,6 +358,10 @@ method PetriNetView:_:Place Edit_element {type args} {
 				label $this(frame_edit).f_event.lab -text "Event : "; pack $this(frame_edit).f_event.lab -side left
 				entry $this(frame_edit).f_event.ent; pack $this(frame_edit).f_event.ent -side left -fill x
 				$this(frame_edit).f_event.ent insert 0 [$transition get_event]
+			 frame $this(frame_edit).f_cond
+				label $this(frame_edit).f_cond.lab -text "Guard condition : "; pack $this(frame_edit).f_cond.lab -side top -anchor w
+				text $this(frame_edit).f_cond.ent -width 60 -height 3; pack $this(frame_edit).f_cond.ent -side left -fill x
+				$this(frame_edit).f_cond.ent insert 0.0 [$transition get_D_cond_triggerable]
 			 frame $this(frame_edit).f_cmd
 				label $this(frame_edit).f_cmd.lab -text "Command : "; pack $this(frame_edit).f_cmd.lab -side top -anchor w
 				text $this(frame_edit).f_cmd.ent -width 60 -height 10; pack $this(frame_edit).f_cmd.ent -side left -fill x
@@ -343,6 +374,7 @@ method PetriNetView:_:Place Edit_element {type args} {
 				button $this(frame_edit).f_val.ok -text "  OK  " -command  "$transition set_name \[$this(frame_edit).f_name.ent get\]
 																			$transition set_event \[$this(frame_edit).f_event.ent get\];
 																		    $transition set_cmd_trigger \[string trim \[$this(frame_edit).f_cmd.ent get 0.0 end\]\]
+																			$transition set_D_cond_triggerable \[string trim \[$this(frame_edit).f_cond.ent get 0.0 end\]\]
 																			$objName recreate_and_redraw
 																		   "
 				pack $this(frame_edit).f_val.ok -side right
@@ -828,7 +860,7 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 	PetriNet:_:Place $place_name $name $nesting_place
 	foreach nested_place [$place_node selectNodes "./place"] {
 		 this Create_net_recursivly $nested_place $place_name [concat $L_nesting_places [list $place_name]]
-		}
+		 }
 	# Save information about the nested elements
 	$place_name set_nested_start_place	[dict get $this(D_mapping_name) $nested_start_place	]
 	$place_name set_nested_end_place	[dict get $this(D_mapping_name) $nested_end_place	]
@@ -868,6 +900,10 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 		 PetriNet:_:Transition $transition_name $name $place_name \
 												$event $cmd_trigger \
 												$D_arc_sources $D_arc_targets
+		 if {[info exists D_cond_triggerable]} {
+			 $transition_name set_D_cond_triggerable $D_cond_triggerable
+			 unset D_cond_triggerable
+			}
 		 dict set this(D_mapping_name) $tclid $transition_name
 		}
 	
@@ -1016,7 +1052,7 @@ method PetriNetView:_:Place Contextual_Release_on {type element x y} {
 			 if {$triggerable} {
 				 set event 			[$element get_event]
 				 set nesting_place	[$element get_nesting_place]
-				 $m add command -label "Trigger event $event" -command "set D_tmp {}; $element Trigger D_tmp"
+				 $m add command -label "Trigger event $event" -command "[$element get_nesting_place] TriggerEvent $event"
 				}
 			}
 		 arc		{
