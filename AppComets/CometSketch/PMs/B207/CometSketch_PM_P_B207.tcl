@@ -111,7 +111,7 @@ method CometSketch_PM_P_B207 get_a_new_B207_seq {seq_id} {
 	dict set this(D_seq) $seq_id [dict create root $root poly_bg $poly_bg L_nodes $L_nodes ctc $ctc duration 10]
 	
 	puts "Sequence $seq_id :\n\tpoly_bg : $poly_bg"
-	$poly_bg abonner_a_detection_pointeur [ALX_pointeur_enfonce]
+	# $poly_bg abonner_a_detection_pointeur [ALX_pointeur_enfonce]
 	
 	return $root
 }
