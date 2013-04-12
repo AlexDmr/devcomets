@@ -207,8 +207,8 @@ method PetriNetView:_:Place Create_hierarchy_for_place {place} {
 	# puts stderr "TODO PetriNetView:_:Place Create_hierarchy_for_place"
 	set start [this get_unique_id P]
 	set end   [this get_unique_id P]
-	PetriNet:_:Place $start $start $place
-	PetriNet:_:Place $end   $end   $place
+	PetriNet:_:Place    $start $start $place
+	PetriNet:_:EndPlace $end   $end   $place
 	
 	$place set_nested_start_place $start; dict set this(D_nested_presentations) $this(place) D_nested_places $start [dict create PetriNetView ""]
 	$place set_nested_end_place   $end  ; dict set this(D_nested_presentations) $this(place) D_nested_places $end   [dict create PetriNetView ""]
@@ -261,6 +261,7 @@ method PetriNetView:_:Place Delete_elements {L_elements} {
 		puts "\tDelete $e"
 		$e dispose
 		dict unset this(D_nested_presentations) $this(place) D_presentations $e
+		dict unset this(D_nested_presentations) $this(place) D_nested_places $e
 		}
 	this recreate_and_redraw
 }
@@ -863,7 +864,13 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 		 }
 	# Save information about the nested elements
 	$place_name set_nested_start_place	[dict get $this(D_mapping_name) $nested_start_place	]
-	$place_name set_nested_end_place	[dict get $this(D_mapping_name) $nested_end_place	]
+	set end_place [dict get $this(D_mapping_name) $nested_end_place	]
+	if {$end_place != ""} {
+		 set end_place_name [$end_place get_name]
+		 $end_place dispose
+		 PetriNet:_:EndPlace $end_place $end_place_name $place_name
+		}
+	$place_name set_nested_end_place $end_place
 	if {[$place_name get_nested_start_place] != ""} {
 		 set cmd [list dict set this(D_nested_presentations)]
 			foreach place $L_nesting_places {lappend cmd $place D_nested_places}
@@ -999,7 +1006,7 @@ method PetriNetView:_:Place Contextual_Release_on_canvas {x y} {
 	$m add command -label "add Transition"	-command [list $objName Add_new_transition $x $y]
 	$m add separator
 	dict for {e D} [$this(place) get_D_events] {
-				 $m add command -label "Trigger event $e" -command [list $this(place) TriggerEvent $e]
+				 $m add command -label "Trigger event $e" -command [list $this(place) TriggerEvent $e {} {}]
 				}
 	$m add separator
 	$m add command -label "add Token"		-command [list $this(place) Add_a_token]
@@ -1032,7 +1039,7 @@ method PetriNetView:_:Place Contextual_Release_on {type element x y} {
 				} else {$m add command -label "Create hierarchy" -command [list $objName Create_hierarchy_for_place $element]}
 			 $m add separator
 			 dict for {e D} [$element get_D_events] {
-				 $m add command -label "Trigger event $e" -command [list $element TriggerEvent $e]
+				 $m add command -label "Trigger event $e" -command [list $element TriggerEvent $e {} {}]
 				}
 			 $m add separator
 			 set nesting_place	[$element get_nesting_place]
@@ -1052,7 +1059,7 @@ method PetriNetView:_:Place Contextual_Release_on {type element x y} {
 			 if {$triggerable} {
 				 set event 			[$element get_event]
 				 set nesting_place	[$element get_nesting_place]
-				 $m add command -label "Trigger event $event" -command "[$element get_nesting_place] TriggerEvent $event"
+				 $m add command -label "Trigger event $event" -command "[$element get_nesting_place] TriggerEvent $event {} $element"
 				}
 			}
 		 arc		{
