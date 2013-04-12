@@ -19,6 +19,7 @@ method PetriNet:_:TokenPool get_token {{Tclass PetriNet:_:Token} args} {
 				set e token_$this(id)
 				$Tclass $e
 			   }
+	
 	eval [concat [list $e init ""] $args]
 	return $e
 }
@@ -51,6 +52,24 @@ if {![gmlObject info exists object TokenPool]} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
+proc PetriNet:_:Select_min_max_age {L} {
+	if {[llength $L]} {
+		 set L [lassign $L first]
+		 set min [$first get_time]; set max $min; set t_min $first; set t_max $first
+		 foreach e $L {
+			 set v [$e get_time]
+			 if {$v < $min} {
+				 set min $v; set t_min $e
+				} else {if {$v > $max} {set max $v; set t_max $e}}
+			}
+		 set L_res [list $t_min $t_max]
+		} else {set L_res [list "" ""]}
+	return $L_res
+}
+
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Token constructor {} {
 	set this(class_name)	[lindex [gmlObject info classes $objName] 0]
 	set this(all_classes)	[gmlObject info classes $objName]
@@ -73,6 +92,11 @@ method PetriNet:_:Token get_age     {} {return [expr [clock milliseconds] - $thi
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Token get_class   { } {return $this(class_name)}
 method PetriNet:_:Token is_a		{C} {return [expr [lsearch $this(all_classes) $C] >= 0]}
+
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+source token_types.tcl
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -123,6 +147,35 @@ method PetriNet:_:Place dispose {} {
 	this inherited
 }
 
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+inherit PetriNet:_:EndPlace PetriNet:_:Place
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:EndPlace constructor {name nesting_place} {
+	this inherited $name $nesting_place
+}
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:EndPlace set_L_tokens {L} {
+	set rep [this inherited $L]
+	if {[llength $this(L_tokens)]} {
+		 TokenPool release_tokens [$this(nesting_place) get_L_tokens]
+		 $this(nesting_place) set_L_tokens [list]
+		}
+}
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:EndPlace Add_L_tokens {L} {
+	set rep [this inherited $L]
+	TokenPool release_tokens [$this(nesting_place) get_L_tokens]
+	$this(nesting_place) set_L_tokens [list]
+}
+
+
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place dispose_nested_graph {} {
 	foreach p $this(L_nested_places)      {$p dispose}
@@ -199,6 +252,11 @@ method PetriNet:_:Place incr_last_test {} {incr this(last_test)}
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place Update_triggerable_transitions_from_place {place} {
 	foreach t [$place get_L_targets] {
+		 if {[$t get_nesting_place] != $objName} {
+			 $this(nesting_place) Update_triggerability $t
+			 $this(nesting_place) Update_triggerable_transitions_from_place $objName
+			 continue
+			}
 		 if {[$t get_id_test] != $this(last_test)} {
 		     $t set_id_test $this(last_test)
 			 this Update_triggerability $t
@@ -216,15 +274,25 @@ method PetriNet:_:Place Add_a_token {{id {}}} {
 }
 
 #___________________________________________________________________________________________________________________________________________
+# Semantic of the nesting for a place :
+#...| Poser un jeton sur la place d'entrée, qu'est ce que ça implique pour la place mère ?
+#...|   => ajout d'un jeton référent? Comment le lien est-il maintenu avec les jetons du graphe?
+#...| Poser/Enlever un jeton sur la place de sortie, que faire du jeton référent?
+#...| Poser/Enlever un jeton sur la place mère...?
+#___________________________________________________________________________________________________________________________________________
 Inject_code PetriNet:_:Place Add_L_tokens {} {
 	set nested_start [this get_nested_start_place]
 	if {$nested_start != ""} {
 		 set token_found 0
-		 foreach place $this(L_nested_places) {
-			 if {[$place llength_L_tokens] > 0} {set token_found 1; break}
-			}
+		 # foreach place $this(L_nested_places) {
+			 # if {[$place llength_L_tokens] > 0 && [this get_nested_end_place] != $place} {
+				 # set token_found 1; break
+				# }
+			# }
 		 if {$token_found == 0} {
-			 $nested_start Add_L_tokens $L
+			 set new_L [list]
+			 foreach t $L {lappend new_L [TokenPool get_copy_of_token $t]}
+			 $nested_start Add_L_tokens $new_L
 			 # puts "Add_L_tokens qui passe dans $nested_start"
 			 this incr_last_test
 			 this Update_triggerable_transitions_from_place $nested_start
@@ -405,9 +473,10 @@ method PetriNet:_:Place Multi_Filter_solutions_with_event {transition D_event_na
 }
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Place TriggerEvent {name {D_event {}}} {
+method PetriNet:_:Place TriggerEvent {name D_event L_transitions} {
 	set L [list]
-	foreach transition [dict get $this(D_events) $name L_transitions] {
+	if {[llength $L_transitions] == 0} {set L_transitions [dict get $this(D_events) $name L_transitions]}
+	foreach transition $L_transitions {
 		 if { [dict get $this(D_triggerable_transitions) $transition triggerable] } {
 			 # Should we recompute triggerability because it depends on the event?
 			 if {[dict get $this(D_triggerable_transitions) $transition depends_on_event]} {
@@ -857,23 +926,28 @@ method PetriNet:_:Transition SuperSelectTokens {place D_weight_name} {
 		 set arc_depends_on_event [expr $arc_depends_on_event || $var_depend_on_event]
 				# if {$weight == "*"} {set weight [expr max(1, [llength $L_tokens])]}
 		 set L_affectations_for_var_name [list]
-		 foreach t [$place get_L_tokens] {
-			 # Can token be part of var_name?
-			 set ms [eval $time]
-			 if { [$t is_a PetriNet:_:$type] 
-			    &&[eval $cond] } {
-				 # The situation is not going to change for this token?
-				 if {$ms != -1} {lappend L_ms_ok $ms}
-				 # Add the token to possible affectations of var_name
-				 # puts "\ttoken $t !"
-				 set new_L_affectations_for_var_name $L_affectations_for_var_name
-				 foreach affectation $L_affectations_for_var_name {lappend new_L_affectations_for_var_name [concat $affectation [list $t]]}
-				 set L_affectations_for_var_name $new_L_affectations_for_var_name
-				 lappend L_affectations_for_var_name [list $t]
-				 # puts "\tL_affectations_for_var_name : $L_affectations_for_var_name"
-				} else 	{if {$ms != -1} {lappend L_ms_ko $ms}
+		 if {[string equal -length 1 $cond "="]} {
+			 # The condition directly selects the right value, no combination to be done for this variable
+			 set L_affectations_for_var_name [eval [string range $cond 1 end]]
+			} else { # General case, we have to compute all possibilities...
+					 foreach t [$place get_L_tokens] {
+						 # Can token be part of var_name?
+						 set ms [eval $time]
+						 if { [$t is_a PetriNet:_:$type] 
+							&&[eval $cond] } {
+							 # The situation is not going to change for this token?
+							 if {$ms != -1} {lappend L_ms_ok $ms}
+							 # Add the token to possible affectations of var_name
+							 # puts "\ttoken $t !"
+							 set new_L_affectations_for_var_name $L_affectations_for_var_name
+							 foreach affectation $L_affectations_for_var_name {lappend new_L_affectations_for_var_name [concat $affectation [list $t]]}
+							 set L_affectations_for_var_name $new_L_affectations_for_var_name
+							 lappend L_affectations_for_var_name [list $t]
+							 # puts "\tL_affectations_for_var_name : $L_affectations_for_var_name"
+							} else 	{if {$ms != -1} {lappend L_ms_ko $ms}
+									}
 						}
-			}
+					}
 		 # Filter the results so that var_name is affected with the right numbers of tokens
 		 if {$weight != "*"} {
 			 set new_L_affectations_for_var_name [list]
@@ -1012,7 +1086,10 @@ method PetriNet:_:Place PutsTokens {place D_event_name D_weight_name D_pool_name
 						} else {
 								# puts "\tcombination is $type"
 								# Else it it is combination
-								set L_tokens [eval [concat $type $weight D_pool]]
+								# set L_tokens [eval [concat $type $weight D_pool]]
+								set D_vars [dict create]
+								# puts [concat $type $weight D_pool]
+								set L_tokens [this Eval [concat $type $weight D_pool] D_pool D_vars]
 							   }
 					# Register variable and puts token in the place
 					$place Add_L_tokens $L_tokens
