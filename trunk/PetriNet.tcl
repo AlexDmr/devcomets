@@ -36,14 +36,15 @@ method PetriNet:_:TokenPool get_copy_of_token {token} {
 method PetriNet:_:TokenPool release_tokens {tokens} {
 	set L_tokens [list]
 	foreach token $tokens {
+		 $token set_place ""
 		 set L [dict get $this(D_tokens) [$token get_class]]
 		 if {[lsearch $L $token] == -1} {
-			 lappend $L $token
+			 lappend L $token
 			 dict set this(D_tokens) [$token get_class] $L
 			}
 		}
 }
-
+Trace PetriNet:_:TokenPool release_tokens
 #___________________________________________________________________________________________________________________________________________
 if {![gmlObject info exists object TokenPool]} {
 	PetriNet:_:TokenPool TokenPool
@@ -73,11 +74,12 @@ proc PetriNet:_:Select_min_max_age {L} {
 method PetriNet:_:Token constructor {} {
 	set this(class_name)	[lindex [gmlObject info classes $objName] 0]
 	set this(all_classes)	[gmlObject info classes $objName]
+	set this(place)			""
 	this init ""
 }
 
 #___________________________________________________________________________________________________________________________________________
-Generate_accessors PetriNet:_:Token [list time]
+Generate_accessors PetriNet:_:Token [list time place]
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Token init {token args} {
@@ -104,6 +106,12 @@ source token_types.tcl
 method PetriNet:_:Place constructor {name {nesting_place {}}} {
 	set this(name)		$name
 	set this(L_errors)	[list]
+	
+	# Dictionnary of composite token reference for each token of the place (listed in L_tokens attribute)
+	# which are the related tokens present in the nested Petri net.
+	set this(D_composite_tokens)	[dict create]
+	set this(D_composant_tokens)	[dict create]
+	set this(is_subbing_token)		0
 	
 	set this(L_tokens)  [list]; set this(id_token) 0
 	set this(L_sources) [list]
@@ -148,6 +156,158 @@ method PetriNet:_:Place dispose {} {
 }
 
 #___________________________________________________________________________________________________________________________________________
+Generate_accessors      PetriNet:_:Place [list name nesting_place nested_start_place nested_end_place]
+Generate_List_accessor  PetriNet:_:Place L_tokens             L_tokens
+Generate_List_accessor  PetriNet:_:Place L_sources            L_sources
+Generate_List_accessor  PetriNet:_:Place L_targets            L_targets
+Generate_List_accessor  PetriNet:_:Place L_nested_places      L_nested_places
+Generate_List_accessor  PetriNet:_:Place L_nested_transitions L_nested_transitions
+Generate_List_accessor  PetriNet:_:Place L_errors 			  L_errors
+Generate_dict_accessors PetriNet:_:Place D_triggerable_transitions
+Generate_dict_accessors PetriNet:_:Place D_events
+Generate_dict_accessors PetriNet:_:Place D_vars
+Generate_dict_accessors PetriNet:_:Place D_composite_tokens
+Generate_dict_accessors PetriNet:_:Place D_composant_tokens
+
+#___________________________________________________________________________________________________________________________________________
+# Semantic of the nesting for a place :
+#...| Poser un jeton sur la place d'entrée, qu'est ce que ça implique pour la place mère ?
+#...|   => ajout d'un jeton référent? Comment le lien est-il maintenu avec les jetons du graphe?
+#...| Poser/Enlever un jeton sur la place de sortie, que faire du jeton référent?
+#...| Poser/Enlever un jeton sur la place mère...?
+# XXX Reste à 
+# XXX   1) Tester le bon fonctionnement avec un jeton qui transite
+# XXX   2) Prendre en compte que des jetons apparaissent (ou disparraissent) lors du franchissement des transitions
+#___________________________________________________________________________________________________________________________________________
+Inject_code PetriNet:_:Place Add_L_tokens {} {
+	foreach e $L {$e set_place $objName}
+	set nested_start [this get_nested_start_place]; set L_places_to_update [list]
+	if {$nested_start != ""} {
+		 foreach token $L {
+			 # Is this token referenced in the dictionnary of composite token?
+			 if {[dict exists $this(D_composite_tokens) $token]} {
+				 # If yes, put back these tokens on their place
+				 foreach tokens_composant [dict get $this(D_composite_tokens) $token] {
+					 foreach token_composant $tokens_composant {
+						  set place [$token_composant get_place]
+						  if {![$place Contains_L_tokens $token_composant]} {
+							 $place Add_L_tokens [list $token_composant]
+							 if {[lsearch $L_places_to_update $place] == -1} {lappend L_places_to_update $place}
+							}
+						 }
+					}
+				} else {# If not, put the tokens in the starting place and generate a composite token to reference them
+						set place $nested_start
+						set nested_token [TokenPool get_copy_of_token $token]
+						this set_item_of_D_composite_tokens [list $token] [list $nested_token]
+						this set_item_of_D_composant_tokens [list $nested_token] [list $token]
+						# puts "\tNow place "
+						$nested_start Add_L_tokens [list $nested_token]
+					   }
+			 if {[lsearch $L_places_to_update $place] == -1} {lappend L_places_to_update $place}
+			}
+		 # Update places that have to be
+		 foreach place $L_places_to_update {
+			 this incr_last_test
+			 this Update_triggerable_transitions_from_place $place
+			}
+		}
+}
+# Trace PetriNet:_:Place Add_L_tokens
+#___________________________________________________________________________________________________________________________________________
+Inject_code PetriNet:_:Place Sub_L_tokens {
+	set nested_start [this get_nested_start_place]
+	if {$nested_start != ""} {
+		 set this(is_subbing_token) 1
+		 set L_places_to_update [list]
+		 # We have to remove related composant tokens
+		 foreach e $L {
+			 # puts "# Remove tokens referenced by $e"
+			 if {[dict exists $this(D_composite_tokens) $e]} {
+				 foreach token [dict get $this(D_composite_tokens) $e] {
+					 set place [$token get_place] 
+					 if {[lsearch $L_places_to_update $place] == -1} {lappend L_places_to_update $place}
+					 # puts [list \t $place Sub_L_tokens $token]
+					 $place Sub_L_tokens $token
+					}
+				}
+			}
+		 # Update places that have to be
+		 foreach place $L_places_to_update {
+			 this incr_last_test
+			 this Update_triggerable_transitions_from_place $place
+			}
+		 set this(is_subbing_token) 0
+		}
+} {}
+
+#___________________________________________________________________________________________________________________________________________
+Manage_CallbackList PetriNet:_:Place [list Add_L_tokens Sub_L_tokens] end
+#___________________________________________________________________________________________________________________________________________
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:Place Add_nesting_token_representing {L} {
+	foreach e $L {
+		 if {[dict exists $this(D_composant_tokens) $e]} {return ""}
+		}
+	# puts "\t$e is not referenced in D_composant_tokens ..."
+	# Get a representing token
+	set token [TokenPool get_token PetriNet:_:Token]
+	# Associate it to tokens in L
+	dict set this(D_composite_tokens) $token $L
+	foreach e $L {dict set this(D_composant_tokens) $e [list $token]}
+	this Add_L_tokens [list $token]
+
+	return $token
+}
+# Trace PetriNet:_:Place Add_nesting_token_representing
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:Place Sub_nesting_tokens_representing {L} {
+	if {$this(is_subbing_token)} {return}
+	# Get all representing tokens referenced by composant tokens in L
+	set L_tokens [list]
+	foreach e $L {
+		 set L_reference_tokens [dict get $this(D_composant_tokens) $e]
+		 set L_tokens [Liste_Union $L_tokens $L_reference_tokens]
+		 dict unset this(D_composant_tokens) $e
+		}
+	foreach e $L_tokens {
+		 # Take care that there may be referenced tokens to remove that are not part of L
+		 # Other tokens referenced by e should be removed properly
+		 # XXX
+		 dict unset this(D_composite_tokens) $e
+		}
+	this Sub_L_tokens $L_tokens
+	TokenPool release_tokens $L_tokens
+	if {$this(nesting_place) != ""} {
+		 $this(nesting_place) incr_last_test
+		 $this(nesting_place) Update_triggerable_transitions_from_place $objName
+		}
+}
+# Trace PetriNet:_:Place Sub_nesting_tokens_representing
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+#___________________________________________________________________________________________________________________________________________
+inherit PetriNet:_:StartPlace PetriNet:_:Place
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:StartPlace constructor {name nesting_place} {
+	this inherited $name $nesting_place
+}
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:StartPlace Add_L_tokens {L} {
+	# Create a token in the nesting place to represent tokens of L
+	this inherited $L
+	$this(nesting_place) Add_nesting_token_representing $L
+}
+# Trace PetriNet:_:StartPlace Add_L_tokens
+#___________________________________________________________________________________________________________________________________________
+# method PetriNet:_:StartPlace Sub_L_tokens {L} {
+	# Nothing special to do there
+# }
+
+#___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 inherit PetriNet:_:EndPlace PetriNet:_:Place
@@ -158,22 +318,17 @@ method PetriNet:_:EndPlace constructor {name nesting_place} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:EndPlace set_L_tokens {L} {
-	set rep [this inherited $L]
-	if {[llength $this(L_tokens)]} {
-		 TokenPool release_tokens [$this(nesting_place) get_L_tokens]
-		 $this(nesting_place) set_L_tokens [list]
-		}
-}
+# method PetriNet:_:EndPlace Add_L_tokens {L} {
+	# Nothing special to do there
+# }
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:EndPlace Add_L_tokens {L} {
-	set rep [this inherited $L]
-	TokenPool release_tokens [$this(nesting_place) get_L_tokens]
-	$this(nesting_place) set_L_tokens [list]
+method PetriNet:_:EndPlace Sub_L_tokens {L} {
+	# Remove all composite token corresponding the tokens in L
+	$this(nesting_place) Sub_nesting_tokens_representing $L
+	this inherited $L
 }
-
-
+# Trace PetriNet:_:EndPlace Sub_L_tokens
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -233,18 +388,6 @@ method PetriNet:_:Place Replicate_links {copy_name D_mapping} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-Generate_accessors      PetriNet:_:Place [list name nesting_place nested_start_place nested_end_place]
-Generate_List_accessor  PetriNet:_:Place L_tokens             L_tokens
-Generate_List_accessor  PetriNet:_:Place L_sources            L_sources
-Generate_List_accessor  PetriNet:_:Place L_targets            L_targets
-Generate_List_accessor  PetriNet:_:Place L_nested_places      L_nested_places
-Generate_List_accessor  PetriNet:_:Place L_nested_transitions L_nested_transitions
-Generate_List_accessor  PetriNet:_:Place L_errors 			  L_errors
-Generate_dict_accessors PetriNet:_:Place D_triggerable_transitions
-Generate_dict_accessors PetriNet:_:Place D_events
-Generate_dict_accessors PetriNet:_:Place D_vars
-
-#___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place incr_last_test {} {incr this(last_test)}
 
 #___________________________________________________________________________________________________________________________________________
@@ -253,8 +396,10 @@ method PetriNet:_:Place incr_last_test {} {incr this(last_test)}
 method PetriNet:_:Place Update_triggerable_transitions_from_place {place} {
 	foreach t [$place get_L_targets] {
 		 if {[$t get_nesting_place] != $objName} {
-			 $this(nesting_place) Update_triggerability $t
-			 $this(nesting_place) Update_triggerable_transitions_from_place $objName
+			 if {$this(nesting_place) != ""} {
+				  $this(nesting_place) Update_triggerability $t
+				  $this(nesting_place) Update_triggerable_transitions_from_place $objName
+				 }
 			 continue
 			}
 		 if {[$t get_id_test] != $this(last_test)} {
@@ -274,39 +419,38 @@ method PetriNet:_:Place Add_a_token {{id {}}} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-# Semantic of the nesting for a place :
-#...| Poser un jeton sur la place d'entrée, qu'est ce que ça implique pour la place mère ?
-#...|   => ajout d'un jeton référent? Comment le lien est-il maintenu avec les jetons du graphe?
-#...| Poser/Enlever un jeton sur la place de sortie, que faire du jeton référent?
-#...| Poser/Enlever un jeton sur la place mère...?
+method PetriNet:_:Place get_references_tokens_of {L_tokens} {
+	set L_reference_tokens [list]
+	foreach token $L_tokens {
+		 set L_reference_tokens [Liste_Union $L_reference_tokens [dict get $this(D_composant_tokens) $token]]
+		}
+	return $L_reference_tokens
+}
+# Trace PetriNet:_:Place get_references_tokens_of
+
 #___________________________________________________________________________________________________________________________________________
-Inject_code PetriNet:_:Place Add_L_tokens {} {
-	set nested_start [this get_nested_start_place]
-	if {$nested_start != ""} {
-		 set token_found 0
-		 # foreach place $this(L_nested_places) {
-			 # if {[$place llength_L_tokens] > 0 && [this get_nested_end_place] != $place} {
-				 # set token_found 1; break
-				# }
-			# }
-		 if {$token_found == 0} {
-			 set new_L [list]
-			 foreach t $L {lappend new_L [TokenPool get_copy_of_token $t]}
-			 $nested_start Add_L_tokens $new_L
-			 # puts "Add_L_tokens qui passe dans $nested_start"
-			 this incr_last_test
-			 this Update_triggerable_transitions_from_place $nested_start
+method PetriNet:_:Place Substitute_refered_tokens {L_old_tokens L_new_tokens} {
+	foreach token $L_new_tokens {
+		 if {![dict exists $this(D_composant_tokens) $token]} {dict set this(D_composant_tokens) $token [list]}
+		}
+	foreach token $L_old_tokens {
+		 # Get the L_reference_tokens
+		 set L_reference_tokens [dict get $this(D_composant_tokens) $token]
+		 # Replace token by L_new_tokens in D_composant_tokens dictionnary
+		 foreach new_token $L_new_tokens {
+			 set new_L_reference_tokens [Liste_Union [dict get $this(D_composant_tokens) $token] $L_reference_tokens]
+			 dict set this(D_composant_tokens) $new_token $new_L_reference_tokens
 			}
-		 foreach transition [this get_L_nested_transitions] {
-			 this Update_triggerability $transition
+		 dict unset this(D_composant_tokens) $token
+		 # Replace token by L_new_tokens in D_composite_tokens dictionnary
+		 foreach reference_token $L_reference_tokens {
+			 set new_refered_tokens [Liste_Union 	[lremove [dict get $this(D_composite_tokens) $reference_token] $token] \
+													$L_new_tokens]
+			 dict set this(D_composite_tokens) $reference_token $new_refered_tokens
 			}
 		}
 }
-
-#___________________________________________________________________________________________________________________________________________
-#___________________________________________________________________________________________________________________________________________
-#___________________________________________________________________________________________________________________________________________
-Manage_CallbackList PetriNet:_:Place [list Add_L_tokens Sub_L_tokens set_L_tokens] end
+# Trace PetriNet:_:Place Substitute_refered_tokens
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -558,7 +702,7 @@ method PetriNet:_:Place Update_triggerability {t {D_event_name {}} {mark {}}} {
 		 set mark [dict get $this(D_triggerable_transitions) $t mark]
 		 incr mark; set force 1
 		} else {if {$mark < [dict get $this(D_triggerable_transitions) $t mark]} {
-					 # puts stderr "\tOld message, we quit because $mark < [dict get $this(D_triggerable_transitions) $t mark]"
+					 puts stderr "\tOld message, we quit because $mark < [dict get $this(D_triggerable_transitions) $t mark]"
 					 return
 					}
 			   }
@@ -759,55 +903,97 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 	if {!$this(triggering) && [$this(nesting_place) get_item_of_D_triggerable_transitions [list $objName triggerable]]} {
 		 upvar $D_event_name D_event
 		 set D_vars [dict create event [dict create name $this(event) D_event $D_event]]
-		 
+
 		 set this(triggering) 1
 		 set L_tokens [list]
-		 # XXX
-		 # set D_pool [$this(nesting_place) get_item_of_D_triggerable_transitions [list $objName D_res]]
+
 		 set D_solutions [$this(nesting_place) get_item_of_D_triggerable_transitions [list $objName D_res]]
-		 # puts "$D_event\nD_solutions = $D_solutions"
 		 set D_pool [dict create]
 		 dict for {place L_solutions} $D_solutions {
 			 if {[llength $L_solutions]} {
 				 set D_pool [dict merge $D_pool [dict get [lindex $L_solutions 0] D_vars]]
 				}
 			}
-		 # /XXX
-		 
+
+		 # Remove tokens from source places
+		 set L_all_source_reference_tokens [list]
 		 dict for {place D_edge} $this(D_sources) {
 			 set L_tokens_source [list]
 			 dict for {var_name D_var} $D_pool {
-				 if {[dict get $D_var place] == $place} {set L_tokens_source [concat $L_tokens_source [dict get $D_var L_tokens]]}
+				 if {[dict get $D_var place] == $place} {
+					 set L_tokens_from_place	[dict get $D_var L_tokens]
+					 set L_tokens_source		[concat $L_tokens_source $L_tokens_from_place]
+					 set L_reference_tokens [[$place get_nesting_place] get_references_tokens_of $L_tokens_from_place]
+					 set L_all_source_reference_tokens [concat $L_all_source_reference_tokens $L_reference_tokens]
+					 # Take into account that the incoming place may not be nested in the same place than the transition
+					 # In this case, we have to change the tokens reference of the incoming place
+					 if {[$place get_nesting_place] != [this get_nesting_place]} {
+						 # The source place can only be in a nested place of the nesting place of the transition
+						 # Substitute reference tokens by source tokens
+						 [this get_nesting_place] Substitute_refered_tokens $L_reference_tokens $L_tokens_from_place
+						 TokenPool release_tokens $L_reference_tokens
+						}
+					}
 				}
-			 # eval	[dict get $D_edge cmd_remove_tokens_source]
+			 # Register in D_vars the representing tokens
 			 dict set D_vars place $place
 			 dict set D_vars L_tokens_source $L_tokens_source
+			 # Call the trigger command
 			 $this(nesting_place) Eval [dict get $D_edge cmd_remove_tokens_source] D_pool D_vars 
 			}
-		 
+
 		 # Add tokens to target places
 		 set D_used [dict create]
+		 dict set D_vars L_all_source_reference_tokens $L_all_source_reference_tokens
 		 dict for {place D_edge} $this(D_targets) {
 			 set D_weight   [dict get $D_edge D_weight]
 			 # eval [dict get $D_edge cmd_puts_tokens_target]
 			 dict set D_vars place 	  $place
 			 dict set D_vars D_weight $D_weight
 			 $this(nesting_place) Eval [dict get $D_edge cmd_puts_tokens_target] D_pool D_vars D_used
+			 # Remember the variables, what are they, what are the related tokens?
+			 # Once added, we have to look wether tokens are still in the same nesting place or not
+			 if {[$place get_nesting_place] != [this get_nesting_place]} {
+				 # The destination place can then only be nested in a place nesting in the same nesting place than the transition
+				 set L_reference_tokens [[$place get_nesting_place] get_references_tokens_of $L_tokens_from_place]
+				 [this get_nesting_place] Substitute_refered_tokens $L_tokens_from_place $L_reference_tokens
+				}
 			}
-		 
+
 		 # Release unused tokens
 		 dict for {var_name D_var} $D_pool {
-			 if {![dict exists $D_used $var_name]} {TokenPool release_tokens [dict get $D_var L_tokens]}
+			 if {![dict exists $D_used $var_name]} {
+				 # Put them back in the pool
+				 TokenPool release_tokens [dict get $D_var L_tokens]
+				 # Remove references from composant/composite dictionnaries
+				 foreach token [dict get $D_var L_tokens] {
+					 foreach reference_token [$this(nesting_place) get_item_of_D_composant_tokens [list $token]] {
+						 set L_reference_tokens [$this(nesting_place) get_item_of_D_composite_tokens [list $reference_token]]
+						 $this(nesting_place) set_item_of_D_composite_tokens [list $reference_token] [lremove $L_reference_tokens $token]
+						}
+					 $this(nesting_place) remove_item_of_D_composant_tokens [list $token]
+					}
+				}
 			}
-		 
+
 		 # Eval the trigger command
 		 dict set D_vars place $place
 		 $this(nesting_place) Eval $this(cmd_trigger) D_pool D_vars 
 
 		 # Update triggerable transitions
 		 $this(nesting_place) incr_last_test; 
-		 dict for {place D_edge} $this(D_sources) {$this(nesting_place) Update_triggerable_transitions_from_place $place}
-		 dict for {place D_edge} $this(D_targets) {$this(nesting_place) Update_triggerable_transitions_from_place $place}
+		 dict for {place D_edge} $this(D_sources) {
+			 if {[$place get_nesting_place] != [this get_nesting_place]} {
+				 $this(nesting_place) Update_triggerable_transitions_from_place [$place get_nesting_place]
+				}
+			 [$place get_nesting_place] Update_triggerable_transitions_from_place $place
+			}
+		 dict for {place D_edge} $this(D_targets) {
+			 if {[$place get_nesting_place] != [this get_nesting_place]} {
+				 $this(nesting_place) Update_triggerable_transitions_from_place [$place get_nesting_place]
+				}
+			 [$place get_nesting_place] Update_triggerable_transitions_from_place $place
+			}
 		 
 		 # puts "\t[this get_name] => [$this(nesting_place) get_item_of_D_triggerable_transitions [list $objName triggerable]]"
 		 set this(triggering) 0
@@ -874,7 +1060,7 @@ proc PetriNet:_:StandardEdge {place D_weight} {
 							D_weight					$D_weight						\
 							cond						{this SuperSelectTokens $place D_weight}	\
 							cmd_remove_tokens_source	{$place Sub_L_tokens $L_tokens_source} \
-							cmd_puts_tokens_target		{this PutsTokens $place D_event D_weight D_pool D_used} \
+							cmd_puts_tokens_target		{this PutsTokens $place $L_all_source_reference_tokens D_event D_weight D_pool D_used} \
 							preso_style_line_config		[dict create -fill black -width 1 -arrow last]	\
 							preso_create_end_line		""				\
 							preso_update_end_line		""				\
@@ -1054,12 +1240,32 @@ method PetriNet:_:Transition SelectTokens {place D_event_name D_weight_name args
 }
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Place PutsTokens {place D_event_name D_weight_name D_pool_name D_used_name} {
+method PetriNet:_:Place PutsTokens {place L_all_source_reference_tokens D_event_name D_weight_name D_pool_name D_used_name} {
 	upvar $D_weight_name D_weight
 	upvar $D_pool_name   D_pool
 	upvar $D_used_name   D_used
 	upvar $D_event_name	 D_event
 	
+	# Compute reference tokens for each variable
+	# dict for {var_name D_var_val} $D_pool {
+		 # set L_composite_tokens [list]
+		 # foreach token [dict get $D_var_val L_tokens] {
+			 # set nesting_place_of_token [[$token get_place] get_nesting_place]
+			 # set composite_token [dict get [$nesting_place_of_token attribute D_composant_tokens] $token]
+			 # if {[lsearch $L_composite_tokens $composite_token] == -1} {lappend L_composite_tokens $composite_token}
+			# }
+		 # dict set D_pool $var_name L_composite_tokens $L_composite_tokens
+		# }
+		
+	# Compute all composite tokens comming from the sources
+	# set L_composite_tokens [list]
+	# dict for {var_name D_var_val} {
+		 # foreach composite_token [dict get $D_var_val L_composite_tokens] {
+			 # if {[lsearch $L_composite_tokens $composite_token] == -1} {lappend L_composite_tokens $composite_token}
+			# }
+		# }
+	
+	# Puts tokens on destination places
 	dict for {var_name D} $D_weight {
 		 if {[dict exists $D_pool $var_name]} {
 			 # puts -nonewline "variable $var_name has been declared"
@@ -1069,7 +1275,16 @@ method PetriNet:_:Place PutsTokens {place D_event_name D_weight_name D_pool_name
 				  dict set D_used $var_name 1
 				 } else {set L_tmp [list]
 						 # puts " but has been used, so we create a copy"
-						 foreach token [dict get $D_pool $var_name L_tokens] {lappend L_tmp [TokenPool get_copy_of_token $token]}
+						 foreach token [dict get $D_pool $var_name L_tokens] {
+							 set copy_token [TokenPool get_copy_of_token $token]
+							 set nesting_place [[$token get_place] get_nesting_place]
+							 $nesting_place set_item_of_D_composant_tokens [list $copy_token] [$nesting_place get_item_of_D_composant_tokens [list $token]]
+							 foreach reference_token [$nesting_place get_item_of_D_composant_tokens [list $token]] {
+								 set new_L_reference_tokens [concat [$nesting_place get_item_of_D_composite_tokens [list $reference_token]] [list $copy_token]]
+								 $nesting_place set_item_of_D_composite_tokens [list $reference_token] $new_L_reference_tokens
+								}
+							 lappend L_tmp $copy_token
+							}
 						 $place Add_L_tokens $L_tmp
 						}
 			} else {

@@ -40,7 +40,7 @@ method PetriNetView:_:Place detach_place {} {
 		 foreach place [$this(place) get_L_nested_places] {
 			 $place UnSubscribe_to_Add_L_tokens $objName
 			 $place UnSubscribe_to_Sub_L_tokens $objName
-			 $place UnSubscribe_to_set_L_tokens $objName
+			 # $place UnSubscribe_to_set_L_tokens $objName
 			}
 		 $this(place) UnSubscribe_to_Update_triggerability $objName
 		}
@@ -107,9 +107,16 @@ method PetriNetView:_:Place Paste {x y} {
 method PetriNetView:_:Place recreate_canvas {} {
 	if {![winfo exists ._$objName]} {
 		 toplevel ._$objName
+		 set this(frame_debug) ._$objName.fdebug
+			frame $this(frame_debug) -background yellow
+			pack $this(frame_debug) -side top -fill x -expand 1
+			button $this(frame_debug).bt -background yellow -text Update -command [list $objName update_debug]
+			pack $this(frame_debug).bt -side left -expand 0 -fill y
+			label $this(frame_debug).lab -background yellow
+			pack $this(frame_debug).lab -side left -anchor w
 		 set this(frame_edit) ._$objName.fedit
-		 frame $this(frame_edit) -background white
-		 pack $this(frame_edit) -side right -expand 0 -fill y
+			 frame $this(frame_edit) -background white
+			 pack $this(frame_edit) -side right -expand 0 -fill y
 		 
 		 set menu_name ._$objName.menu
 		 menu $menu_name 
@@ -468,11 +475,11 @@ method PetriNetView:_:Place Draw_place {{L_places {}} {L_transitions {}}} {
 			 set txt_token ""
 			 set nb_tokens [$place llength_L_tokens]
 			 if {$nb_tokens > 0} {set txt_token $nb_tokens}
-			 $this(canvas) create text  [expr ($x1+$x2)/2.0] [expr $y2 + 3] -font "Arial 6" -text $txt_token -tags [list $objName $place in_$place text_nb_token_of_$place just_$place]
+			 $this(canvas) create text  [expr ($x1+$x2)/2.0] [expr $y2 + 3] -fill red -font "Arial 6" -text $txt_token -tags [list $objName $place in_$place text_nb_token_of_$place just_$place]
 				# Subscribe for token changes
 				$place Subscribe_to_Add_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place] UNIQUE
 				$place Subscribe_to_Sub_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place] UNIQUE
-				$place Subscribe_to_set_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place] UNIQUE
+				# $place Subscribe_to_set_L_tokens $objName [list $objName Update_preso_nb_tokens_of $place] UNIQUE
 
 			 # Ellipse
 			 set nesting_place [$place get_nesting_place]
@@ -863,7 +870,14 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 		 this Create_net_recursivly $nested_place $place_name [concat $L_nesting_places [list $place_name]]
 		 }
 	# Save information about the nested elements
-	$place_name set_nested_start_place	[dict get $this(D_mapping_name) $nested_start_place	]
+	set start_place [dict get $this(D_mapping_name) $nested_start_place	]
+	if {$start_place != ""} {
+		 set start_place_name [$start_place get_name]
+		 $start_place dispose
+		 PetriNet:_:StartPlace $start_place $start_place_name $place_name
+		}
+	$place_name set_nested_start_place $start_place
+	
 	set end_place [dict get $this(D_mapping_name) $nested_end_place	]
 	if {$end_place != ""} {
 		 set end_place_name [$end_place get_name]
@@ -871,6 +885,7 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 		 PetriNet:_:EndPlace $end_place $end_place_name $place_name
 		}
 	$place_name set_nested_end_place $end_place
+	
 	if {[$place_name get_nested_start_place] != ""} {
 		 set cmd [list dict set this(D_nested_presentations)]
 			foreach place $L_nesting_places {lappend cmd $place D_nested_places}
@@ -921,9 +936,25 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #_____________________________________________________________________________________________________________
+method PetriNetView:_:Place update_debug {} {
+	# Debug
+	set txt "D_composite :\n"
+	dict for {k v} [$this(place) get_D_composite_tokens] {append txt "\t$k : {$v}\n"}
+	append txt "D_composant :\n"
+	dict for {k v} [$this(place) get_D_composant_tokens] {append txt "\t$k : {$v}\n"}
+	$this(frame_debug).lab configure -text $txt
+}
+
+#___________________________________________________________________________________________________________________________________________
 method PetriNetView:_:Place Update_preso_nb_tokens_of {place} {
+	# Display tokens
 	set nb [$place llength_L_tokens]
-	if {$nb > 0} {set txt $nb} else {set txt ""}
+	if {$nb > 0} {
+		 set txt $nb
+		 foreach token [$place get_L_tokens] {
+			 append txt "\n" $token
+			}
+		} else {set txt ""}
 	$this(canvas) itemconfigure text_nb_token_of_$place -text $txt
 }
 # Trace PetriNetView:_:Place Update_preso_nb_tokens_of
