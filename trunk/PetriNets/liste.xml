@@ -1,0 +1,102 @@
+<PetriNetView place="place_1">
+	<place>
+		<attribute type="tclid">place_1</attribute>
+		<attribute type="name">P_17</attribute>
+		<attribute type="nested_start_place">place_2</attribute>
+		<attribute type="nested_end_place">place_3</attribute>
+		<attribute type="D_events">event {L_transitions {transition_7 transition_8 transition_10} cmd_subscribe {} cmd_unsubscribe {}} init {L_transitions transition_9 cmd_subscribe {} cmd_unsubscribe {}}</attribute>
+		<place>
+			<attribute type="tclid">place_2</attribute>
+			<attribute type="name">P_18</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_3</attribute>
+			<attribute type="name">P_19</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_4</attribute>
+			<attribute type="name">Queue</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_5</attribute>
+			<attribute type="name">Travail</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_6</attribute>
+			<attribute type="name">Effectué</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<transition>
+			<attribute type="tclid">transition_7</attribute>
+			<attribute type="name">AjoutTravail</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger"></attribute>
+			<attribute type="D_sources"></attribute>
+			<attribute type="D_targets">place_5 {StandardEdge place_5 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">transition_8</attribute>
+			<attribute type="name">ConstruireQueue</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger">puts "\tL : $L {[$L attribute L_elements]}"</attribute>
+			<attribute type="D_sources">place_5 {StandardEdge place_5 {e {w 1 t Token cond {= list [lindex [PetriNet:_:Select_min_max_age [$place get_L_tokens]] 1]} time {subst -1} event_filter {}}}} place_4 {StandardEdge place_4 {L {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_4 {StandardEdge place_4 {Le {w 1 t {$L lappend $e} cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">transition_9</attribute>
+			<attribute type="name">init</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
+			<attribute type="event">init</attribute>
+			<attribute type="cmd_trigger"></attribute>
+			<attribute type="D_sources">place_4 {inhibitordEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_4 {StandardEdge place_4 {L {w 1 t {PetriNet:_:ConstructTokenList PetriNet:_:Token} cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">transition_10</attribute>
+			<attribute type="name">Defiler</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger">puts "Travail terminé"
+puts "\teL : $eL {[$eL attribute L_elements]}"
+puts "\t L : $L {[$L attribute L_elements]}"
+puts "\t e : $e"</attribute>
+			<attribute type="D_sources">place_4 {StandardEdge place_4 {eL {w 1 t Token cond {expr [$t llength] &gt; 0} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_4 {StandardEdge place_4 {L {w 1 t {$eL lrange 1 end} cond {subst 1} time {subst -1} event_filter {}}}} place_6 {StandardEdge place_6 {e {w 1 t {$eL lindex 0} cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+		</transition>
+	</place>
+	<presentation type="place" represents="place_2" x="189" y="11" />
+	<presentation type="place" represents="place_3" x="217" y="-6" />
+	<presentation type="place" represents="place_4" x="155" y="137" />
+	<presentation type="place" represents="place_5" x="39" y="136" />
+	<presentation type="transition" represents="transition_7" x="21" y="209" />
+	<presentation type="transition" represents="transition_8" x="72" y="63" />
+	<presentation type="transition" represents="transition_9" x="161" y="210" />
+	<presentation type="transition" represents="transition_10" x="252" y="116" />
+	<presentation type="place" represents="place_6" x="308" y="169" />
+	<PetriNetView place="place_2">
+	</PetriNetView>
+	<PetriNetView place="place_3">
+	</PetriNetView>
+	<PetriNetView place="place_4">
+	</PetriNetView>
+	<PetriNetView place="place_5">
+	</PetriNetView>
+	<PetriNetView place="place_6">
+	</PetriNetView>
+</PetriNetView>
