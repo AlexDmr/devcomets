@@ -45,7 +45,7 @@ method CometAppsGate_PM_FC UPNP_device_appeared {keys_name val_name} {
 	upvar $keys_name	keys
 	upvar $val_name		D_val
 	
-	puts "\t$keys"
+	# puts "\t$keys"
 	if {[dict get $D_val friendlyName] == "AppsGate set-top box"} {
 		 set this(Box_UDN) $keys
 		 set L_rep [$this(comet_UPNP) Search_UDN_service_action [list {UDN} "\$UDN == \"$this(Box_UDN)\""] "" [list "" {$D_name == "getWebsocket"}]]
@@ -53,7 +53,7 @@ method CometAppsGate_PM_FC UPNP_device_appeared {keys_name val_name} {
 		 $this(comet_UPNP) soap_call $UDN  $service $action [list] "$objName set_ws_address \[dict get \$UPNP_res serverWebsocket\]"
 		}
 }
-Trace CometAppsGate_PM_FC UPNP_device_appeared
+# Trace CometAppsGate_PM_FC UPNP_device_appeared
 
 #___________________________________________________________________________________________________________________________________________
 method CometAppsGate_PM_FC UPNP_device_disappeared {keys_name} {
