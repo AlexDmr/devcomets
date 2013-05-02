@@ -107,6 +107,9 @@ method PetriNet:_:Place constructor {name {nesting_place {}}} {
 	set this(name)		$name
 	set this(L_errors)	[list]
 	
+	set this(loaded_from_file)      ""
+	set this(nested_graph_modified) 0
+	
 	# Dictionnary of composite token reference for each token of the place (listed in L_tokens attribute)
 	# which are the related tokens present in the nested Petri net.
 	set this(D_composite_tokens)	[dict create]
@@ -156,7 +159,7 @@ method PetriNet:_:Place dispose {} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-Generate_accessors      PetriNet:_:Place [list name nesting_place nested_start_place nested_end_place]
+Generate_accessors      PetriNet:_:Place [list name nested_graph_modified loaded_from_file nesting_place nested_start_place nested_end_place]
 Generate_List_accessor  PetriNet:_:Place L_tokens             L_tokens
 Generate_List_accessor  PetriNet:_:Place L_sources            L_sources
 Generate_List_accessor  PetriNet:_:Place L_targets            L_targets
@@ -760,6 +763,7 @@ method PetriNet:_:Place Nest_transition {t event} {
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place Save_to_stream {node_text stream dec} {
+	# If it is not a place coming from a file...
 	puts $stream "${dec}<place>"
 	$node_text nodeValue $objName
 	puts $stream "${dec}\t<attribute type=\"tclid\">[$node_text asXML]</attribute>"
@@ -767,8 +771,16 @@ method PetriNet:_:Place Save_to_stream {node_text stream dec} {
 		 $node_text nodeValue $this($a)
 		 puts $stream "${dec}\t<attribute type=\"$a\">[$node_text asXML]</attribute>"
 		}
-	foreach place 		$this(L_nested_places) 		{$place 		Save_to_stream $node_text $stream "$dec\t"}
-	foreach transition 	$this(L_nested_transitions) {$transition 	Save_to_stream $node_text $stream "$dec\t"}
+	if {$this(nesting_place) == "" || [this get_loaded_from_file] == "" || [this get_nested_graph_modified]} {
+		 foreach place 		$this(L_nested_places) 		{$place 		Save_to_stream $node_text $stream "$dec\t"}
+		 foreach transition $this(L_nested_transitions) {$transition	Save_to_stream $node_text $stream "$dec\t"}
+		} else {set file_name [this get_loaded_from_file]
+				if {[string first [string tolower [pwd]] [string tolower $file_name]] == 0} {
+					 set file_name [string range $file_name [string length [pwd]/] end]
+					}
+				$node_text nodeValue $file_name
+				puts $stream "${dec}\t<file>[$node_text asXML]</file>"
+			   }
 	puts $stream "${dec}</place>"
 }
 
@@ -915,19 +927,28 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 				}
 			}
 
+		 # Dictionnary to list variable that have been used.
+		 # Conditionnal variable are set to be used by default in the selection phase, other ones are set to be used in the put phase
+		 set D_used [dict create]
+
 		 # Remove tokens from source places
 		 set L_all_source_reference_tokens [list]
 		 dict for {place D_edge} $this(D_sources) {
 			 set L_tokens_source [list]
+			 set remove_tokens [dict get $D_edge remove_tokens]
 			 dict for {var_name D_var} $D_pool {
 				 if {[dict get $D_var place] == $place} {
+					if {!$remove_tokens} {
+						 puts "Don't remove token related to variable $var_name from place [$place get_name]" 
+						 dict set D_used $var_name 1
+						}
 					 set L_tokens_from_place	[dict get $D_var L_tokens]
 					 set L_tokens_source		[concat $L_tokens_source $L_tokens_from_place]
 					 set L_reference_tokens [[$place get_nesting_place] get_references_tokens_of $L_tokens_from_place]
 					 set L_all_source_reference_tokens [concat $L_all_source_reference_tokens $L_reference_tokens]
 					 # Take into account that the incoming place may not be nested in the same place than the transition
 					 # In this case, we have to change the tokens reference of the incoming place
-					 if {[$place get_nesting_place] != [this get_nesting_place]} {
+					 if {$remove_tokens && [$place get_nesting_place] != [this get_nesting_place]} {
 						 # The source place can only be in a nested place of the nesting place of the transition
 						 # Substitute reference tokens by source tokens
 						 [this get_nesting_place] Substitute_refered_tokens $L_reference_tokens $L_tokens_from_place
@@ -943,7 +964,6 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 			}
 
 		 # Add tokens to target places
-		 set D_used [dict create]
 		 dict set D_vars L_all_source_reference_tokens $L_all_source_reference_tokens
 		 dict for {place D_edge} $this(D_targets) {
 			 set D_weight   [dict get $D_edge D_weight]
@@ -1059,6 +1079,7 @@ proc PetriNet:_:StandardEdge {place D_weight} {
 	set D 	[dict create	type						StandardEdge					\
 							D_weight					$D_weight						\
 							cond						{this SuperSelectTokens $place D_weight}	\
+							remove_tokens				{1}	\
 							cmd_remove_tokens_source	{$place Sub_L_tokens $L_tokens_source} \
 							cmd_puts_tokens_target		{this PutsTokens $place $L_all_source_reference_tokens D_event D_weight D_pool D_used} \
 							preso_style_line_config		[dict create -fill black -width 1 -arrow last]	\
@@ -1073,6 +1094,7 @@ proc PetriNet:_:ConditionnaldEdge {place D_weight} {
 	set D [PetriNet:_:StandardEdge $place $D_weight]
 		dict set D type						ConditionnaldEdge
 		dict set D cmd_remove_tokens_source {}
+		dict set D remove_tokens			0
 		dict set D preso_style_line_config	-dash 1
 	return $D
 }
@@ -1083,6 +1105,7 @@ proc PetriNet:_:inhibitordEdge {place D_weight} {
 		dict set D type						inhibitordEdge
 		dict set D cond						"lassign \[[dict get $D cond]\] b_tmp D_tmp ms_tmp dep; list \[expr !\$b_tmp\] \$D_tmp \$ms_tmp \$dep"
 		dict set D cmd_remove_tokens_source {}
+		dict set D remove_tokens			0
 		dict set D preso_style_line_config	-dash 1
 		dict set D preso_style_line_config	-arrow none
 		dict set D preso_create_end_line	{$canvas create oval [expr $x2 - 3] [expr $y2 - 3] [expr $x2 + 3] [expr $y2 + 3] -tags $L_tags -fill black}
@@ -1246,24 +1269,16 @@ method PetriNet:_:Place PutsTokens {place L_all_source_reference_tokens D_event_
 	upvar $D_used_name   D_used
 	upvar $D_event_name	 D_event
 	
-	# Compute reference tokens for each variable
-	# dict for {var_name D_var_val} $D_pool {
-		 # set L_composite_tokens [list]
-		 # foreach token [dict get $D_var_val L_tokens] {
-			 # set nesting_place_of_token [[$token get_place] get_nesting_place]
-			 # set composite_token [dict get [$nesting_place_of_token attribute D_composant_tokens] $token]
-			 # if {[lsearch $L_composite_tokens $composite_token] == -1} {lappend L_composite_tokens $composite_token}
-			# }
-		 # dict set D_pool $var_name L_composite_tokens $L_composite_tokens
-		# }
-		
-	# Compute all composite tokens comming from the sources
-	# set L_composite_tokens [list]
-	# dict for {var_name D_var_val} {
-		 # foreach composite_token [dict get $D_var_val L_composite_tokens] {
-			 # if {[lsearch $L_composite_tokens $composite_token] == -1} {lappend L_composite_tokens $composite_token}
-			# }
-		# }
+	# Reference all token referencing tokens from the inputs variables
+	set L_source_reference_tokens [list]
+	dict for {var_name D} $D_pool {
+		 foreach token [dict get $D L_tokens] {
+			 set L_source_reference_tokens [Liste_Union $L_source_reference_tokens [dict get $this(D_composant_tokens) $token]]
+			}
+		}
+	if {[llength $L_source_reference_tokens] == 0} {
+		 set L_source_reference_tokens [dict keys $this(D_composite_tokens)]
+		}
 	
 	# Puts tokens on destination places
 	dict for {var_name D} $D_weight {
@@ -1306,6 +1321,17 @@ method PetriNet:_:Place PutsTokens {place L_all_source_reference_tokens D_event_
 								# puts [concat $type $weight D_pool]
 								set L_tokens [this Eval [concat $type $weight D_pool] D_pool D_vars]
 							   }
+					# Add nesting references for tokens
+					# New tokens are refered by references tokens of every token source
+					# If no token source, then use all reference token of the nesting place
+					# puts "L_source_reference_tokens : $L_source_reference_tokens"
+					foreach token $L_tokens {
+						 dict set this(D_composant_tokens) $token $L_source_reference_tokens
+						 foreach reference_token $L_source_reference_tokens {
+							 set L_refered_tokens [dict get $this(D_composite_tokens) $reference_token]
+							 dict set this(D_composite_tokens) $reference_token [Liste_Union $L_refered_tokens $token]
+							}
+						}
 					# Register variable and puts token in the place
 					$place Add_L_tokens $L_tokens
 					dict set D_pool $var_name [dict create L_tokens $L_tokens]

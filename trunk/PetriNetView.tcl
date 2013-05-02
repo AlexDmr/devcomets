@@ -182,6 +182,7 @@ method PetriNetView:_:Place New_net {} {
 			   
 	set this(D_nested_presentations) [dict create $this(place) [dict create D_presentations [dict create] D_nested_places [dict create]]]
 	this Create_hierarchy_for_place $this(place)
+	dict set this(D_nested_presentations) $this(place) file ""
 	
 	this recreate_and_redraw
 }
@@ -246,7 +247,9 @@ method PetriNetView:_:Place Add_new_place {x y {place {}}} {
 		}
 	dict set this(D_nested_presentations) $this(place) D_presentations $place [dict create x $x y $y]
 	dict set this(D_nested_presentations) $this(place) D_nested_places $place [dict create PetriNetView ""]
-	
+
+	$this(place) set_nested_graph_modified 1
+
 	this recreate_and_redraw
 }
 
@@ -255,6 +258,8 @@ method PetriNetView:_:Place Add_new_transition {x y} {
 	set transition [this get_unique_id T]
 	PetriNet:_:Transition $transition $transition $this(place) event "" [list] [list]
 	dict set this(D_nested_presentations) $this(place) D_presentations $transition [dict create x $x y $y]
+	
+	$this(place) set_nested_graph_modified 1
 	
 	this recreate_and_redraw
 	
@@ -270,6 +275,8 @@ method PetriNetView:_:Place Delete_elements {L_elements} {
 		dict unset this(D_nested_presentations) $this(place) D_presentations $e
 		dict unset this(D_nested_presentations) $this(place) D_nested_places $e
 		}
+
+	$this(place) set_nested_graph_modified 1
 	this recreate_and_redraw
 }
 
@@ -293,6 +300,7 @@ method PetriNetView:_:Place Delete_or_create_arc {source target} {
 								}
 					}
 		 # Redraw
+		 $this(place) set_nested_graph_modified 1
 		 this recreate_and_redraw
 		 return 1
 		}
@@ -351,6 +359,7 @@ method PetriNetView:_:Place Edit_element {type args} {
 				$this(frame_edit).f_name.ent insert 0 [$place get_name]
 			 frame $this(frame_edit).f_cmd
 				button $this(frame_edit).f_cmd.ok -text "  OK  " -command 	"$place set_name \[$this(frame_edit).f_name.ent get\]
+																			 $this(place) set_nested_graph_modified 1
 																			 $objName recreate_and_redraw
 																			"
 				pack $this(frame_edit).f_cmd.ok -side right
@@ -383,6 +392,7 @@ method PetriNetView:_:Place Edit_element {type args} {
 																			$transition set_event \[$this(frame_edit).f_event.ent get\];
 																		    $transition set_cmd_trigger \[string trim \[$this(frame_edit).f_cmd.ent get 0.0 end\]\]
 																			$transition set_D_cond_triggerable \[string trim \[$this(frame_edit).f_cond.ent get 0.0 end\]\]
+																			$this(place) set_nested_graph_modified 1
 																			$objName recreate_and_redraw
 																		   "
 				pack $this(frame_edit).f_val.ok -side right
@@ -407,6 +417,7 @@ method PetriNetView:_:Place Edit_element {type args} {
 				$this(frame_edit).f_weight.txt insert 0.0 [$transition get_item_of_$D_name [list $place D_weight]]
 			 frame $this(frame_edit).f_event
 				set cmd "$transition set_item_of_$D_name \[list $place\] \[PetriNet:_:\${PetriNetView:_:Place__menu_type_arc} $place \[string trim \[$this(frame_edit).f_weight.txt get 0.0 end\]\]\];
+						 $this(place) set_nested_graph_modified 1
 						 $objName recreate_and_redraw
 						"
 				button $this(frame_edit).f_event.ok -text "  OK  " -command $cmd
@@ -716,7 +727,10 @@ method PetriNetView:_:Place Save_to_file {{file_name {}}} {
 	set doc 		[dom createDocument PetriNetView]
 	set node_text 	[$doc createTextNode ""]
 	set f [open $file_name w]
+		set pwd [pwd]
+		cd [file dirname $file_name]
 		this Save_to_stream $node_text $f "" 1
+		cd $pwd
 	close $f
 	$doc delete
 }
@@ -725,7 +739,9 @@ method PetriNetView:_:Place Save_to_file {{file_name {}}} {
 method PetriNetView:_:Place Save_to_stream {node_text f dec save_fc} {
 		fconfigure $f -encoding utf-8
 		puts $f "${dec}<PetriNetView place=\"$this(place)\">"
-			if {$save_fc} {$this(place) Save_to_stream $node_text $f "\t"}
+			if {$save_fc} {
+				 $this(place) Save_to_stream $node_text $f "\t"
+				}
 			this recreate_and_redraw
 			this Save_D_presentation_to_stream $f "\t$dec" $this(D_nested_presentations)
 			# foreach preso $this(L_views) {$preso Save_to_stream $node_text $f $dec\t 0}
@@ -743,6 +759,7 @@ method PetriNetView:_:Place Save_D_presentation_to_stream {stream dec D_descr} {
 			}
 		 if {[dict exists $D D_nested_places]} {
 			 dict for {e D_nested} [dict get $D D_nested_places] {
+				 if {[$e get_loaded_from_file] != "" && ![$e get_nested_graph_modified]} {continue}
 				 puts $stream "${dec}<PetriNetView place=\"$e\">"
 				 set PNV [dict get $D_nested PetriNetView]
 				 if {$PNV == ""} {
@@ -766,30 +783,38 @@ method PetriNetView:_:Place Load_from_file {{file_name {}}} {
 		set doc [dom parse [read $f]]
 		close $f
 		set root [$doc documentElement]
-			set this(D_mapping_name) 			[dict create "" ""]
+			set this(D_mapping_name) 			[dict create]
 			set this(D_nested_presentations) 	[dict create]
 			
 			set place_node [$root selectNodes "./place"]
 			set nesting_place $this(place)
+
+			set pwd [pwd]
+			cd [file dirname $file_name]
 			set this(place) [this Create_net_recursivly $place_node ""]
-			
+			cd $pwd
+
 			# Create representations
-			set this(D_nested_presentations) [dict create]
 			this recreate_canvas
 			this Draw_place
 			
 			# Move representations
 			foreach preso [$root selectNodes "./presentation"] {
 				 foreach att [list represents x y] {set $att [$preso getAttribute $att]}
-				 set this(dragged_element) [dict get $this(D_mapping_name) $represents]
+				 set this(dragged_element) [dict get $this(D_mapping_name) $this(place)::$represents]
 				 set this(last_x) 0; set this(last_y) 0
 				 this inter_Move $x $y
 				}
 			set this(dragged_element) ""
 			
 			# Load nested presentations information
-			this Recursive_load_of_PetriNetView $root [list]
+			this Recursive_load_of_PetriNetView $root [list $this(place)]
 			dict set this(D_nested_presentations) $this(place) PetriNetView $objName
+			dict set this(D_nested_presentations) $this(place) file 		$file_name
+			
+			# Register the fact that the root node was loaded from a file
+			$this(place) set_loaded_from_file		$file_name
+			$this(place) set_nested_graph_modified	0
 			
 			# Do we load inside an other place?
 			if {$nesting_place != ""} {
@@ -805,14 +830,16 @@ method PetriNetView:_:Place Load_from_file {{file_name {}}} {
 				 if {$PNV != ""} {
 					  # Deletion of the previous nesting place
 					  lassign [$PNV get_coords $nesting_place] x y
-					  puts "Adding new place $this(place) at $x $y"
+					  # puts "Adding new place $this(place) at $x $y"
 					  $PNV Add_new_place $x $y $this(place)
-					  puts "Deletion of $nesting_place after substitution by $this(place)"
+					  # puts "Deletion of $nesting_place after substitution by $this(place)"
 					  $PNV Delete_elements [list $nesting_place]
 					  # this(D_preso)
 					 }
 				}
 		$doc delete
+		
+		return $this(place)
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -833,22 +860,23 @@ method PetriNetView:_:Place Update_positions_from_D_presentations {} {
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNetView:_:Place Recursive_load_of_PetriNetView {root_node L_nesting_places} {
-	set cmd [list dict set this(D_nested_presentations) $this(place)]
-		foreach place $L_nesting_places {lappend cmd D_nested_places $place}
+	set nesting_place [lindex $L_nesting_places end]
+	set cmd [concat [list dict set this(D_nested_presentations)] [lindex $L_nesting_places 0]]
+		foreach place [lrange $L_nesting_places 1 end] {lappend cmd D_nested_places $place}
 	eval [concat $cmd [list PetriNetView ""]]
-	eval [concat $cmd [list D_nested_places [dict create]]]
+
 	foreach preso [$root_node selectNodes "./presentation"] {
 		 foreach att [list represents x y] {set $att [$preso getAttribute $att]}
-		 set represented_element [dict get $this(D_mapping_name) $represents]
+		 set represented_element [dict get $this(D_mapping_name) ${nesting_place}::$represents]
 		 eval [concat $cmd [list D_presentations $represented_element [dict create x $x y $y]]]
 		}
 	foreach preso [$root_node selectNodes "./PetriNetView"] {
 		 set represents [$preso getAttribute place]
-		 set represented_element [dict get $this(D_mapping_name) $represents]
+		 set represented_element [dict get $this(D_mapping_name) ${nesting_place}::$represents]
 		 this Recursive_load_of_PetriNetView $preso [concat $L_nesting_places [list $represented_element]]
 		}
 }
-
+# Trace PetriNetView:_:Place Recursive_load_of_PetriNetView
 #___________________________________________________________________________________________________________________________________________
 method PetriNetView:_:Place get_unique_id {prefix} {
 	incr class(id)
@@ -861,47 +889,79 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 	foreach att_node [$place_node selectNodes "./attribute"] {
 		 set [$att_node getAttribute type] [$att_node asText]
 		}
-		
-	# Create places recursivly
-	set place_name [this get_unique_id place]
-	dict set this(D_mapping_name) $tclid $place_name
-	PetriNet:_:Place $place_name $name $nesting_place
-	foreach nested_place [$place_node selectNodes "./place"] {
-		 this Create_net_recursivly $nested_place $place_name [concat $L_nesting_places [list $place_name]]
-		 }
-	# Save information about the nested elements
-	set start_place [dict get $this(D_mapping_name) $nested_start_place	]
-	if {$start_place != ""} {
-		 set start_place_name [$start_place get_name]
-		 $start_place dispose
-		 PetriNet:_:StartPlace $start_place $start_place_name $place_name
-		}
-	$place_name set_nested_start_place $start_place
-	
-	set end_place [dict get $this(D_mapping_name) $nested_end_place	]
-	if {$end_place != ""} {
-		 set end_place_name [$end_place get_name]
-		 $end_place dispose
-		 PetriNet:_:EndPlace $end_place $end_place_name $place_name
-		}
-	$place_name set_nested_end_place $end_place
-	
-	if {[$place_name get_nested_start_place] != ""} {
-		 set cmd [list dict set this(D_nested_presentations)]
-			foreach place $L_nesting_places {lappend cmd $place D_nested_places}
-			lappend cmd $place_name
-		 eval [concat $cmd [list D_presentations [dict create]]]
-		 eval [concat $cmd [list D_nested_places [dict create]]]
-		 eval [concat $cmd [list PetriNetView 	 ""			  ]]
-		}
-	
-	# Save information about the events
-	set new_D_events [dict create]
-		dict for {e D} $D_events {
-			 dict set D L_transitions [list]
-			 dict set new_D_events $e $D
-			}
-		$place_name set_D_events $new_D_events
+	# puts "<Create_net_recursivly $name>"
+	lassign [$place_node selectNodes "./file"] file_node
+	if {$file_node != ""} {
+		 # Load the referenced file
+		 set file_name [$file_node asText]
+		 set f [open $file_name r]
+			fconfigure $f -encoding utf-8
+			set doc [dom parse [read $f]]
+			close $f
+			set root [$doc documentElement]
+				set sub_place_node [$root selectNodes "./place"]
+				
+				set pwd [pwd]
+				cd [file dirname $file_name]
+				set place_name [this Create_net_recursivly $sub_place_node $nesting_place $L_nesting_places]
+				cd $pwd
+				
+				# puts stderr [concat $L_nesting_places [list $place_name]]
+				this Recursive_load_of_PetriNetView $root [concat $L_nesting_places [list $place_name]]
+		 $doc delete
+		 $place_name set_name $name
+		 $place_name set_loaded_from_file		[$file_node asText]
+		 $place_name set_nested_graph_modified	0
+
+		 dict set this(D_mapping_name) ${nesting_place}::$tclid $place_name
+		 dict set this(D_mapping_name) ${nesting_place}::$nested_start_place	[$place_name get_nested_start_place]
+		 dict set this(D_mapping_name) ${nesting_place}::$nested_end_place		[$place_name get_nested_end_place  ]
+		} else {
+				# Create places recursivly
+				set place_name [this get_unique_id place]
+				dict set this(D_mapping_name) ${nesting_place}::$tclid $place_name
+				# puts "\t${nesting_place}::$tclid <=> $place_name"
+				PetriNet:_:Place $place_name $name $nesting_place
+
+			    # Setup presentation stuff
+				if {$nested_start_place != ""} {
+					 set cmd [list dict set this(D_nested_presentations)]
+						foreach place $L_nesting_places {lappend cmd $place D_nested_places}
+						lappend cmd $place_name
+					 eval [concat $cmd [list D_presentations [dict create]]]
+					 eval [concat $cmd [list D_nested_places [dict create]]]
+					 eval [concat $cmd [list PetriNetView 	 ""			  ]]
+					}
+				
+				# Recursive creation of nested palces and transitions
+				foreach nested_place [$place_node selectNodes "./place"] {
+					 this Create_net_recursivly $nested_place $place_name [concat $L_nesting_places [list $place_name]]
+					 }
+				# Save information about the nested elements
+				if {$nested_start_place != ""} {
+					 set start_place [dict get $this(D_mapping_name) ${place_name}::$nested_start_place	]
+					 set start_place_name [$start_place get_name]
+					 $start_place dispose
+					 PetriNet:_:StartPlace $start_place $start_place_name $place_name
+					} else {set start_place ""}
+				$place_name set_nested_start_place $start_place
+				
+				if {$nested_end_place != ""} {
+					 set end_place [dict get $this(D_mapping_name) ${place_name}::$nested_end_place	]
+					 set end_place_name [$end_place get_name]
+					 $end_place dispose
+					 PetriNet:_:EndPlace $end_place $end_place_name $place_name
+					} else {set end_place ""}
+				$place_name set_nested_end_place $end_place
+			   
+				# Save information about the events
+				set new_D_events [dict create]
+					dict for {e D} $D_events {
+						 dict set D L_transitions [list]
+						 dict set new_D_events $e $D
+						}
+					$place_name set_D_events $new_D_events
+			   }
 	
 	# Create transitions
 	foreach transition [$place_node selectNodes "./transition"] {
@@ -910,12 +970,12 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 			}
 		 set D_arc_sources [dict create]; dict for {k v} $D_sources {
 			 set place_name_in_xml $k
-			 set place_name_in_tcl [dict get $this(D_mapping_name) $place_name_in_xml]
+			 set place_name_in_tcl [dict get $this(D_mapping_name) ${place_name}::$place_name_in_xml]
 			 dict set D_arc_sources $place_name_in_tcl [eval PetriNet:_:[lreplace $v 1 1 $place_name_in_tcl]]
 			}
 		 set D_arc_targets [dict create]; dict for {k v} $D_targets {
 			 set place_name_in_xml $k
-			 set place_name_in_tcl [dict get $this(D_mapping_name) $place_name_in_xml]
+			 set place_name_in_tcl [dict get $this(D_mapping_name) ${place_name}::$place_name_in_xml]
 			 dict set D_arc_targets $place_name_in_tcl [eval PetriNet:_:[lreplace $v 1 1 $place_name_in_tcl]]
 			}
 		 set transition_name [this get_unique_id transition]
@@ -926,12 +986,14 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 			 $transition_name set_D_cond_triggerable $D_cond_triggerable
 			 unset D_cond_triggerable
 			}
-		 dict set this(D_mapping_name) $tclid $transition_name
+		 dict set this(D_mapping_name) ${place_name}::$tclid $transition_name
 		}
 	
 	# Return the reference of the newly created place
+	# puts "</Create_net_recursivly $name>"
 	return $place_name
 }
+# Trace PetriNetView:_:Place Create_net_recursivly
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
