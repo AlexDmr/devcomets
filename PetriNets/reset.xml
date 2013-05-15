@@ -1,0 +1,149 @@
+<PetriNetView place="P_1">
+	<place>
+		<attribute type="tclid">P_1</attribute>
+		<attribute type="name">P_1</attribute>
+		<attribute type="nested_start_place">P_2</attribute>
+		<attribute type="nested_end_place">P_3</attribute>
+		<attribute type="D_events">event {L_transitions {T_5 T_6 T_7} cmd_subscribe {} cmd_unsubscribe {}}</attribute>
+		<place>
+			<attribute type="tclid">P_2</attribute>
+			<attribute type="name">P_2</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">P_3</attribute>
+			<attribute type="name">P_3</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">P_4</attribute>
+			<attribute type="name">P_4</attribute>
+			<attribute type="nested_start_place">P_8</attribute>
+			<attribute type="nested_end_place">P_9</attribute>
+			<attribute type="D_events">event {L_transitions {T_13 T_15 T_16} cmd_subscribe {} cmd_unsubscribe {}}</attribute>
+			<place>
+				<attribute type="tclid">P_8</attribute>
+				<attribute type="name">P_8</attribute>
+				<attribute type="nested_start_place"></attribute>
+				<attribute type="nested_end_place"></attribute>
+				<attribute type="D_events"></attribute>
+			</place>
+			<place>
+				<attribute type="tclid">P_9</attribute>
+				<attribute type="name">P_9</attribute>
+				<attribute type="nested_start_place"></attribute>
+				<attribute type="nested_end_place"></attribute>
+				<attribute type="D_events"></attribute>
+			</place>
+			<place>
+				<attribute type="tclid">P_11</attribute>
+				<attribute type="name">P_11</attribute>
+				<attribute type="nested_start_place"></attribute>
+				<attribute type="nested_end_place"></attribute>
+				<attribute type="D_events"></attribute>
+			</place>
+			<place>
+				<attribute type="tclid">P_12</attribute>
+				<attribute type="name">P_12</attribute>
+				<attribute type="nested_start_place"></attribute>
+				<attribute type="nested_end_place"></attribute>
+				<attribute type="D_events"></attribute>
+			</place>
+			<place>
+				<attribute type="tclid">P_14</attribute>
+				<attribute type="name">P_14</attribute>
+				<attribute type="nested_start_place"></attribute>
+				<attribute type="nested_end_place"></attribute>
+				<attribute type="D_events"></attribute>
+			</place>
+			<transition>
+				<attribute type="tclid">T_13</attribute>
+				<attribute type="name">T_13</attribute>
+				<attribute type="D_cond_triggerable">static {} event {}</attribute>
+				<attribute type="event">event</attribute>
+				<attribute type="cmd_trigger"></attribute>
+				<attribute type="D_sources">P_8 {StandardEdge P_8 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+				<attribute type="D_targets">P_11 {StandardEdge P_11 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} P_12 {StandardEdge P_12 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			</transition>
+			<transition>
+				<attribute type="tclid">T_15</attribute>
+				<attribute type="name">T_15</attribute>
+				<attribute type="D_cond_triggerable">static {} event {}</attribute>
+				<attribute type="event">event</attribute>
+				<attribute type="cmd_trigger"></attribute>
+				<attribute type="D_sources">P_12 {StandardEdge P_12 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+				<attribute type="D_targets">P_14 {StandardEdge P_14 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			</transition>
+			<transition>
+				<attribute type="tclid">T_16</attribute>
+				<attribute type="name">T_16</attribute>
+				<attribute type="D_cond_triggerable">static {} event {}</attribute>
+				<attribute type="event">event</attribute>
+				<attribute type="cmd_trigger"></attribute>
+				<attribute type="D_sources">P_14 {StandardEdge P_14 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} P_11 {StandardEdge P_11 {a {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+				<attribute type="D_targets">P_9 {StandardEdge P_9 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			</transition>
+		</place>
+		<transition>
+			<attribute type="tclid">T_5</attribute>
+			<attribute type="name">T_5</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger"></attribute>
+			<attribute type="D_sources">P_2 {StandardEdge P_2 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">P_4 {StandardEdge P_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">T_6</attribute>
+			<attribute type="name">T_6</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger"></attribute>
+			<attribute type="D_sources">P_4 {ResetEdge P_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">P_2 {StandardEdge P_2 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+		</transition>
+		<transition>
+			<attribute type="tclid">T_7</attribute>
+			<attribute type="name">T_7</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
+			<attribute type="event">event</attribute>
+			<attribute type="cmd_trigger"></attribute>
+			<attribute type="D_sources">P_4 {StandardEdge P_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">P_3 {StandardEdge P_3 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+		</transition>
+	</place>
+	<presentation type="place" represents="P_2" x="38" y="81" />
+	<presentation type="place" represents="P_3" x="259" y="79" />
+	<presentation type="place" represents="P_4" x="141" y="81" />
+	<presentation type="transition" represents="T_5" x="95" y="34" />
+	<presentation type="transition" represents="T_6" x="85" y="141" />
+	<presentation type="transition" represents="T_7" x="202" y="60" />
+	<PetriNetView place="P_2">
+	</PetriNetView>
+	<PetriNetView place="P_3">
+	</PetriNetView>
+	<PetriNetView place="P_4">
+		<presentation type="place" represents="P_11" x="161" y="44" />
+		<presentation type="place" represents="P_8" x="26" y="98" />
+		<presentation type="place" represents="P_9" x="296" y="52" />
+		<presentation type="place" represents="P_12" x="118" y="156" />
+		<presentation type="transition" represents="T_13" x="77" y="96" />
+		<presentation type="place" represents="P_14" x="227" y="158" />
+		<presentation type="transition" represents="T_15" x="172" y="136" />
+		<presentation type="transition" represents="T_16" x="251" y="98" />
+		<PetriNetView place="P_11">
+		</PetriNetView>
+		<PetriNetView place="P_12">
+		</PetriNetView>
+		<PetriNetView place="P_14">
+		</PetriNetView>
+	</PetriNetView>
+	<PetriNetView place="P_8">
+	</PetriNetView>
+	<PetriNetView place="P_9">
+	</PetriNetView>
+</PetriNetView>
