@@ -44,7 +44,7 @@ method PetriNet:_:TokenPool release_tokens {tokens} {
 			}
 		}
 }
-Trace PetriNet:_:TokenPool release_tokens
+# Trace PetriNet:_:TokenPool release_tokens
 #___________________________________________________________________________________________________________________________________________
 if {![gmlObject info exists object TokenPool]} {
 	PetriNet:_:TokenPool TokenPool
@@ -75,14 +75,22 @@ method PetriNet:_:Token constructor {} {
 	set this(class_name)	[lindex [gmlObject info classes $objName] 0]
 	set this(all_classes)	[gmlObject info classes $objName]
 	set this(place)			""
+	set this(D_meta)		[dict create]
 	this init ""
 }
 
 #___________________________________________________________________________________________________________________________________________
-Generate_accessors PetriNet:_:Token [list time place]
+Generate_accessors 		PetriNet:_:Token [list time place]
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:Token get_metadata {var}     {return [dict get $this(D_meta) $var]}
+method PetriNet:_:Token set_metadata {var val} {dict set this(D_meta) $var $val}
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Token init {token args} {
+	if {$token != ""} {
+		 set this(D_meta) [$token attribute D_meta]
+		}
 	this update_time
 }
 
@@ -156,6 +164,16 @@ method PetriNet:_:Place dispose {} {
 	if {$this(nesting_place) != ""} {$this(nesting_place) Sub_L_nested_places $objName}
 
 	this inherited
+}
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:Place Empty_cmd_trigger {} {
+	foreach t $this(L_nested_transitions) {
+		 $t set_cmd_trigger ""
+		}
+	foreach p $this(L_nested_places) {
+		 $p Empty_cmd_trigger
+		}
 }
 
 #___________________________________________________________________________________________________________________________________________
@@ -247,6 +265,26 @@ Inject_code PetriNet:_:Place Sub_L_tokens {
 #___________________________________________________________________________________________________________________________________________
 Manage_CallbackList PetriNet:_:Place [list Add_L_tokens Sub_L_tokens] end
 #___________________________________________________________________________________________________________________________________________
+
+#___________________________________________________________________________________________________________________________________________
+method PetriNet:_:Place forget_tokens_only_referenced_by {L} {
+	this Sub_L_tokens $L
+	foreach t $L {
+		 if {[dict exists $this(D_composite_tokens) $t]} {
+			 foreach token_composant [dict get $this(D_composite_tokens) $t] {
+				 if {[llength [dict get $this(D_composant_tokens) $token_composant]] == 1} {
+					 # Remove this composant token as only t it is only referenced by t
+					 dict unset this(D_composant_tokens) $token_composant
+					 TokenPool release_tokens [list $token_composant]
+					} else  {set L_composite_tokens [dict get $this(D_composant_tokens) $token_composant]
+							 dict set this(D_composant_tokens) $token_composant [lremove $L_composite_tokens $t]
+							}
+				}
+			 # forget this composite token
+			 dict unset this(D_composite_tokens) $t
+			}
+		}
+}
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place Add_nesting_token_representing {L} {
@@ -553,17 +591,20 @@ method PetriNet:_:Place OnTransition {name op cmd} {
 #___________________________________________________________________________________________________________________________________________
 # Filter solutions based on the constraints expressed on each individual variable
 method PetriNet:_:Place Mono_Filter_solutions_with_event {transition D_event_name} {
-	upvar $D_event_name D_event
+	upvar $D_event_name event
 	set ok 0; set D_solution [dict create]
+	# puts "\tL_solutions : [dict get $this(D_triggerable_transitions) $transition D_res]"
 	dict for {place L_solutions} [dict get $this(D_triggerable_transitions) $transition D_res] {
 		 foreach solution $L_solutions {
 			 # If this solution is good enough, we return it!
 			 set solution_ok 1
 			 foreach {var_name D_var} [dict get $solution D_vars] {
 				 if {[dict get $D_var var_depend_on_event]} {
-					 # puts "Filter $var_name !"
+					 # puts "\tFilter $var_name !"
 					 set filter [$transition get_item_of_D_sources [list $place D_weight $var_name event_filter]]
 					 foreach t [dict get $D_var L_tokens] {
+						 # puts "\tconsidering token $t\n\t$filter"
+						 # puts "\t[subst $filter]"
 						 if {![eval $filter]} {
 							 # puts stderr "\tElimination of current solution with $t to code"
 							 set solution_ok 0
@@ -581,13 +622,17 @@ method PetriNet:_:Place Mono_Filter_solutions_with_event {transition D_event_nam
 				}
 			}
 		 # Did we found a solution for place ? If not we abort !
-		 if {![dict exists $D_solution $place]} {set D_solution [dict create]; break}
+		 if {![dict exists $D_solution $place]} {
+			 # set D_solution [dict create]
+			 # break
+			}
 		}
 		
 	# There was no good enough solution
+	# puts "\tD_solution : [list $D_solution]"
 	return $D_solution
 }
-# Trace PetriNet:_:Place Filter_solutions_with_event
+# Trace PetriNet:_:Place Mono_Filter_solutions_with_event
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place Multi_Filter_solutions_with_event {transition D_event_name filter_name} {
@@ -616,26 +661,34 @@ method PetriNet:_:Place Multi_Filter_solutions_with_event {transition D_event_na
 			}
 		}
 	
+	puts "\t[dict create $objName $new_L_combi]"
 	return [dict create $objName $new_L_combi]
 }
+# Trace PetriNet:_:Place Multi_Filter_solutions_with_event
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Place TriggerEvent {name D_event L_transitions} {
 	set L [list]
-	if {[llength $L_transitions] == 0} {set L_transitions [dict get $this(D_events) $name L_transitions]}
+	if {[llength $L_transitions] == 0 && [dict exists $this(D_events) $name]} {
+		 set L_transitions [dict get $this(D_events) $name L_transitions]
+		}
 	foreach transition $L_transitions {
 		 if { [dict get $this(D_triggerable_transitions) $transition triggerable] } {
 			 # Should we recompute triggerability because it depends on the event?
 			 if {[dict get $this(D_triggerable_transitions) $transition depends_on_event]} {
 				 # error "To be implemented : filter solutions so that only the ones compatibles with the event are selected"
 				 set D_solutions [this Mono_Filter_solutions_with_event $transition D_event]
-				 if {[dict size $D_solutions] == 0} {
+				 # Are all variable which should have a solution affected ?
+				 set should_have_a_solution 0
+				 dict for {place D_place} [$transition get_D_sources] {
+					 set should_have_a_solution [expr $should_have_a_solution | [dict get $D_place should_have_a_solution]]
+					}
+				 # if {!$should_have_a_solution} {puts "TriggerEvent $name\n\tD_event : $D_event\n\tD_solutions : $D_solutions"}
+				 if {([dict size $D_solutions] > 0) != $should_have_a_solution} {
 					 set can_be_triggered 0
 					} else {set can_be_triggered 1
 						    dict set this(D_triggerable_transitions) $transition D_res $D_solutions
 						   }
-				 # this Update_triggerability $transition D_event
-				 # if { [dict get $this(D_triggerable_transitions) $transition triggerable] } {set can_be_triggered 1} else {set can_be_triggered 0}
 				} else {set can_be_triggered 1}
 				
 			 # puts "before :\n"
@@ -644,7 +697,11 @@ method PetriNet:_:Place TriggerEvent {name D_event L_transitions} {
 			 set multi_var_filter [$transition get_item_of_D_cond_triggerable event]
 			 if {$multi_var_filter != ""} {
 				 set D_solutions [this Multi_Filter_solutions_with_event $transition D_event multi_var_filter]
-				 if {[dict size $D_solutions] == 0} {
+				 set should_have_a_solution 0
+				 dict for {place D_place} [$transition get_D_sources] {
+					 set should_have_a_solution [expr $should_have_a_solution | [dict get $D_place should_have_a_solution]]
+					}
+				 if {[dict size $D_solutions] == 0 && $should_have_a_solution} {
 					set can_be_triggered 0
 					} else {set can_be_triggered 1
 						    dict set this(D_triggerable_transitions) $transition D_res $D_solutions
@@ -681,8 +738,18 @@ method PetriNet:_:Place Eval {cmd D_pool_name D_vars_name args} {
 	dict for {k v} $D_pool 		 {set $k [dict get $v L_tokens]}
 	dict for {k v} $D_vars		 {set $k $v}
 	
-	eval $cmd
+	if {[catch {set rep [eval $cmd]} err]} {
+		 puts stderr "Error while evaluating command in place $objName ([this get_name])"
+		 puts stderr "\tcommand : $cmd"
+		 puts stderr "\t__________________"
+		 puts stderr $::errorInfo
+		 set rep ""
+		}
+	
+	# puts "\t\tEval => $rep"
+	return $rep
 }
+# Trace PetriNet:_:Place Eval
 
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
@@ -729,15 +796,17 @@ method PetriNet:_:Place Update_triggerability {t {D_event_name {}} {mark {}}} {
 Manage_CallbackList PetriNet:_:Place [list Update_triggerability] end
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Place Update_event_related_to {t new_event} {
-	this UnSubscribe_to_event [$t get_event] $t
-	this   Subscribe_to_event $new_event     $t
+method PetriNet:_:Place Update_event_related_to {t new_L_events} {
+	foreach event [$t get_L_events] {this UnSubscribe_to_event $event $t}
+	foreach event $new_L_events 	{this   Subscribe_to_event $event $t}
 }
 
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Place Nest_transition {t event} {
+method PetriNet:_:Place Nest_transition {t L_events} {
 	if {[$t get_nesting_place] != ""} {
-		 [$t get_nesting_place] UnSubscribe_to_event $event $t
+		 foreach event $L_events {
+			  [$t get_nesting_place] UnSubscribe_to_event $event $t
+			 }
 		 [$t get_nesting_place] remove_item_of_D_nested_transitions [list $t]
 		}
 
@@ -747,10 +816,10 @@ method PetriNet:_:Place Nest_transition {t event} {
 		}
 	dict set this(D_triggerable_transitions) $t [dict create triggerable 0 D_res "" time_reeval 0 mark 0 depends_on_event 0]
 	this Update_triggerability $t this(pipo_event)
-	this Subscribe_to_event    $event $t 
+	foreach event $L_events {this Subscribe_to_event    $event $t}
 	
 	# Manage callbacks for arcs modifications
-	$t Subscribe_to_set_event $objName "$objName Update_event_related_to $t \$v" 
+	$t Subscribe_to_set_L_events $objName "$objName Update_event_related_to $t \$L"
 	foreach mtd [list 	set_D_sources set_item_of_D_sources remove_item_of_D_sources \
 						set_D_targets set_item_of_D_targets remove_item_of_D_targets \
 				] {
@@ -787,14 +856,14 @@ method PetriNet:_:Place Save_to_stream {node_text stream dec} {
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
-method PetriNet:_:Transition constructor {name nesting_place event cmd_trigger D_sources D_targets} {
+method PetriNet:_:Transition constructor {name nesting_place L_events cmd_trigger D_sources D_targets} {
 	set this(triggering) 0
 	set this(name)		 $name
 	set this(L_errors)	 [list]
 
 	set this(D_sources) $D_sources; dict for {place D_place} $D_sources {$place Add_L_targets [list $objName]}
 	set this(D_targets) $D_targets; dict for {place D_place} $D_targets {$place Add_L_sources [list $objName]}
-	set this(event)		$event
+	set this(L_events)	$L_events
 
 	set this(nesting_place)    ""
 	set this(D_cond_triggerable) [dict create static {} event {}]
@@ -803,7 +872,7 @@ method PetriNet:_:Transition constructor {name nesting_place event cmd_trigger D
 	set this(id_test) 0
 	
 	if {$nesting_place != ""} {
-		 $nesting_place Nest_transition $objName $event
+		 $nesting_place Nest_transition $objName $L_events
 		}
 }
 
@@ -819,7 +888,7 @@ method PetriNet:_:Transition dispose {} {
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Transition Replicate_core {copy_name nesting_place serv_name} {
-	PetriNet:_:Transition $copy_name cp:[this get_name] $nesting_place [this get_event] [this get_cmd_trigger] [dict create] [dict create]
+	PetriNet:_:Transition $copy_name cp:[this get_name] $nesting_place [this get_L_events] [this get_cmd_trigger] [dict create] [dict create]
 	$copy_name set_D_cond_triggerable [this get_D_cond_triggerable]
 	return $copy_name
 }
@@ -848,7 +917,7 @@ method PetriNet:_:Transition Save_to_stream {node_text stream dec} {
 	puts $stream "${dec}<transition>"
 	$node_text nodeValue $objName
 	puts $stream "${dec}\t<attribute type=\"tclid\">[$node_text asXML]</attribute>"
-	foreach a [list name D_cond_triggerable event cmd_trigger] {
+	foreach a [list name D_cond_triggerable L_events cmd_trigger] {
 		 $node_text nodeValue $this($a)
 		 puts $stream "${dec}\t<attribute type=\"$a\">[$node_text asXML]</attribute>"
 		}
@@ -863,8 +932,9 @@ method PetriNet:_:Transition Save_to_stream {node_text stream dec} {
 }
 
 #___________________________________________________________________________________________________________________________________________
-Generate_accessors 		PetriNet:_:Transition [list name nesting_place event cmd_trigger id_test]
-Generate_List_accessor	PetriNet:_:Transition L_errors	L_errors
+Generate_accessors 		PetriNet:_:Transition [list name nesting_place cmd_trigger id_test]
+Generate_List_accessor	PetriNet:_:Transition L_errors L_errors
+Generate_List_accessor	PetriNet:_:Transition L_events L_events
 Generate_dict_accessors PetriNet:_:Transition D_sources
 Generate_dict_accessors PetriNet:_:Transition D_targets
 Generate_dict_accessors PetriNet:_:Transition D_cond_triggerable
@@ -874,7 +944,7 @@ Manage_CallbackList PetriNet:_:Transition [list set_D_sources set_item_of_D_sour
 												set_D_targets set_item_of_D_targets remove_item_of_D_targets \
 											] end
 
-Manage_CallbackList PetriNet:_:Transition [list set_event] begin
+Manage_CallbackList PetriNet:_:Transition [list set_L_events] begin
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Transition Triggerable {D_event_name {in_nesting_context 1}} {
@@ -886,8 +956,20 @@ method PetriNet:_:Transition Triggerable {D_event_name {in_nesting_context 1}} {
 	dict for {place D_edge} $this(D_sources) {
 		 set D_weight   		[dict get $D_edge D_weight]
 		 set cond_select		[dict get $D_edge cond]
-		 lassign				[eval $cond_select] res L_solutions ms depends_on_event
+		 lassign				[eval $cond_select] res L_solutions ms edge_depends_on_event
+		 if {  $res == 0
+		    && ![dict get $D_edge should_have_a_solution] } {
+				 set has_event_filter 0
+				 dict for {idT D_idT} [dict get $D_edge D_weight] {
+					 if {[dict get $D_idT event_filter] != ""} {set has_event_filter 1; break;}
+					}
+				 if {$has_event_filter} {
+					 # puts stderr "[dict get $D_edge type] from $place ([$place get_name]) to $objName ([this get_name]) is not triggerable BUT has an event filter"
+					 set res 1
+					}
+				}
 		 if {$depends_on_event == ""} {error "NULL with :\ncond_select : $cond_select"}
+		 set depends_on_event [expr $depends_on_event | $edge_depends_on_event]
 		 if {!$res} {return [list 0 "" $ms $depends_on_event]} else {if {$ms >= 0} {lappend L_ms $ms}}
 		 # arc is triggerable, so merge the set of possibilities
 		 dict set D_res $place $L_solutions
@@ -914,7 +996,8 @@ method PetriNet:_:Transition Triggerable {D_event_name {in_nesting_context 1}} {
 method PetriNet:_:Transition Trigger {D_event_name} {
 	if {!$this(triggering) && [$this(nesting_place) get_item_of_D_triggerable_transitions [list $objName triggerable]]} {
 		 upvar $D_event_name D_event
-		 set D_vars [dict create event [dict create name $this(event) D_event $D_event]]
+		 # set D_vars [dict create event [dict create name [lindex $this(L_events) 0] D_event $D_event]]
+		 set D_vars [dict create event $D_event]
 
 		 set this(triggering) 1
 		 set L_tokens [list]
@@ -980,6 +1063,12 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 				}
 			}
 
+		 # puts "# Eval the trigger command"
+		 set D_vars [dict merge [dict create place $this(nesting_place)] $D_vars]
+		 # puts "D_vars :"
+		 # dict for {k v} $D_vars {puts "\t$k : $v"}
+		 $this(nesting_place) Eval $this(cmd_trigger) D_pool D_vars 
+		 # puts "Done."
 		 # Release unused tokens
 		 dict for {var_name D_var} $D_pool {
 			 if {![dict exists $D_used $var_name]} {
@@ -995,10 +1084,6 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 					}
 				}
 			}
-
-		 # Eval the trigger command
-		 dict set D_vars place $place
-		 $this(nesting_place) Eval $this(cmd_trigger) D_pool D_vars 
 
 		 # Update triggerable transitions
 		 $this(nesting_place) incr_last_test; 
@@ -1079,6 +1164,7 @@ proc PetriNet:_:StandardEdge {place D_weight} {
 	set D 	[dict create	type						StandardEdge					\
 							D_weight					$D_weight						\
 							cond						{this SuperSelectTokens $place D_weight}	\
+							should_have_a_solution		{1}	\
 							remove_tokens				{1}	\
 							cmd_remove_tokens_source	{$place Sub_L_tokens $L_tokens_source} \
 							cmd_puts_tokens_target		{this PutsTokens $place $L_all_source_reference_tokens D_event D_weight D_pool D_used} \
@@ -1086,6 +1172,15 @@ proc PetriNet:_:StandardEdge {place D_weight} {
 							preso_create_end_line		""				\
 							preso_update_end_line		""				\
 			]
+	return $D
+}
+
+#___________________________________________________________________________________________________________________________________________
+proc PetriNet:_:ResetEdge {place D_weight} {
+	set D [PetriNet:_:StandardEdge $place $D_weight]
+		dict set D type						ResetEdge
+		dict set D cmd_remove_tokens_source {$place forget_tokens_only_referenced_by $L_tokens_source}
+		dict set D preso_style_line_config	-width 3
 	return $D
 }
 
@@ -1104,6 +1199,7 @@ proc PetriNet:_:inhibitordEdge {place D_weight} {
 	set D [PetriNet:_:StandardEdge $place $D_weight]
 		dict set D type						inhibitordEdge
 		dict set D cond						"lassign \[[dict get $D cond]\] b_tmp D_tmp ms_tmp dep; list \[expr !\$b_tmp\] \$D_tmp \$ms_tmp \$dep"
+		dict set D should_have_a_solution	0
 		dict set D cmd_remove_tokens_source {}
 		dict set D remove_tokens			0
 		dict set D preso_style_line_config	-dash 1
@@ -1211,8 +1307,10 @@ method PetriNet:_:Transition SuperSelectTokens {place D_weight_name} {
 	if { $b_res && [llength $L_ms_ok]} {set ms [lindex [lsort -real $L_ms_ok] 0]}
 	if {!$b_res && [llength $L_ms_ko]} {set ms [lindex [lsort -real $L_ms_ko] 0]}
 
+	# puts "\t=> [list $b_res $L_solutions $ms $arc_depends_on_event]"
 	return [list $b_res $L_solutions $ms $arc_depends_on_event]
 }
+# Trace PetriNet:_:Transition SuperSelectTokens
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Transition SelectTokens {place D_event_name D_weight_name args} {
@@ -1316,9 +1414,7 @@ method PetriNet:_:Place PutsTokens {place L_all_source_reference_tokens D_event_
 						} else {
 								# puts "\tcombination is $type"
 								# Else it it is combination
-								# set L_tokens [eval [concat $type $weight D_pool]]
 								set D_vars [dict create]
-								# puts [concat $type $weight D_pool]
 								set L_tokens [this Eval [concat $type $weight D_pool] D_pool D_vars]
 							   }
 					# Add nesting references for tokens
@@ -1335,6 +1431,7 @@ method PetriNet:_:Place PutsTokens {place L_all_source_reference_tokens D_event_
 					# Register variable and puts token in the place
 					$place Add_L_tokens $L_tokens
 					dict set D_pool $var_name [dict create L_tokens $L_tokens]
+					# puts "\t\t$var_name : [list $L_tokens]"
 					dict set D_used $var_name 1
 				   }
 		}

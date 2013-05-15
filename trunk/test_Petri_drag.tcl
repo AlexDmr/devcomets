@@ -19,55 +19,6 @@ canvas .c -background blue; pack .c -expand 1 -fill both
 # $root_place OnTransition tripleClick += [list puts TRIPLE!!!]
 
 #___________________________________________________________________________________________________________________________________________
-# Definitions
-#___________________________________________________________________________________________________________________________________________
-inherit PetriNet:_:TokenPointer PetriNet:_:Token
-method PetriNet:_:TokenPointer constructor {} {
-	this inherited
-	this init_coordinate "" 0 0
-}
-
-#___________________________________________________________________________________________________________________________________________
-method PetriNet:_:TokenPointer init {token args} {
-	this inherited $token
-	if {$token != "" && [$token is_a PetriNet:_:TokenPointer]} {
-		 set this(x)		[$token attribute x]
-		 set this(y)		[$token attribute y]
-		 set this(last_x)	[$token attribute last_x]
-		 set this(last_y)	[$token attribute last_y]
-		 set this(id_ptr)	[$token attribute id_ptr]
-		}
-}
-
-#___________________________________________________________________________________________________________________________________________
-method PetriNet:_:TokenPointer init_coordinate {id x y} {
-	set this(x) 		$x; set this(y) 		$y
-	set this(last_x)	$x; set this(last_y)	$y
-	set this(id_ptr)	$id
-}
-
-#___________________________________________________________________________________________________________________________________________
-method PetriNet:_:TokenPointer update_coordinate {x y} {
-	set this(last_x)	$this(x); set this(last_y)	$this(y)
-	set this(x)			$x		; set this(y) 		$y
-	
-	return [list [expr $x - $this(last_x)] [expr $y - $this(last_y)]]
-}
-
-#___________________________________________________________________________________________________________________________________________
-proc PetriNet:_:InitTokenPointer {weight D_pool_name} {
-	upvar $D_pool_name D_pool
-	
-	puts "InitPointerToken $weight $D_pool"
-	set L [list]
-	for {set i 0} {$i < $weight} {incr i} {
-		 lappend L [TokenPool get_token PetriNet:_:TokenPointer]
-		}
-	
-	return $L
-}
-
-#___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 #___________________________________________________________________________________________________________________________________________
 $root_place TriggerEvent init [dict create] [list]

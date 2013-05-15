@@ -369,27 +369,27 @@ method PetriNetView:_:Place Edit_element {type args} {
 								   set this(cmd_deselect) [list $this(canvas) itemconfigure rectangle_$transition -fill white]
 			 frame $this(frame_edit).f_name
 				label $this(frame_edit).f_name.lab -text "Name : "; pack $this(frame_edit).f_name.lab -side left
-				entry $this(frame_edit).f_name.ent; pack $this(frame_edit).f_name.ent -side left -fill x
+				entry $this(frame_edit).f_name.ent; pack $this(frame_edit).f_name.ent -side left -fill x -expand 1
 				$this(frame_edit).f_name.ent insert 0 [$transition get_name]
 			 frame $this(frame_edit).f_event
 				label $this(frame_edit).f_event.lab -text "Event : "; pack $this(frame_edit).f_event.lab -side left
-				entry $this(frame_edit).f_event.ent; pack $this(frame_edit).f_event.ent -side left -fill x
-				$this(frame_edit).f_event.ent insert 0 [$transition get_event]
+				entry $this(frame_edit).f_event.ent; pack $this(frame_edit).f_event.ent -side left -fill x -expand 1
+				$this(frame_edit).f_event.ent insert 0 [$transition get_L_events]
 			 frame $this(frame_edit).f_cond
 				label $this(frame_edit).f_cond.lab -text "Guard condition : "; pack $this(frame_edit).f_cond.lab -side top -anchor w
-				text $this(frame_edit).f_cond.ent -width 60 -height 3; pack $this(frame_edit).f_cond.ent -side left -fill x
+				text $this(frame_edit).f_cond.ent -width 60 -height 3; pack $this(frame_edit).f_cond.ent -side left -fill x -expand 1
 				$this(frame_edit).f_cond.ent insert 0.0 [$transition get_D_cond_triggerable]
 			 frame $this(frame_edit).f_cmd
 				label $this(frame_edit).f_cmd.lab -text "Command : "; pack $this(frame_edit).f_cmd.lab -side top -anchor w
-				text $this(frame_edit).f_cmd.ent -width 60 -height 10; pack $this(frame_edit).f_cmd.ent -side left -fill x
+				text $this(frame_edit).f_cmd.ent -width 60 -height 10; pack $this(frame_edit).f_cmd.ent -side left -fill x -expand 1
 				$this(frame_edit).f_cmd.ent insert 0.0 [$transition get_cmd_trigger]
 			 frame $this(frame_edit).f_err
 				label $this(frame_edit).f_err.lab -text "Errors : "; pack $this(frame_edit).f_err.lab -side top -anchor w
-				text $this(frame_edit).f_err.ent -width 60 -height 6 -background red; pack $this(frame_edit).f_err.ent -side left -fill x
+				text $this(frame_edit).f_err.ent -width 60 -height 6 -background red; pack $this(frame_edit).f_err.ent -side left -fill x -expand 1
 				$this(frame_edit).f_err.ent insert 0.0 [join [$transition get_L_errors] "\n"]
 			 frame $this(frame_edit).f_val
 				button $this(frame_edit).f_val.ok -text "  OK  " -command  "$transition set_name \[$this(frame_edit).f_name.ent get\]
-																			$transition set_event \[$this(frame_edit).f_event.ent get\];
+																			$transition set_L_events \[$this(frame_edit).f_event.ent get\];
 																		    $transition set_cmd_trigger \[string trim \[$this(frame_edit).f_cmd.ent get 0.0 end\]\]
 																			$transition set_D_cond_triggerable \[string trim \[$this(frame_edit).f_cond.ent get 0.0 end\]\]
 																			$this(place) set_nested_graph_modified 1
@@ -408,7 +408,7 @@ method PetriNetView:_:Place Edit_element {type args} {
 				label $this(frame_edit).f_name.source -text "  source : [$source get_name]($source)"; pack $this(frame_edit).f_name.source -side top -anchor w
 				label $this(frame_edit).f_name.target -text "  target : [$target get_name]($target)"; pack $this(frame_edit).f_name.target -side top -anchor w
 			 global PetriNetView:_:Place__menu_type_arc
-			 tk_optionMenu $this(frame_edit).f_name.type PetriNetView:_:Place__menu_type_arc StandardEdge ConditionnaldEdge inhibitordEdge
+			 tk_optionMenu $this(frame_edit).f_name.type PetriNetView:_:Place__menu_type_arc StandardEdge ConditionnaldEdge inhibitordEdge ResetEdge
 				pack $this(frame_edit).f_name.type -side top -fill x -expand 1
 				set PetriNetView:_:Place__menu_type_arc [$transition get_item_of_$D_name [list $place type]]
 			 frame $this(frame_edit).f_weight
@@ -425,7 +425,7 @@ method PetriNetView:_:Place Edit_element {type args} {
 			}
 		}
 	foreach w [winfo children $this(frame_edit)] {
-		 pack $w -side top -fill x
+		 pack $w -side top -fill x -expand 1
 		}
 }
 
@@ -980,7 +980,7 @@ method PetriNetView:_:Place Create_net_recursivly {place_node nesting_place {L_n
 			}
 		 set transition_name [this get_unique_id transition]
 		 PetriNet:_:Transition $transition_name $name $place_name \
-												$event $cmd_trigger \
+												$L_events $cmd_trigger \
 												$D_arc_sources $D_arc_targets
 		 if {[info exists D_cond_triggerable]} {
 			 $transition_name set_D_cond_triggerable $D_cond_triggerable
@@ -1150,9 +1150,10 @@ method PetriNetView:_:Place Contextual_Release_on {type element x y} {
 			 set D_tmp {}
 			 lassign [$element Triggerable D_tmp] triggerable D_res
 			 if {$triggerable} {
-				 set event 			[$element get_event]
-				 set nesting_place	[$element get_nesting_place]
-				 $m add command -label "Trigger event $event" -command "[$element get_nesting_place] TriggerEvent $event {} $element"
+				 foreach event [$element get_L_events] {
+					  set nesting_place	[$element get_nesting_place]
+					  $m add command -label "Trigger event $event" -command "[$element get_nesting_place] TriggerEvent $event {} $element"
+					 }
 				}
 			}
 		 arc		{
