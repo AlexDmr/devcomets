@@ -44,7 +44,7 @@
 			<attribute type="tclid">transition_7</attribute>
 			<attribute type="name">press</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">press</attribute>
+			<attribute type="L_events">press</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources"></attribute>
 			<attribute type="D_targets">place_6 {StandardEdge place_6 {idT {w 1 t Token cond {subst 1} time {subst -1}}}}</attribute>
@@ -53,7 +53,7 @@
 			<attribute type="tclid">transition_8</attribute>
 			<attribute type="name">tripleClick</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">idle</attribute>
+			<attribute type="L_events">idle</attribute>
 			<attribute type="cmd_trigger">
 </attribute>
 			<attribute type="D_sources">place_4 {StandardEdge place_4 {troisT {w 6 t Token cond {subst 1} time {subst -1}}
@@ -65,7 +65,7 @@
 			<attribute type="tclid">transition_9</attribute>
 			<attribute type="name">removeOld</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">idle</attribute>
+			<attribute type="L_events">idle</attribute>
 			<attribute type="cmd_trigger">puts "Vous cliquates [llength $T] fois..."
 </attribute>
 			<attribute type="D_sources">place_4 {StandardEdge place_4 {T {w * t Token cond {subst 1} time {subst -1}}
@@ -84,7 +84,7 @@
 			<attribute type="tclid">transition_10</attribute>
 			<attribute type="name">init</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">idle</attribute>
+			<attribute type="L_events">idle</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_6 {StandardEdge place_6 {idT {w 1 t Token cond {subst 1} time {subst -1}}}} place_5 {inhibitordEdge place_5 {nop {w 1 t Token cond {subst 1} time {subst -1}}
 }}</attribute>
@@ -94,7 +94,7 @@
 			<attribute type="tclid">transition_11</attribute>
 			<attribute type="name">update</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">idle</attribute>
+			<attribute type="L_events">idle</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_6 {StandardEdge place_6 {idU {w 1 t Token cond {subst 1} time {subst -1}}
 }} place_5 {ConditionnaldEdge place_5 {c {w 1 t Token cond {subst 1} time {subst -1}}
@@ -109,7 +109,7 @@
 			<attribute type="tclid">transition_12</attribute>
 			<attribute type="name">reinit</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">idle</attribute>
+			<attribute type="L_events">idle</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_4 {inhibitordEdge place_4 {nop {w 1 t Token cond {subst 1} time {subst -1}}
 }} place_5 {StandardEdge place_5 {idT {w 1 t Token cond {subst 1} time {subst -1}}}}</attribute>
@@ -119,7 +119,7 @@
 			<attribute type="tclid">T_13</attribute>
 			<attribute type="name">T_13</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_4 {StandardEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1}}}}</attribute>
 			<attribute type="D_targets"></attribute>

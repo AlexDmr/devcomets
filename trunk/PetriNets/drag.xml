@@ -51,7 +51,7 @@
 			<attribute type="tclid">transition_24</attribute>
 			<attribute type="name">enter</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">enter</attribute>
+			<attribute type="L_events">enter</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_21 {StandardEdge place_21 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">place_20 {StandardEdge place_20 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -60,7 +60,7 @@
 			<attribute type="tclid">transition_25</attribute>
 			<attribute type="name">press</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">press</attribute>
+			<attribute type="L_events">press</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_20 {StandardEdge place_20 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}}}} place_22 {inhibitordEdge place_22 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">place_22 {StandardEdge place_22 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -69,7 +69,7 @@
 			<attribute type="tclid">transition_26</attribute>
 			<attribute type="name">move</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">move</attribute>
+			<attribute type="L_events">move</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_22 {StandardEdge place_22 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}}}}</attribute>
 			<attribute type="D_targets">place_22 {StandardEdge place_22 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -78,7 +78,7 @@
 			<attribute type="tclid">transition_27</attribute>
 			<attribute type="name">release</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">release</attribute>
+			<attribute type="L_events">release</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_22 {StandardEdge place_22 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}}}}</attribute>
 			<attribute type="D_targets">place_20 {StandardEdge place_20 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -87,7 +87,7 @@
 			<attribute type="tclid">transition_28</attribute>
 			<attribute type="name">leave</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">leave</attribute>
+			<attribute type="L_events">leave</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_20 {StandardEdge place_20 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}}}}</attribute>
 			<attribute type="D_targets">place_21 {StandardEdge place_21 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -96,7 +96,7 @@
 			<attribute type="tclid">transition_29</attribute>
 			<attribute type="name">init</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">init</attribute>
+			<attribute type="L_events">init</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources"></attribute>
 			<attribute type="D_targets">place_21 {StandardEdge place_21 {idT {w 1 t PetriNet:_:InitTokenPointer cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -105,7 +105,7 @@
 			<attribute type="tclid">transition_30</attribute>
 			<attribute type="name">press2</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">press</attribute>
+			<attribute type="L_events">press</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_20 {StandardEdge place_20 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_22 {StandardEdge place_22 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">place_23 {StandardEdge place_23 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -114,7 +114,7 @@
 			<attribute type="tclid">transition_31</attribute>
 			<attribute type="name">move2</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">move</attribute>
+			<attribute type="L_events">move</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_23 {StandardEdge place_23 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}} P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">place_23 {StandardEdge place_23 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -123,7 +123,7 @@
 			<attribute type="tclid">transition_32</attribute>
 			<attribute type="name">release2</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">release</attribute>
+			<attribute type="L_events">release</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_23 {StandardEdge place_23 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}} P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">place_22 {StandardEdge place_22 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_20 {StandardEdge place_20 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
