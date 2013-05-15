@@ -1072,7 +1072,7 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 		 # puts "Done."
 		 # Release unused tokens
 		 dict for {var_name D_var} $D_pool {
-			 puts "Considering variable $var_name"
+			 # puts "Considering variable $var_name"
 			 if {![dict exists $D_used $var_name]} {
 				 set L_tokens [list]
 				 foreach token [dict get $D_var L_tokens] {
@@ -1086,7 +1086,7 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 					}
 
 				 # Remove references from composant/composite dictionnaries
-				 puts "\tDeference tokens : $L_tokens"
+				 # puts "\tDeference tokens : $L_tokens"
 				 foreach token $L_tokens {
 					 foreach reference_token [$this(nesting_place) get_item_of_D_composant_tokens [list $token]] {
 						 set L_reference_tokens [$this(nesting_place) get_item_of_D_composite_tokens [list $reference_token]]
