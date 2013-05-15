@@ -30,7 +30,7 @@
 			<attribute type="tclid">transition_5</attribute>
 			<attribute type="name">T_5</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources"></attribute>
 			<attribute type="D_targets">place_4 {StandardEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1}}}}</attribute>
@@ -39,7 +39,7 @@
 			<attribute type="tclid">transition_6</attribute>
 			<attribute type="name">T_6</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_4 {StandardEdge place_4 {toto {w 1 t Token cond {expr [clock milliseconds]/1000 % 2} time {expr 1000*([clock milliseconds]/1000 + 1)}}
 

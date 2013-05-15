@@ -30,7 +30,7 @@
 			<attribute type="tclid">transition_22</attribute>
 			<attribute type="name">T_20</attribute>
 			<attribute type="D_cond_triggerable">static {} event {expr [$a get_age] &gt; [$b get_age]}</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_18 {StandardEdge place_18 {a {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} b {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_20 {StandardEdge place_20 {c {w 2 t Token cond {subst 1} time {subst -1} event_filter {}} d {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">place_19 {StandardEdge place_19 {c {w 2 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_18 {StandardEdge place_18 {a {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} b {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_20 {StandardEdge place_20 {c {w 2 t Token cond {subst 1} time {subst -1} event_filter {}} d {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>

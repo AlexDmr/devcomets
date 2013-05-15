@@ -64,7 +64,7 @@
 				<attribute type="tclid">T_13</attribute>
 				<attribute type="name">T_13</attribute>
 				<attribute type="D_cond_triggerable">static {} event {}</attribute>
-				<attribute type="event">event</attribute>
+				<attribute type="L_events">event</attribute>
 				<attribute type="cmd_trigger"></attribute>
 				<attribute type="D_sources">P_8 {StandardEdge P_8 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 				<attribute type="D_targets">P_11 {StandardEdge P_11 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} P_12 {StandardEdge P_12 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -73,7 +73,7 @@
 				<attribute type="tclid">T_15</attribute>
 				<attribute type="name">T_15</attribute>
 				<attribute type="D_cond_triggerable">static {} event {}</attribute>
-				<attribute type="event">event</attribute>
+				<attribute type="L_events">event</attribute>
 				<attribute type="cmd_trigger"></attribute>
 				<attribute type="D_sources">P_12 {StandardEdge P_12 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 				<attribute type="D_targets">P_14 {StandardEdge P_14 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -82,7 +82,7 @@
 				<attribute type="tclid">T_16</attribute>
 				<attribute type="name">T_16</attribute>
 				<attribute type="D_cond_triggerable">static {} event {}</attribute>
-				<attribute type="event">event</attribute>
+				<attribute type="L_events">event</attribute>
 				<attribute type="cmd_trigger"></attribute>
 				<attribute type="D_sources">P_14 {StandardEdge P_14 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} P_11 {StandardEdge P_11 {a {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 				<attribute type="D_targets">P_9 {StandardEdge P_9 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -92,7 +92,7 @@
 			<attribute type="tclid">T_5</attribute>
 			<attribute type="name">T_5</attribute>
 			<attribute type="D_cond_triggerable">static {} event {}</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">P_2 {StandardEdge P_2 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">P_4 {StandardEdge P_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -101,7 +101,7 @@
 			<attribute type="tclid">T_6</attribute>
 			<attribute type="name">T_6</attribute>
 			<attribute type="D_cond_triggerable">static {} event {}</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">P_4 {ResetEdge P_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">P_2 {StandardEdge P_2 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -110,7 +110,7 @@
 			<attribute type="tclid">T_7</attribute>
 			<attribute type="name">T_7</attribute>
 			<attribute type="D_cond_triggerable">static {} event {}</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">P_4 {StandardEdge P_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">P_3 {StandardEdge P_3 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>

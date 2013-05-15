@@ -64,7 +64,7 @@
 				<attribute type="tclid">transition_10</attribute>
 				<attribute type="name">press</attribute>
 				<attribute type="cond_triggerable">subst 1</attribute>
-				<attribute type="event">press</attribute>
+				<attribute type="L_events">press</attribute>
 				<attribute type="cmd_trigger"></attribute>
 				<attribute type="D_sources">place_6 {StandardEdge place_6 {idT {t Token w 1}}}</attribute>
 				<attribute type="D_targets">place_8 {StandardEdge place_8 {idT {t Token w 1}}}</attribute>
@@ -73,7 +73,7 @@
 				<attribute type="tclid">transition_11</attribute>
 				<attribute type="name">releaseKO</attribute>
 				<attribute type="cond_triggerable">subst 1</attribute>
-				<attribute type="event">release</attribute>
+				<attribute type="L_events">release</attribute>
 				<attribute type="cmd_trigger"></attribute>
 				<attribute type="D_sources">place_9 {StandardEdge place_9 {idT {t Token w 1}}}</attribute>
 				<attribute type="D_targets">place_6 {StandardEdge place_6 {idT {t Token w 1}}}</attribute>
@@ -82,7 +82,7 @@
 				<attribute type="tclid">transition_12</attribute>
 				<attribute type="name">releaseOK</attribute>
 				<attribute type="cond_triggerable">subst 1</attribute>
-				<attribute type="event">release</attribute>
+				<attribute type="L_events">release</attribute>
 				<attribute type="cmd_trigger"></attribute>
 				<attribute type="D_sources">place_8 {StandardEdge place_8 {idT {t Token w 1}}}</attribute>
 				<attribute type="D_targets">place_6 {StandardEdge place_6 {idT {t Token w 1}}}</attribute>
@@ -91,7 +91,7 @@
 				<attribute type="tclid">transition_13</attribute>
 				<attribute type="name">enter</attribute>
 				<attribute type="cond_triggerable">subst 1</attribute>
-				<attribute type="event">enter</attribute>
+				<attribute type="L_events">enter</attribute>
 				<attribute type="cmd_trigger"></attribute>
 				<attribute type="D_sources">place_9 {StandardEdge place_9 {idT {t Token w 1}}}</attribute>
 				<attribute type="D_targets">place_8 {StandardEdge place_8 {idT {t Token w 1}}}</attribute>
@@ -100,7 +100,7 @@
 				<attribute type="tclid">transition_14</attribute>
 				<attribute type="name">leave</attribute>
 				<attribute type="cond_triggerable">subst 1</attribute>
-				<attribute type="event">leave</attribute>
+				<attribute type="L_events">leave</attribute>
 				<attribute type="cmd_trigger"></attribute>
 				<attribute type="D_sources">place_8 {StandardEdge place_8 {idT {t Token w 1}}}</attribute>
 				<attribute type="D_targets">place_9 {StandardEdge place_9 {idT {t Token w 1}}}</attribute>
@@ -124,7 +124,7 @@
 			<attribute type="tclid">transition_17</attribute>
 			<attribute type="name">activate</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">activate</attribute>
+			<attribute type="L_events">activate</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_4 {StandardEdge place_4 {idT {t Token w 1}}}</attribute>
 			<attribute type="D_targets">place_5 {StandardEdge place_5 {idT {t Token w 1}}}</attribute>
@@ -133,7 +133,7 @@
 			<attribute type="tclid">transition_18</attribute>
 			<attribute type="name">init</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">init</attribute>
+			<attribute type="L_events">init</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources"></attribute>
 			<attribute type="D_targets">place_5 {StandardEdge place_5 {idT {t Token w 1}}}</attribute>
@@ -142,7 +142,7 @@
 			<attribute type="tclid">transition_19</attribute>
 			<attribute type="name">desactivate</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">desactivate</attribute>
+			<attribute type="L_events">desactivate</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_5 {StandardEdge place_5 {idT {t Token w 1}}}</attribute>
 			<attribute type="D_targets">place_4 {StandardEdge place_4 {idT {t Token w 1}}} place_2 {StandardEdge place_2 {idT {t Token w 1}}}</attribute>
@@ -151,7 +151,7 @@
 			<attribute type="tclid">transition_20</attribute>
 			<attribute type="name">T_19</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger">
 </attribute>
 			<attribute type="D_sources">place_5 {StandardEdge place_5 {idT {t Token w 1}}} place_2 {StandardEdge place_2 {bob {t Token w 1}
@@ -162,7 +162,7 @@
 			<attribute type="tclid">transition_21</attribute>
 			<attribute type="name">T_21</attribute>
 			<attribute type="cond_triggerable">subst 1</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger">
 </attribute>
 			<attribute type="D_sources">place_15 {StandardEdge place_15 {idT {t Token w 2}

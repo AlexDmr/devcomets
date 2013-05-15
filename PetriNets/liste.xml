@@ -44,7 +44,7 @@
 			<attribute type="tclid">transition_7</attribute>
 			<attribute type="name">AjoutTravail</attribute>
 			<attribute type="D_cond_triggerable">static {} event {}</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources"></attribute>
 			<attribute type="D_targets">place_5 {StandardEdge place_5 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -53,7 +53,7 @@
 			<attribute type="tclid">transition_8</attribute>
 			<attribute type="name">ConstruireQueue</attribute>
 			<attribute type="D_cond_triggerable">static {} event {}</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger">puts "\tL : $L {[$L attribute L_elements]}"</attribute>
 			<attribute type="D_sources">place_5 {StandardEdge place_5 {e {w 1 t Token cond {= list [lindex [PetriNet:_:Select_min_max_age [$place get_L_tokens]] 1]} time {subst -1} event_filter {}}}} place_4 {StandardEdge place_4 {L {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">place_4 {StandardEdge place_4 {Le {w 1 t {$L lappend $e} cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -62,7 +62,7 @@
 			<attribute type="tclid">transition_9</attribute>
 			<attribute type="name">init</attribute>
 			<attribute type="D_cond_triggerable">static {} event {}</attribute>
-			<attribute type="event">init</attribute>
+			<attribute type="L_events">init</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources">place_4 {inhibitordEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 			<attribute type="D_targets">place_4 {StandardEdge place_4 {L {w 1 t {PetriNet:_:ConstructTokenList PetriNet:_:Token} cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
@@ -71,7 +71,7 @@
 			<attribute type="tclid">transition_10</attribute>
 			<attribute type="name">Defiler</attribute>
 			<attribute type="D_cond_triggerable">static {} event {}</attribute>
-			<attribute type="event">event</attribute>
+			<attribute type="L_events">event</attribute>
 			<attribute type="cmd_trigger">puts "Travail terminé"
 puts "\teL : $eL {[$eL attribute L_elements]}"
 puts "\t L : $L {[$L attribute L_elements]}"

@@ -44,7 +44,7 @@ method PetriNet:_:TokenPool release_tokens {tokens} {
 			}
 		}
 }
-# Trace PetriNet:_:TokenPool release_tokens
+Trace PetriNet:_:TokenPool release_tokens
 #___________________________________________________________________________________________________________________________________________
 if {![gmlObject info exists object TokenPool]} {
 	PetriNet:_:TokenPool TokenPool
@@ -260,6 +260,7 @@ Inject_code PetriNet:_:Place Sub_L_tokens {
 			}
 		 set this(is_subbing_token) 0
 		}
+	foreach e $L {$e set_place ""}
 } {}
 
 #___________________________________________________________________________________________________________________________________________
@@ -1071,11 +1072,22 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 		 # puts "Done."
 		 # Release unused tokens
 		 dict for {var_name D_var} $D_pool {
+			 puts "Considering variable $var_name"
 			 if {![dict exists $D_used $var_name]} {
-				 # Put them back in the pool
-				 TokenPool release_tokens [dict get $D_var L_tokens]
-				 # Remove references from composant/composite dictionnaries
+				 set L_tokens [list]
 				 foreach token [dict get $D_var L_tokens] {
+					 set release_tokens 1; set dereference 1
+					 if {[$token get_place] != ""} {
+						 set release_tokens 0
+						 if {[[$token get_place] get_nesting_place] == [this get_nesting_place]} {set dereference 0}
+						}
+					 if {$dereference}		{lappend L_tokens $token}
+					 if {$release_tokens}	{TokenPool release_tokens [list $token]}
+					}
+
+				 # Remove references from composant/composite dictionnaries
+				 puts "\tDeference tokens : $L_tokens"
+				 foreach token $L_tokens {
 					 foreach reference_token [$this(nesting_place) get_item_of_D_composant_tokens [list $token]] {
 						 set L_reference_tokens [$this(nesting_place) get_item_of_D_composite_tokens [list $reference_token]]
 						 $this(nesting_place) set_item_of_D_composite_tokens [list $reference_token] [lremove $L_reference_tokens $token]
@@ -1416,6 +1428,7 @@ method PetriNet:_:Place PutsTokens {place L_all_source_reference_tokens D_event_
 								# Else it it is combination
 								set D_vars [dict create]
 								set L_tokens [this Eval [concat $type $weight D_pool] D_pool D_vars]
+								# puts "\tL_tokens : $L_tokens"
 							   }
 					# Add nesting references for tokens
 					# New tokens are refered by references tokens of every token source
