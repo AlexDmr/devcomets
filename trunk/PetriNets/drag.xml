@@ -1,159 +1,159 @@
-<PetriNetView place="place_17">
+<PetriNetView place="place_1">
 	<place>
-		<attribute type="tclid">place_17</attribute>
+		<attribute type="tclid">place_1</attribute>
 		<attribute type="name">P_14</attribute>
-		<attribute type="nested_start_place">place_18</attribute>
-		<attribute type="nested_end_place">place_19</attribute>
-		<attribute type="D_events">event {L_transitions {} cmd_subscribe {} cmd_unsubscribe {}} enter {L_transitions transition_24 cmd_subscribe {} cmd_unsubscribe {}} press {L_transitions {transition_25 transition_30} cmd_subscribe {} cmd_unsubscribe {}} move {L_transitions {transition_26 transition_31} cmd_subscribe {} cmd_unsubscribe {}} release {L_transitions {transition_27 transition_32} cmd_subscribe {} cmd_unsubscribe {}} leave {L_transitions transition_28 cmd_subscribe {} cmd_unsubscribe {}} init {L_transitions transition_29 cmd_subscribe {} cmd_unsubscribe {}}</attribute>
+		<attribute type="nested_start_place">place_6</attribute>
+		<attribute type="nested_end_place">place_7</attribute>
+		<attribute type="D_events">event {L_transitions {} cmd_subscribe {} cmd_unsubscribe {}} enter {L_transitions transition_8 cmd_subscribe {} cmd_unsubscribe {}} press {L_transitions {transition_9 transition_14} cmd_subscribe {} cmd_unsubscribe {}} move {L_transitions {transition_10 transition_15} cmd_subscribe {} cmd_unsubscribe {}} release {L_transitions {transition_11 transition_16} cmd_subscribe {} cmd_unsubscribe {}} leave {L_transitions transition_12 cmd_subscribe {} cmd_unsubscribe {}} init {L_transitions transition_13 cmd_subscribe {} cmd_unsubscribe {}}</attribute>
 		<place>
-			<attribute type="tclid">place_18</attribute>
-			<attribute type="name">out</attribute>
-			<attribute type="nested_start_place"></attribute>
-			<attribute type="nested_end_place"></attribute>
-			<attribute type="D_events"></attribute>
-		</place>
-		<place>
-			<attribute type="tclid">place_19</attribute>
-			<attribute type="name">P_16</attribute>
-			<attribute type="nested_start_place"></attribute>
-			<attribute type="nested_end_place"></attribute>
-			<attribute type="D_events"></attribute>
-		</place>
-		<place>
-			<attribute type="tclid">place_20</attribute>
+			<attribute type="tclid">place_2</attribute>
 			<attribute type="name">in</attribute>
 			<attribute type="nested_start_place"></attribute>
 			<attribute type="nested_end_place"></attribute>
 			<attribute type="D_events"></attribute>
 		</place>
 		<place>
-			<attribute type="tclid">place_21</attribute>
+			<attribute type="tclid">place_3</attribute>
 			<attribute type="name">out</attribute>
 			<attribute type="nested_start_place"></attribute>
 			<attribute type="nested_end_place"></attribute>
 			<attribute type="D_events"></attribute>
 		</place>
 		<place>
-			<attribute type="tclid">place_22</attribute>
+			<attribute type="tclid">place_4</attribute>
 			<attribute type="name">dragging</attribute>
 			<attribute type="nested_start_place"></attribute>
 			<attribute type="nested_end_place"></attribute>
 			<attribute type="D_events"></attribute>
 		</place>
 		<place>
-			<attribute type="tclid">place_23</attribute>
+			<attribute type="tclid">place_5</attribute>
 			<attribute type="name">zooming</attribute>
 			<attribute type="nested_start_place"></attribute>
 			<attribute type="nested_end_place"></attribute>
 			<attribute type="D_events"></attribute>
 		</place>
+		<place>
+			<attribute type="tclid">place_6</attribute>
+			<attribute type="name">out</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
+		<place>
+			<attribute type="tclid">place_7</attribute>
+			<attribute type="name">P_16</attribute>
+			<attribute type="nested_start_place"></attribute>
+			<attribute type="nested_end_place"></attribute>
+			<attribute type="D_events"></attribute>
+		</place>
 		<transition>
-			<attribute type="tclid">transition_24</attribute>
+			<attribute type="tclid">transition_8</attribute>
 			<attribute type="name">enter</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">enter</attribute>
 			<attribute type="cmd_trigger"></attribute>
-			<attribute type="D_sources">place_21 {StandardEdge place_21 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
-			<attribute type="D_targets">place_20 {StandardEdge place_20 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_sources">place_3 {StandardEdge place_3 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_2 {StandardEdge place_2 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 		<transition>
-			<attribute type="tclid">transition_25</attribute>
+			<attribute type="tclid">transition_9</attribute>
 			<attribute type="name">press</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">press</attribute>
 			<attribute type="cmd_trigger"></attribute>
-			<attribute type="D_sources">place_20 {StandardEdge place_20 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}}}} place_22 {inhibitordEdge place_22 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
-			<attribute type="D_targets">place_22 {StandardEdge place_22 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_sources">place_2 {StandardEdge place_2 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $event id]}}}} place_4 {inhibitordEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_4 {StandardEdge place_4 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 		<transition>
-			<attribute type="tclid">transition_26</attribute>
+			<attribute type="tclid">transition_10</attribute>
 			<attribute type="name">move</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">move</attribute>
 			<attribute type="cmd_trigger"></attribute>
-			<attribute type="D_sources">place_22 {StandardEdge place_22 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}}}}</attribute>
-			<attribute type="D_targets">place_22 {StandardEdge place_22 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_sources">place_4 {StandardEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $event id]}}}}</attribute>
+			<attribute type="D_targets">place_4 {StandardEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 		<transition>
-			<attribute type="tclid">transition_27</attribute>
+			<attribute type="tclid">transition_11</attribute>
 			<attribute type="name">release</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">release</attribute>
 			<attribute type="cmd_trigger"></attribute>
-			<attribute type="D_sources">place_22 {StandardEdge place_22 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}}}}</attribute>
-			<attribute type="D_targets">place_20 {StandardEdge place_20 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_sources">place_4 {StandardEdge place_4 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $event id]}}}}</attribute>
+			<attribute type="D_targets">place_2 {StandardEdge place_2 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 		<transition>
-			<attribute type="tclid">transition_28</attribute>
+			<attribute type="tclid">transition_12</attribute>
 			<attribute type="name">leave</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">leave</attribute>
 			<attribute type="cmd_trigger"></attribute>
-			<attribute type="D_sources">place_20 {StandardEdge place_20 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}}}}</attribute>
-			<attribute type="D_targets">place_21 {StandardEdge place_21 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_sources">place_2 {StandardEdge place_2 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $event id]}}}}</attribute>
+			<attribute type="D_targets">place_3 {StandardEdge place_3 {idT {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 		<transition>
-			<attribute type="tclid">transition_29</attribute>
+			<attribute type="tclid">transition_13</attribute>
 			<attribute type="name">init</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">init</attribute>
 			<attribute type="cmd_trigger"></attribute>
 			<attribute type="D_sources"></attribute>
-			<attribute type="D_targets">place_21 {StandardEdge place_21 {idT {w 1 t PetriNet:_:InitTokenPointer cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_3 {StandardEdge place_3 {idT {w 1 t PetriNet:_:InitTokenPointer cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 		<transition>
-			<attribute type="tclid">transition_30</attribute>
+			<attribute type="tclid">transition_14</attribute>
 			<attribute type="name">press2</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">press</attribute>
 			<attribute type="cmd_trigger"></attribute>
-			<attribute type="D_sources">place_20 {StandardEdge place_20 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_22 {StandardEdge place_22 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
-			<attribute type="D_targets">place_23 {StandardEdge place_23 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_sources">place_2 {StandardEdge place_2 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_4 {StandardEdge place_4 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_5 {StandardEdge place_5 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 		<transition>
-			<attribute type="tclid">transition_31</attribute>
+			<attribute type="tclid">transition_15</attribute>
 			<attribute type="name">move2</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">move</attribute>
 			<attribute type="cmd_trigger"></attribute>
-			<attribute type="D_sources">place_23 {StandardEdge place_23 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}} P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
-			<attribute type="D_targets">place_23 {StandardEdge place_23 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_sources">place_5 {StandardEdge place_5 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $event id]}} P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_5 {StandardEdge place_5 {P1 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}} P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 		<transition>
-			<attribute type="tclid">transition_32</attribute>
+			<attribute type="tclid">transition_16</attribute>
 			<attribute type="name">release2</attribute>
-			<attribute type="cond_triggerable">subst 1</attribute>
+			<attribute type="D_cond_triggerable">static {} event {}</attribute>
 			<attribute type="L_events">release</attribute>
 			<attribute type="cmd_trigger"></attribute>
-			<attribute type="D_sources">place_23 {StandardEdge place_23 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $D_event id]}} P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
-			<attribute type="D_targets">place_22 {StandardEdge place_22 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_20 {StandardEdge place_20 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_sources">place_5 {StandardEdge place_5 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {string equal [$t attribute id_ptr] [dict get $event id]}} P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
+			<attribute type="D_targets">place_4 {StandardEdge place_4 {P {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}} place_2 {StandardEdge place_2 {P2 {w 1 t Token cond {subst 1} time {subst -1} event_filter {}}}}</attribute>
 		</transition>
 	</place>
-	<presentation type="place" represents="place_18" x="46" y="22" />
-	<presentation type="place" represents="place_19" x="95" y="15" />
-	<presentation type="place" represents="place_20" x="141" y="100" />
-	<presentation type="transition" represents="transition_24" x="73" y="86" />
-	<presentation type="transition" represents="transition_25" x="168" y="171" />
-	<presentation type="place" represents="place_21" x="19" y="96" />
-	<presentation type="transition" represents="transition_26" x="303" y="222" />
-	<presentation type="place" represents="place_22" x="248" y="168" />
-	<presentation type="transition" represents="transition_27" x="156" y="224" />
-	<presentation type="transition" represents="transition_28" x="73" y="110" />
-	<presentation type="transition" represents="transition_29" x="22" y="165" />
-	<presentation type="place" represents="place_23" x="333" y="28" />
-	<presentation type="transition" represents="transition_30" x="214" y="32" />
-	<presentation type="transition" represents="transition_31" x="335" y="92" />
-	<presentation type="transition" represents="transition_32" x="410" y="107" />
-	<PetriNetView place="place_18">
+	<presentation type="place" represents="place_6" x="34" y="12" />
+	<presentation type="place" represents="place_7" x="75" y="-3" />
+	<presentation type="place" represents="place_2" x="125" y="92" />
+	<presentation type="transition" represents="transition_8" x="63" y="78" />
+	<presentation type="transition" represents="transition_9" x="158" y="163" />
+	<presentation type="place" represents="place_3" x="9" y="88" />
+	<presentation type="transition" represents="transition_10" x="293" y="214" />
+	<presentation type="place" represents="place_4" x="238" y="160" />
+	<presentation type="transition" represents="transition_11" x="146" y="216" />
+	<presentation type="transition" represents="transition_12" x="63" y="102" />
+	<presentation type="transition" represents="transition_13" x="12" y="157" />
+	<presentation type="place" represents="place_5" x="323" y="20" />
+	<presentation type="transition" represents="transition_14" x="204" y="24" />
+	<presentation type="transition" represents="transition_15" x="325" y="84" />
+	<presentation type="transition" represents="transition_16" x="400" y="99" />
+	<PetriNetView place="place_6">
 	</PetriNetView>
-	<PetriNetView place="place_19">
+	<PetriNetView place="place_7">
 	</PetriNetView>
-	<PetriNetView place="place_20">
+	<PetriNetView place="place_2">
 	</PetriNetView>
-	<PetriNetView place="place_21">
+	<PetriNetView place="place_3">
 	</PetriNetView>
-	<PetriNetView place="place_22">
+	<PetriNetView place="place_4">
 	</PetriNetView>
-	<PetriNetView place="place_23">
+	<PetriNetView place="place_5">
 	</PetriNetView>
 </PetriNetView>

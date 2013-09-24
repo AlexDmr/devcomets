@@ -24,7 +24,7 @@ canvas .c -background blue; pack .c -expand 1 -fill both
 $root_place OnTransition tripleClick += [list puts TRIPLE!!!]
 
 $root_place Subscribe_to_Update_triggerability ALEX {
-	if {$b && [$t get_event] == "idle"} {
+	if {$b && [lsearch [$t get_L_events] "idle"] >= 0} {
 		 puts "\tALEX trigger [$t get_name]"
 		 set D [dict create]
 		 $t Trigger D
