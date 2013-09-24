@@ -44,7 +44,7 @@ method PetriNet:_:TokenPool release_tokens {tokens} {
 			}
 		}
 }
-Trace PetriNet:_:TokenPool release_tokens
+# Trace PetriNet:_:TokenPool release_tokens
 #___________________________________________________________________________________________________________________________________________
 if {![gmlObject info exists object TokenPool]} {
 	PetriNet:_:TokenPool TokenPool
@@ -75,12 +75,23 @@ method PetriNet:_:Token constructor {} {
 	set this(class_name)	[lindex [gmlObject info classes $objName] 0]
 	set this(all_classes)	[gmlObject info classes $objName]
 	set this(place)			""
+	set this(last_place)	""
 	set this(D_meta)		[dict create]
 	this init ""
 }
 
 #___________________________________________________________________________________________________________________________________________
-Generate_accessors 		PetriNet:_:Token [list time place]
+Generate_accessors 		PetriNet:_:Token [list time place last_place]
+
+#___________________________________________________________________________________________________________________________________________
+Inject_code PetriNet:_:Token set_place {
+	if {$this(place) != $v} {
+		 if {$this(place) == ""} {
+			 set this(last_place) $v
+			} else	{set this(last_place) $this(place)
+					}
+		}
+} 	{}
 
 #___________________________________________________________________________________________________________________________________________
 method PetriNet:_:Token get_metadata {var}     {return [dict get $this(D_meta) $var]}
@@ -210,7 +221,7 @@ Inject_code PetriNet:_:Place Add_L_tokens {} {
 				 # If yes, put back these tokens on their place
 				 foreach tokens_composant [dict get $this(D_composite_tokens) $token] {
 					 foreach token_composant $tokens_composant {
-						  set place [$token_composant get_place]
+						  set place [$token_composant get_last_place]
 						  if {![$place Contains_L_tokens $token_composant]} {
 							 $place Add_L_tokens [list $token_composant]
 							 if {[lsearch $L_places_to_update $place] == -1} {lappend L_places_to_update $place}
@@ -773,7 +784,7 @@ method PetriNet:_:Place Update_triggerability {t {D_event_name {}} {mark {}}} {
 		 set mark [dict get $this(D_triggerable_transitions) $t mark]
 		 incr mark; set force 1
 		} else {if {$mark < [dict get $this(D_triggerable_transitions) $t mark]} {
-					 puts stderr "\tOld message, we quit because $mark < [dict get $this(D_triggerable_transitions) $t mark]"
+					 # puts stderr "\tOld message, we quit because $mark < [dict get $this(D_triggerable_transitions) $t mark]"
 					 return
 					}
 			   }
@@ -1023,7 +1034,7 @@ method PetriNet:_:Transition Trigger {D_event_name} {
 			 dict for {var_name D_var} $D_pool {
 				 if {[dict get $D_var place] == $place} {
 					if {!$remove_tokens} {
-						 puts "Don't remove token related to variable $var_name from place [$place get_name]" 
+						 # puts "Don't remove token related to variable $var_name from place [$place get_name]" 
 						 dict set D_used $var_name 1
 						}
 					 set L_tokens_from_place	[dict get $D_var L_tokens]

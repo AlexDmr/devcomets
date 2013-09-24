@@ -31,7 +31,16 @@ cont_table Add_daughters_R [list inter_img [CometText txt_ad "adress of the webp
 	cont_table set_default_css_style_file "demo_gaelle.css++"
 	cont_table Apply_default_style
 
-cr_phone Add_daughters_R [CometChoiceN telec "Remote controler" "" -set_b_inf 1 -set_b_sup [llength $L_photos] -Subscribe_to_set_val ALEX {if {$v != (1+[lsearch [inter_img get_daughters] [cr_screen get_daughters]])} {cr_screen set_daughters_R [lindex [inter_img get_daughters] [expr $v-1]]}} U]
+cr_phone Add_daughters_R [CometChoiceN telec "Remote controler" "" \
+							-set_b_inf 1 \
+							-set_b_sup [llength $L_photos] \
+							-Subscribe_to_set_val ALEX {
+								if {$v != (1+[lsearch [inter_img get_daughters] [cr_screen get_daughters]])} {
+									 set new_img [lindex [inter_img get_daughters] [expr $v-1]]
+									 puts "Switching to image $new_img"
+									 cr_screen set_daughters_R $new_img
+									}
+								} U]
 	cr_phone set_default_css_style_file "demo_gaelle_phone.css++"
 	cr_phone Apply_default_style
 
@@ -40,6 +49,7 @@ if {[info exists editeur_tcl]} {
 	source [get_B207_files_root]B_toolglass.tcl
 		B_toolglass toolglass {Plug_image_on_screen [$infos NOEUD]}
 		$noeud_partage Ajouter_fils_au_debut [toolglass attribute n_meta]
+		$noeud_partage Position_des_fils_changeable 0
 		
 	proc Plug_image_on_screen {n_B207} {
 		set PM [$n_B207 Val CometPM]

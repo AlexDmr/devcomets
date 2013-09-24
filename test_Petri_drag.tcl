@@ -24,18 +24,17 @@ canvas .c -background blue; pack .c -expand 1 -fill both
 $root_place TriggerEvent init [dict create] [list]
 $root_place TriggerEvent init [dict create] [list]
 set init {
-	 set coords [dict get $event D_event]; 
-	 $P init_coordinate [dict get $coords id] [dict get $coords x] [dict get $coords y]
+	 $P init_coordinate [dict get $event id] [dict get $event x] [dict get $event y]
 	}
 $root_place OnTransition press		+= $init
 $root_place OnTransition enter		+= $init
 $root_place OnTransition move	+= {
-	 set coords [dict get $event D_event]; set x [dict get $coords x]; set y [dict get $coords y]
+	 set x [dict get $event x]; set y [dict get $event y]
 	 lassign [$idT update_coordinate $x $y] dx dy
 	 .c move toto $dx $dy
 	}
 $root_place OnTransition move2	+= {
-	 set coords [dict get $event D_event]; set x [dict get $coords x]; set y [dict get $coords y]
+	 set x [dict get $event x]; set y [dict get $event y]
 	 lassign [$P2 update_coordinate $x $y] dx dy
 	 set min_x [expr min([$P1 attribute x], [$P2 attribute x])]; set min_y [expr min([$P1 attribute y], [$P2 attribute y])]
 	 set max_x [expr max([$P1 attribute x], [$P2 attribute x])]; set max_y [expr max([$P1 attribute y], [$P2 attribute y])]
@@ -44,8 +43,7 @@ $root_place OnTransition move2	+= {
 	 .c coords toto [expr $cx-$dx-10] [expr $cy-$dy-10] [expr $cx+$dx+10] [expr $cy+$dy+10]
 	}
 $root_place OnTransition press2	+= {
-	set coords [dict get $event D_event];
-	 $P1 init_coordinate [dict get $coords id] [dict get $coords x] [dict get $coords y]
+	 $P1 init_coordinate [dict get $event id] [dict get $event x] [dict get $event y]
 	}
 	
 source simPointerCanvas.tcl

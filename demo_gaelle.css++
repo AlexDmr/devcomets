@@ -19,7 +19,7 @@
 
 #$current->PMs txt_ad {
 	GDD_fct : Implem(TextDisplay_CUI_QRcode);
-	FCT_Eval   : puts "Apply style for adress in $obj";
+	FCT_Eval: puts "Apply style for adress in $obj";
 }
 
 #$current->PMs txt_ad(CometImage) {
